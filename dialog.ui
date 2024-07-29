@@ -77,11 +77,11 @@
     <string>по</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_4">
+  <widget class="QLabel" name="fromDate">
    <property name="geometry">
     <rect>
-     <x>180</x>
-     <y>50</y>
+     <x>178</x>
+     <y>49</y>
      <width>91</width>
      <height>21</height>
     </rect>
@@ -102,11 +102,11 @@
    <property name="title">
     <string>Данные для таблицы</string>
    </property>
-   <widget class="QCheckBox" name="checkBox_3">
+   <widget class="QCheckBox" name="showEveryMinute">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>20</y>
+      <y>21</y>
       <width>151</width>
       <height>17</height>
      </rect>
@@ -115,11 +115,11 @@
      <string>выбрать каждую минуту</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_4">
+   <widget class="QCheckBox" name="showEveryNMinutesEachHour">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>48</y>
+      <y>55</y>
       <width>111</width>
       <height>17</height>
      </rect>
@@ -128,11 +128,11 @@
      <string>выбрать каждую</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_5">
+   <widget class="QCheckBox" name="calculateAverageEveryNMinutes">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>77</y>
+      <y>89</y>
       <width>191</width>
       <height>17</height>
      </rect>
@@ -141,11 +141,11 @@
      <string>посчитать среднее для каждых</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_6">
+   <widget class="QCheckBox" name="showEveryMinuteMultipleOfN">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>110</y>
+      <y>123</y>
       <width>231</width>
       <height>17</height>
      </rect>
@@ -154,21 +154,27 @@
      <string>выбрать каждую минуту часа, кратную</string>
     </property>
    </widget>
-   <widget class="QSpinBox" name="spinBox">
+   <widget class="QSpinBox" name="nMinutesInterval">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>44</y>
+      <x>141</x>
+      <y>54</y>
       <width>42</width>
       <height>22</height>
      </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>60</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
       <x>200</x>
-      <y>46</y>
+      <y>55</y>
       <width>121</width>
       <height>21</height>
      </rect>
@@ -177,21 +183,27 @@
      <string>минуту каждого часа</string>
     </property>
    </widget>
-   <widget class="QSpinBox" name="spinBox_2">
+   <widget class="QSpinBox" name="averageInterval">
     <property name="geometry">
      <rect>
       <x>210</x>
-      <y>77</y>
+      <y>89</y>
       <width>42</width>
       <height>22</height>
      </rect>
+    </property>
+    <property name="minimum">
+     <number>2</number>
+    </property>
+    <property name="maximum">
+     <number>60</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_8">
     <property name="geometry">
      <rect>
       <x>260</x>
-      <y>77</y>
+      <y>89</y>
       <width>47</width>
       <height>16</height>
      </rect>
@@ -200,23 +212,29 @@
      <string>минут</string>
     </property>
    </widget>
-   <widget class="QSpinBox" name="spinBox_3">
+   <widget class="QSpinBox" name="nMultiple">
     <property name="geometry">
      <rect>
       <x>260</x>
-      <y>106</y>
+      <y>121</y>
       <width>42</width>
       <height>22</height>
      </rect>
     </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>60</number>
+    </property>
    </widget>
   </widget>
-  <widget class="QLabel" name="label_2">
+  <widget class="QLabel" name="DeviceModel">
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>20</y>
-     <width>191</width>
+     <y>19</y>
+     <width>71</width>
      <height>16</height>
     </rect>
    </property>
@@ -227,7 +245,7 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>49</x>
+     <x>50</x>
      <y>19</y>
      <width>151</width>
      <height>16</height>
@@ -243,11 +261,11 @@
     <string>Блок данных с Изделия:</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_6">
+  <widget class="QLabel" name="toDate">
    <property name="geometry">
     <rect>
-     <x>310</x>
-     <y>50</y>
+     <x>304</x>
+     <y>49</y>
      <width>91</width>
      <height>21</height>
     </rect>
@@ -268,7 +286,7 @@
    <property name="title">
     <string>Оформление</string>
    </property>
-   <widget class="QCheckBox" name="checkBox">
+   <widget class="QCheckBox" name="includeTableOfContents">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -281,7 +299,7 @@
      <string>оглавление таблицы</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_2">
+   <widget class="QCheckBox" name="includeHeaderOnEveryPage">
     <property name="geometry">
      <rect>
       <x>20</x>

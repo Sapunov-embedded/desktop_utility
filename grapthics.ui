@@ -35,12 +35,12 @@
    <iconset>
     <normaloff>../../../../Farmsib/Icons/free-icon-first-aid-kit-2992082.png</normaloff>../../../../Farmsib/Icons/free-icon-first-aid-kit-2992082.png</iconset>
   </property>
-  <widget class="QGraphicsView" name="graphicsView">
+  <widget class="QCustomPlot" name="graphicsView">
    <property name="geometry">
     <rect>
-     <x>245</x>
+     <x>255</x>
      <y>59</y>
-     <width>791</width>
+     <width>781</width>
      <height>741</height>
     </rect>
    </property>
@@ -90,7 +90,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox">
+   <widget class="QCheckBox" name="inTemp">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -103,7 +103,7 @@
      <string>Т внутр.</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_2">
+   <widget class="QCheckBox" name="outTemp">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -116,7 +116,7 @@
      <string>Т внеш.</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_3">
+   <widget class="QCheckBox" name="iHumid">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -129,7 +129,7 @@
      <string>Rh внутр.</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_4">
+   <widget class="QCheckBox" name="outHumid">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -142,7 +142,7 @@
      <string>Rh внеш.</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_5">
+   <widget class="QCheckBox" name="partialPressure">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -155,7 +155,7 @@
      <string>Парциальное давление</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_6">
+   <widget class="QCheckBox" name="dewPoint">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -168,7 +168,7 @@
      <string>Температура точки росы</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_7">
+   <widget class="QCheckBox" name="square">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -181,7 +181,7 @@
      <string>кубик</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_8">
+   <widget class="QCheckBox" name="controlTemp">
     <property name="geometry">
      <rect>
       <x>153</x>
@@ -194,7 +194,7 @@
      <string>Контроль Т</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_9">
+   <widget class="QCheckBox" name="controlHumid">
     <property name="geometry">
      <rect>
       <x>153</x>
@@ -207,7 +207,7 @@
      <string>Контроль Rh</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label">
+   <widget class="QLabel" name="snDevice">
     <property name="geometry">
      <rect>
       <x>100</x>
@@ -269,7 +269,7 @@
      </size>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_3">
+   <widget class="QPushButton" name="printToPdf">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -292,7 +292,7 @@
      </size>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_4">
+   <widget class="QPushButton" name="Print">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -483,6 +483,9 @@
     <property name="currentIndex">
      <number>0</number>
     </property>
+    <property name="maxVisibleItems">
+     <number>120</number>
+    </property>
     <property name="modelColumn">
      <number>0</number>
     </property>
@@ -513,7 +516,53 @@
     </item>
    </widget>
   </widget>
+  <widget class="QLabel" name="discription">
+   <property name="geometry">
+    <rect>
+     <x>500</x>
+     <y>40</y>
+     <width>241</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>График регистрации температуры за период</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="fromDateTime">
+   <property name="geometry">
+    <rect>
+     <x>750</x>
+     <y>40</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>10.10.2010 11:00 </string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="ToDateTime">
+   <property name="geometry">
+    <rect>
+     <x>860</x>
+     <y>40</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>10.10.2010 11:00 </string>
+   </property>
+  </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QGraphicsView</extends>
+   <header>qcustomplot.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

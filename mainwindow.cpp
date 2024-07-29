@@ -2,233 +2,157 @@
 #include "ui_mainwindow.h"
 #include "dialog.h"
 #include "users.h"
+
 #include <QDirIterator>
 #include <QDebug>  //for debug
 #include <QFileDialog>
-
-
 #include <QIODevice>
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(SerialPortManager *SerialPM, ExportCSV *CSV,ExportDataFromBytes *parsedData, QWidget *parent)
   : QMainWindow(parent)
-  , ui(new Ui::MainWindow),serial(new QSerialPort(this))
+  , ui(new Ui::MainWindow),
+    SerialPM(SerialPM),storage(DeviceInfoStorage::getInstanse()),CSV(CSV),timer(new QTimer),layout(new QVBoxLayout),parsed(parsedData),g(parsedData)
 {
+
   ui->setupUi(this);
+
+
   ui->mainConsole_1->setPlainText("Устройство не подключено.\n");
 
-  //setting port to default for 101/211 TMFC
-  serial->setBaudRate(QSerialPort::Baud9600);
-  serial->setDataBits(QSerialPort::Data8);
-  serial->setParity(QSerialPort::NoParity);
-  serial->setStopBits(QSerialPort::TwoStop);
-  serial->setFlowControl(QSerialPort::NoFlowControl);
+  ui->progressBar->setMinimum(0);
+  ui->progressBar->setMaximum(storage.getBlockSizeValue());
+
+  layout->addWidget( ui->lcdDate);
+  // setLayout(layout);
+
+  layout->addWidget(ui->lcdHours);
+  // setLayout(layout);
+
+  // connect(timer, &QTimer::timeout, this, &MainWindow::on_getTempButton_clicked);
+  // connect(timer, &QTimer::timeout, this, &MainWindow::set_lcd_datatime);
+  connect(timer, &QTimer::timeout, this, &MainWindow::setProgressBar);
+  timer->start(1000);
+
+  connect (ui->Button_connect,&QPushButton::clicked,this,&MainWindow::on_getTempButton_clicked);
+  connect (ui->Button_connect,&QPushButton::clicked,this,&MainWindow::set_lcd_datatime);
+
+  //-------serial connect
+  //Auto connect
+  connect(ui->Button_connect, &QPushButton::clicked,this, [this,SerialPM](){
+      ProcessConnect();
+
+      SerialPM->auto_search_com_ports();
+
+      if(SerialPM->getConnectStatus()){
+
+          ShowHideConnectWindow();
+
+        }
+      else {
+          ui->mainConsole_1->setText("ТМФЦ устройство не найдено.");
+        }
+    },Qt::AutoConnection);
+
+  //disconnect
+  connect(ui->Disconnect_device, &QPushButton::clicked,this, [this,SerialPM](){
+      SerialPM->closeSerialPort();
+      ui->pushButton_11->setEnabled(true);
+      ui->SNumber_text->clear();
+      ui->FW_version_text->clear();
+      closeSerialPort();
+    },Qt::AutoConnection);
+
+  //manual connect
+  connect(ui->pushButton_11, &QPushButton::clicked,this, [this,SerialPM](){
+      ProcessConnect();
+
+      SerialPM->PortNumUpdate(ui->numberComPort_2->value());
+
+      SerialPM->on_pushButton_11_clicked();
+
+      if (!SerialPM->getConnectStatus()) {
+          qDebug()<<"can't open port\n";
+          ui->mainConsole_1->setText(SerialPM->getPortName()+" порт не найден или отсутствует в системе.");
+        }
+      else {
+          ShowHideConnectWindow();
+        }
+    },Qt::AutoConnection);
+
+  //------date and time pc
+  connect(ui->pushButton_10, &QPushButton::clicked,this, [this](){
+      storage.setDateTime(QDateTime::currentDateTime());
+      ui->textBrowser->insertPlainText("Дата и время ПК: "+storage.getDateTime().toString("dd.MM.yyyy hh:mm")+"\n");
+      ui->dateEdit->setDateTime(storage.getDateTime());
+      ui->timeEdit->setTime(storage.getDateTime().time());
+      storage.getDateTime().currentDateTimeUtc();
+      ui->UTC->setText("+"+QString::number(storage.getDateTime().utcOffset()/60/60)+":00");
+
+    },Qt::AutoConnection);
+
+  connect(ui->readDateTimeFromDevice, &QPushButton::clicked,this, [this,SerialPM](){
+      SerialPM->on_readDateTimeFromDevice_clicked();
+      ui->textBrowser->insertPlainText("Дата и время устройства: "+storage.getDateTime().toString("dd.MM.yyyy hh:mm")+"\n");
+
+      ui->dateEdit->setDate(storage.getDateTime().date());
+      ui->timeEdit->setTime(storage.getDateTime().time());
+    },Qt::AutoConnection);
+
+  connect(ui->writeDateTimeFromDevice, &QPushButton::clicked,this, [this,SerialPM](){
+      SerialPM->on_writeDateTimeFromDevice_clicked();//temp
+      ui->textBrowser->insertPlainText("Дата и время обновлено на устройстве.\n");
+    },Qt::AutoConnection);
+
+  connect(ui->pushButton_16, &QPushButton::clicked,this, [this](){
+      ui->textBrowser->clear();
+    },Qt::AutoConnection);
+
+  connect(ui->pushButton_18, &QPushButton::clicked,this, [this](){
+      ui->mainConsole_1->clear();
+    },Qt::AutoConnection);
 
 
-  //seaching current file path to Acrobat.exe
-  QDirIterator it("C:/Program Files (x86)/", QStringList() << "Acrobat.exe", QDir::NoFilter, QDirIterator::Subdirectories);
-  while (it.hasNext()) {
-      QFile f(it.next());
-      f.open(QIODevice::ReadOnly);
-      this->PathToAdobe=f.fileName();
-    }
-  ui->PathToAdobeLine->setText(this->PathToAdobe); //refresh path in text line
 }
 
 MainWindow::~MainWindow()
 {
-
-  delete serial;
+  delete layout;
+  delete timer;
   delete ui;
 }
 
-
-void MainWindow::on_FolderDataBase_clicked()
-{
-  this->FolderNameDB = QFileDialog::getExistingDirectory(this,
-                                                         tr("Open Database folder"), "./");
-  ui->DbPath->setText(this->FolderNameDB);
-}
-
-
-void MainWindow::on_FolderTemporaryFilesPdf_clicked()
-{
-  this->FolderNamePdf = QFileDialog::getExistingDirectory(this,
-                                                          tr("Open PDF folder"), "./");
-  ui->TempPathPdf->setText(this->FolderNamePdf);
-}
-
-
-
-void MainWindow::on_FolderTemporaryFilesXlsx_clicked()
-{
-  this->FolderNameXlsx = QFileDialog::getExistingDirectory(this,
-                                                           tr("Open Xlsx folder"), "./");
-  ui->TempPathXlsx->setText(this->FolderNameXlsx);
-}
-
-
-void MainWindow::on_PathToAdobe_clicked()
-{   //setting current folder name to adobe, if nothing to found in c:/program files (x86)/
-  this->PathToAdobe = QFileDialog::getOpenFileName(this,
-                                                   tr("Open Adobe path"),this->PathToAdobe ,tr("*.exe"));
-  ui->PathToAdobeLine->setText(this->PathToAdobe);
-}
-
-
-void MainWindow::on_lineEdit_7_textChanged(const QString &arg1)
-{
-  this->FolderNameDB=arg1;
-}
-
-
-void MainWindow::on_lineEdit_8_textChanged(const QString &arg1)
-{
-  this->FolderNamePdf=arg1;
-}
-
-
-void MainWindow::on_lineEdit_9_textChanged(const QString &arg1)
-{
-  this->FolderNameXlsx=arg1;
-}
-
-
-void MainWindow::on_lineEdit_10_textChanged(const QString &arg1)
-{
-  this->PathToAdobe =arg1;
-}
-
+//--------------------------------------------------------------------------
+//report window
 void MainWindow::on_toolButton_13_clicked()
 {
-  Dialog d;
+
+  Dialog d(CSV);
   d.setWindowFlags (d.windowFlags() & ~Qt::WindowContextHelpButtonHint);//disable button "?" near close button
   d.exec();
 }
 
-
+//graphics window show
 void MainWindow::on_toolButton_12_clicked()
 {
   g.show();
 }
 
-void MainWindow::on_UserButton_clicked()
-{
-  Users us;
-  us.setWindowFlags (us.windowFlags() & ~Qt::WindowContextHelpButtonHint); //disable button "?" near close button
-  us.exec();
-}
+//-------------------------------------------------------------------------
+
 
 //Button Auto connect to device
-void MainWindow::on_Button_connect_clicked()
-{
-  auto_search_com_ports();
-}
+void MainWindow::on_Button_connect_clicked(){};
 
-//This function is getting listed all com ports in system and goes through all list
-void MainWindow::auto_search_com_ports(){
-
-  ui->mainConsole_1->clear();
-  ui->mainConsole_1->setText("Подключение к устройству...");
-  QApplication::processEvents();
-  ui->mainConsole_1->clear();
-
-  const QList<QSerialPortInfo> serialPortInfos = QSerialPortInfo::availablePorts();
-
-  for (const QSerialPortInfo &p : serialPortInfos) {
-      serial->setPortName(p.portName());
-
-      if (serial->open(QIODevice::ReadWrite)) {
-          if(askSerialPort()){
-              updateData();
-              break;
-            };
-        }
-    }
-  ui->mainConsole_1->clear();
-  ui->mainConsole_1->setText("ТМФЦ устройство не найдено.");
-}
-
-//This function is asking "Who are you?" the connected device
-bool MainWindow::askSerialPort()
-{
-  //array hex commands for building request "Who are you?", command 57.
-  /*
-#0      0xF0            - to flash interrupt, ignored at MCU side
-#1      0xEA,0xE5       - header
-#2      comd            - command
-#3      data0           - actual temperature in milliCelsius, MSB
-#4      data1           - actual temperature in milliCelsius, LSB
-#5      cs              - control sum = sum of bytes 1..4
-*/
-  if(serial->isOpen()){
-
-      writeData(createCommand(0x39,0x00,0x00));
-      serial->waitForBytesWritten(100);//this can work with auto connection using default value, but for manual connection need a set timeout
-
-      serial->waitForReadyRead(500); //optimal time for delay before read, we have a problem, sometimes its not enouth for manual connect
-      const QByteArray data = serial->readAll();
-
-      if(data != static_cast<QByteArray>("101")&& data != static_cast<QByteArray>("211")){
-          qDebug()<<serial->portName()<<" no get correct answer not given\n";
-          closeSerialPort();
-        }
-      else{
-          qDebug()<<"hello "<<data<<"\n";
-          ui->Disconnected_device->hide();
-          uint8_t value=1;
-          QString PortName=serial->portName();
-          QString numberPort="";
-
-          for(int chr=3;chr<PortName.size();++chr){
-              numberPort+=PortName[chr];
-            }
-
-          value=numberPort.toInt();
-          ui->numberComPort_2->setValue(value);
-          ui->textBrowser->insertPlainText("Устройство подключено. Порт "+serial->portName()+"\nМодель ТМФЦ "+ data+".\n");
-          ui->Connected_device->show();
-          return true;
-        }
-      return false;
-    }
-  else{
-      qDebug()<<serial->portName()<<"not open\n";
-      return false;
-    }
-}
-
-//this function close the open COM and swap the widgets
 void MainWindow::closeSerialPort()
 {
-  if (serial->isOpen()){
-      qDebug()<<serial->portName()<<" serial was closed\n";
-      ui->mainConsole_1->setText("Устройство отключено.\n");
-      ui->Disconnected_device->show();
-      ui->Connected_device->hide();
-      ui->SNumber_text->clear();
-      ui->FW_version_text->clear();
-      serial->close();
-    }
-}
+  ui->mainConsole_1->setText("Устройство отключено.\n");
+  ui->Disconnected_device->show();
+  ui->Connected_device->hide();
 
-//this function sends array data to the UART device
-void MainWindow::writeData(const QByteArray &data)
-{
-  const qint64 written = serial->write(data);
-  if (written == data.size()) {
-      qDebug()<<written<<" bytes was written\n";
-    } else {
-      qDebug()<<"Failed to write all data to port %1.\n"
-                "Error: "<<serial->errorString()<<"\n";
-    }
 }
 
 //auto disconnect button
-void MainWindow::on_Disconnect_device_clicked()
-{
-  closeSerialPort();
-  ui->pushButton_11->setEnabled(true);
-}
+void MainWindow::on_Disconnect_device_clicked(){};
 
 //this is func for hide and show manual and auto connect buttons
 void MainWindow::on_SelectPort_2_stateChanged(int arg1)
@@ -244,181 +168,352 @@ void MainWindow::on_SelectPort_2_stateChanged(int arg1)
 }
 
 //button manual connect
-void MainWindow::on_pushButton_11_clicked()
-{
-  ui->mainConsole_1->clear();
-  ui->mainConsole_1->setText("Подключение к устройству...");
-  QApplication::processEvents();
-  ui->mainConsole_1->clear();
-
-  QString str="COM"+QString::number(ui->numberComPort_2->value());
-  serial->setPortName(str);
-  if (serial->open(QIODevice::ReadWrite)) {
-      askSerialPort();
-      updateData();
-    }
-  else{
-      qDebug()<<"can't open port\n";
-      QString str=serial->portName()+ " порт не найден или отсутствует в системе.";
-      ui->mainConsole_1->setText(str);
-    }
-}
+void MainWindow::on_pushButton_11_clicked(){};
 
 void MainWindow::readFwVersion(){
-  serial->waitForBytesWritten(1000);
-  fwVersion.clear();
-  if(serial->isOpen()){
 
-      writeData(createCommand(0x3A,0x00,0x00)); //command #58, data1=0, data2=0
-      serial->waitForBytesWritten(500);
-
-      serial->waitForReadyRead(500);
-      const QByteArray data = serial->readAll();
-
-      for(const auto& it:data){
-          fwVersion+=QString::number(it);
-        }
-      ui->FW_version_text->setText(fwVersion);
-
-    }
-  qDebug()<<"fwVersion: "<<fwVersion;
+  SerialPM->readFwVersion();
+  ui->FW_version_text->setText(storage.getFwVersion());
+  qDebug()<<"fwVersion: "<<storage.getFwVersion();
 }
 
 void MainWindow::readSnDevice(){
-  serial->waitForBytesWritten(1000);
-
-  if(serial->isOpen()){
-
-      writeData(createCommand(0x15,0x00,0x00));
-      serial->waitForBytesWritten(500);
-
-      serial->waitForReadyRead(500);
-      const QByteArray data = serial->readAll();
-      deviceInfo=data;
-      if(data.size()==32){
-          QString str;
-          for(int it=10;it<16;++it){
-              str+=QString::number(data[it]);
-            }
-          ui->SNumber_text->setText(str);
-          qDebug()<<"s.n "<<str;
-        }
-
-    }
+  ui->SNumber_text->setText(storage.getSnDevice());
 }
 
-QByteArray MainWindow::createCommand(uint8_t cmd, uint8_t data_1, uint8_t data_2){
-  QByteArray cmd_arr;
-  cmd_arr.resize(7);
-  cmd_arr[0]=0xF0;
-  cmd_arr[1]=0xEA;
-  cmd_arr[2]=0xE5;
-  cmd_arr[3]=cmd;
-  cmd_arr[4]=data_1;
-  cmd_arr[5]=data_2;
-  cmd_arr[6]=cmd+data_1+data_2;
-  return cmd_arr;
-}
 
 void MainWindow::updateData(){
-  readSnDevice();
   readFwVersion();
+  readSnDevice();
+
+  SerialPM->getTempHumid();
 }
 
 
-void MainWindow::on_pushButton_10_clicked()
-{
-  dataTime=QDateTime::currentDateTime();
-  ui->textBrowser->insertPlainText("Дата и время ПК: "+dataTime.toString("dd.MM.yyyy hh:mm")+"\n");
-  ui->dateEdit->setDateTime(dataTime);
-  ui->timeEdit->setTime(dataTime.time());
-  dataTime.currentDateTimeUtc();
-  ui->UTC->setText("+"+QString::number(dataTime.utcOffset()/60/60)+":00");
-  qDebug()<<dataTime.toString("dd/MM/yyyy");
-}
+void MainWindow::on_pushButton_10_clicked(){};
 
 
-void MainWindow::on_readDateTimeFromDevice_clicked()
-{
-  if(serial->isOpen()){
-      writeData(createCommand(0x3B,0x00,0x00));
-      serial->waitForBytesWritten(500);
-
-      serial->waitForReadyRead(1000);
-      const QByteArray data = serial->readAll();
-      if(data.size()==5){
-      dataTime.setTime(QTime(data[0],data[1],0));
-      dataTime.setDate(QDate(2000+data[4],data[3],data[2]));
-
-      ui->textBrowser->insertPlainText("Дата и время устройства: "+dataTime.toString("dd.MM.yyyy hh:mm")+"\n");
-
-      ui->dateEdit->setDate(dataTime.date());
-      ui->timeEdit->setTime(dataTime.time());
-        }
-    }
-
-}
+void MainWindow::on_readDateTimeFromDevice_clicked(){};
 
 
-void MainWindow::on_writeDateTimeFromDevice_clicked()
-{
-  if(serial->isOpen()){
-
-      ui->textBrowser->insertPlainText("Дата и время обновлено на устройстве.\n");
-
-      serial->waitForReadyRead(500);//timeout
-
-      QString hour = QString::number(dataTime.time().hour());
-
-      QString minuts = QString::number(dataTime.time().minute());
-
-      writeData(createCommand(0x27,hour.toUInt(), minuts.toUInt()));
-
-      serial->waitForBytesWritten(500);
-      //-----------
-
-      serial->waitForReadyRead(500);//timeout
-
-      QString month = QString::number(dataTime.date().month());
-
-      QString day = QString::number(dataTime.date().day());
-
-      QString year = QString::number(dataTime.date().year());
-
-      QByteArray year_array= year.toUtf8();
-
-      uint8_t result = (year_array[2]-'0')*10+(year_array[3]-'0');
-
-      writeData(createCommand(0x28,result, 0x00));
-
-      serial->waitForBytesWritten(500);
-
-      //------------
-      serial->waitForReadyRead(500);
-      writeData(createCommand(0x29,month.toUInt(), day.toUInt()));
-
-      serial->waitForBytesWritten(100);
-    }
-}
-
+void MainWindow::on_writeDateTimeFromDevice_clicked(){};
 
 void MainWindow::on_dateEdit_userDateChanged(const QDate &date)
 {
-    dataTime.setDate(date);
+  QDateTime dt=storage.getDateTime();
+  dt.setDate(date);
+  storage.setDateTime(dt);
+}
+
+void MainWindow::on_pushButton_16_clicked(){};
+
+
+void MainWindow::on_pushButton_18_clicked(){};
+
+void MainWindow::on_timeEdit_userTimeChanged(const QTime &time)
+{
+  QDateTime dt=storage.getDateTime();
+  dt.setTime(time);
+  storage.setDateTime(dt);
+}
+
+void MainWindow::ProcessConnect(){
+  ui->mainConsole_1->clear();
+  ui->mainConsole_1->setText("Подключение к устройству...");
+  QApplication::processEvents();
+
+};
+
+void MainWindow::ShowHideConnectWindow(){
+  ui->SNumber_text->setText(storage.getSnDevice());
+  ui->FW_version_text->setText(storage.getFwVersion());
+  ui->Disconnected_device->hide();
+  ui->Connected_device->show();
+  //------
+  SerialPM->on_readDateTimeFromDevice_clicked();
+  set_lcd_datatime();
+  initVerificationDate();
+  on_readFlash_clicked();
+
+  ui->numberComPort_2->setValue(SerialPM->getPortNumber());
+  ui->textBrowser->insertPlainText("Устройство подключено. Порт "+ SerialPM->getPortName() +"\nМодель ТМФЦ "+ storage.getModelDevice() +".\n");
+};
+
+
+void MainWindow::on_getTempButton_clicked()
+{
+  SerialPM->getTempHumid();
+  ui->lcd_temp->display(storage.getTemperature());
+  ui->lcd_humid->display(qRound(storage.getHumid()));
+  SerialPM->on_readDateTimeFromDevice_clicked();
+  set_lcd_datatime();
+}
+
+void MainWindow::set_lcd_datatime(){
+  QDateTime dataTime=storage.getDateTime();
+
+  ui->lcdDate->display(dataTime.toString("dd.MM.yyyy"));
+
+  ui->lcdHours->display(dataTime.time().toString("HH:mm"));
+
+  ui->dateEdit->setDate(dataTime.date());
+
+  ui->timeEdit->setTime(dataTime.time());
+
+}
+
+void MainWindow::on_readFlash_clicked()
+{
+  SerialPM->GetControlRange();
+
+  ui->indicate_16->setStyleSheet("background-color:rgb(255, 255, 255); ");
+  ui->indicate_48->setStyleSheet("background-color:rgb(255, 255, 255); ");
+  ui->indicate_112->setStyleSheet("background-color:rgb(255, 255, 255); ");
+  ui->indicate_240->setStyleSheet("background-color:rgb(255, 255, 255); ");
+  ui->indicate_8->setStyleSheet("background-color:rgb(255, 255, 255); ");
+  ui->indicate_4->setStyleSheet("background-color:rgb(255, 255, 255); ");
+  ui->indicate_2->setStyleSheet("background-color:rgb(255, 255, 255); ");
+  ui->indicate_1->setStyleSheet("background-color:rgb(255, 255, 255); ");
+
+
+  for(uint8_t it=1;it<=8;++it){
+      if(SerialPM->controllSettings[it]&&it==1){
+          ui->indicate_1->setStyleSheet("background-color:black; ");
+        }
+
+      if(SerialPM->controllSettings[it]&&it==2){
+          ui->indicate_2->setStyleSheet("background-color:black; ");
+        }
+
+      if(SerialPM->controllSettings[it]&&it==3){
+          ui->indicate_4->setStyleSheet("background-color:black; ");
+        }
+
+
+      if(SerialPM->controllSettings[it]&&it==4){
+          ui->indicate_8->setStyleSheet("background-color:black; ");
+        }
+
+
+      if(SerialPM->controllSettings[it]&&it==5){
+          ui->indicate_16->setStyleSheet("background-color:black; ");
+        }
+
+      if(SerialPM->controllSettings[it]&&it==6){
+          ui->indicate_48->setStyleSheet("background-color:black; ");
+        }
+
+
+      if(SerialPM->controllSettings[it]&&it==7){
+          ui->indicate_112->setStyleSheet("background-color:black; ");
+        }
+
+      if(SerialPM->controllSettings[it]&&it==8){
+          ui->indicate_240->setStyleSheet("background-color:black; ");
+        }
+    }
+  SerialPM->GetVolumeLevel();
+  uint8_t VolumeLevel=storage.getVolumeLevel();
+  qDebug()<<VolumeLevel;
+  ui->VolumeLevel->setCurrentText(QString::number(VolumeLevel));
 }
 
 
-
-
-
-void MainWindow::on_pushButton_16_clicked()
+//range squars
+void MainWindow::on_refresh_clicked()
 {
-    ui->textBrowser->clear();
+  ui->indicate_16->setStyleSheet("background-color:rgb(255, 255, 255); ");
+  ui->indicate_48->setStyleSheet("background-color:rgb(255, 255, 255); ");
+  ui->indicate_112->setStyleSheet("background-color:rgb(255, 255, 255); ");
+  ui->indicate_240->setStyleSheet("background-color:rgb(255, 255, 255); ");
+  ui->indicate_8->setStyleSheet("background-color:rgb(255, 255, 255); ");
+  ui->indicate_4->setStyleSheet("background-color:rgb(255, 255, 255); ");
+  ui->indicate_2->setStyleSheet("background-color:rgb(255, 255, 255); ");
+  ui->indicate_1->setStyleSheet("background-color:rgb(255, 255, 255); ");
+
+
+  for(uint8_t it=1;it<=8;++it){
+      if(SerialPM->controllSettings[it]&&it==1){
+          ui->indicate_1->setStyleSheet("background-color:black; ");
+        }
+
+
+      if(SerialPM->controllSettings[it]&&it==2){
+          ui->indicate_2->setStyleSheet("background-color:black; ");
+        }
+
+      if(SerialPM->controllSettings[it]&&it==3){
+          ui->indicate_4->setStyleSheet("background-color:black; ");
+        }
+
+      if(SerialPM->controllSettings[it]&&it==4){
+          ui->indicate_8->setStyleSheet("background-color:black; ");
+        }
+
+      if(SerialPM->controllSettings[it]&&it==5){
+          ui->indicate_16->setStyleSheet("background-color:black; ");
+        }
+
+      if(SerialPM->controllSettings[it]&&it==6){
+          ui->indicate_48->setStyleSheet("background-color:black; ");
+        }
+
+      if(SerialPM->controllSettings[it]&&it==7){
+          ui->indicate_112->setStyleSheet("background-color:black; ");
+        }
+
+      if(SerialPM->controllSettings[it]&&it==8){
+          ui->indicate_240->setStyleSheet("background-color:black; ");
+        }
+    }
+}
+
+//write to flash control settings
+void MainWindow::on_WriteToFlash_clicked()
+{
+  SerialPM->SetControlRange();
+}
+
+//mask squers
+void MainWindow::saveNewMask(uint8_t cell_number, bool checked){
+  if(checked){
+      SerialPM->controllSettings[cell_number]=true;
+    }
+  else{
+      SerialPM->controllSettings[cell_number]=false;
+    }
+  on_refresh_clicked();
+};
+
+void MainWindow::on_indicate_240_clicked(bool checked)
+{
+  saveNewMask(8,checked);
+}
+
+void MainWindow::on_indicate_112_clicked(bool checked)
+{
+  saveNewMask(7,checked);
+}
+
+void MainWindow::on_indicate_48_clicked(bool checked)
+{
+  saveNewMask(6,checked);
+}
+
+void MainWindow::on_indicate_16_clicked(bool checked)
+{
+  saveNewMask(5,checked);
+}
+
+void MainWindow::on_indicate_8_clicked(bool checked)
+{
+  saveNewMask(4,checked);
+}
+
+void MainWindow::on_indicate_4_clicked(bool checked)
+{
+  saveNewMask(3,checked);
+}
+
+void MainWindow::on_indicate_2_clicked(bool checked)
+{
+  saveNewMask(2,checked);
+}
+
+void MainWindow::on_indicate_1_clicked(bool checked)
+{
+  saveNewMask(1,checked);
+}
+
+//write to device new settings volume level
+void MainWindow::on_WriteVolumeLevel_clicked()
+{
+  SerialPM->SetVolumeLevel(ui->VolumeLevel->currentText().toUShort());
+  SerialPM->saveSettings();
+
+}
+
+void MainWindow::on_VerificationDate_userDateChanged(const QDate &date)
+{
+ storage.setVerificationDate(date);
+  endVerificationDate();
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+  SerialPM->SetVerficationDate();
+
 }
 
 
-void MainWindow::on_pushButton_18_clicked()
+//while its settup higher speed 57600
+void MainWindow::on_AutoSpeed_clicked()
 {
-    ui->mainConsole_1->clear();
+  SerialPM->autoSelectBaudRate();
+}
+
+//for debug manual spped set(for sofware side)
+void MainWindow::on_speed_currentIndexChanged(const QString &arg1)
+{
+  SerialPM->setSpeed(arg1);
+}
+
+void  MainWindow::initVerificationDate(){
+  SerialPM->GetVerificationDate();
+  ui->VerificationDate->setDate(storage.getVerificationDate());
+  endVerificationDate();
+}
+
+bool MainWindow::validationTimeDate(){
+  return true;
+}
+
+void MainWindow::on_ReadDataFromDeviceButton_clicked()
+{
+  SerialPM->GetAllData();
+}
+
+void MainWindow::endVerificationDate(){
+  QDate dt=storage.getVerificationDate();
+  int endYear=dt.year()+2;
+  ui->verificationDateEnd->setText(QString::number(dt.day())+"."+QString::number(dt.month())+"."+QString::number(endYear));
+};
+
+void MainWindow::on_ReportButton_clicked()
+{
+
+      window.setWindowTitle("Export to PDF and Print Example");
+      window.resize(400, 300);
+      window.show();
+}
+
+
+void MainWindow::on_progressBar_valueChanged(int value)
+{
+  value=SerialPM->processBarValue;
+}
+
+void MainWindow::setProgressBar(){
+  MainWindow::ui->progressBar->setValue(SerialPM->processBarValue);
+};
+
+void MainWindow::on_JournalButton_clicked()
+{
+  SerialPM->getBlockSize();
+  ui->progressBar->setMaximum(storage.getBlockSizeValue());
+}
+
+
+void MainWindow::on_SaveToDataBaseButton_clicked()
+{
+  SerialPM->getBlockSize();
+  ui->progressBar->setMaximum(storage.getBlockSizeValue());
+}
+
+
+void MainWindow::on_test_clicked()
+{
+  QByteArray arr=storage.getDataBlock();
+
 }
 
