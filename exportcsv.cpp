@@ -28,8 +28,8 @@ void ExportCSV::startExportProcess(){
       QString pageHeader_101="Дата/Время;Т, °С;Rh, %;Нарушение;Контроль\n";
       QString pageHeader_211="Дата/Время;Т внутр, °С;Rh внутр, %;Т внеш, °С;Rh внеш, %;Нарушение;Контроль\n";
       QString controlRange="Интервал контроля;";
-      QString yes="Да\n";
-      QString no="Нет\n";
+      QString yes="Да";
+      QString no="Нет";
 
       std::vector<float> middleOfTemp;
       std::vector<float> middleOfHumid;
@@ -121,7 +121,7 @@ void ExportCSV::startExportProcess(){
                     }
                 }
 
-              if (includeHeaderOnEveryPage && (count_db % (50 - shift) == 0)&&count_db!=0&&count_db!=49) {
+              if (includeHeaderOnEveryPage && (count_db % (50 - shift) == 0)&&count_db!=0&&count_db!=49&&PrintMeasure) {
                   //    qDebug()<<count_db % (50 - shift)<<" shift: "<<shift<<"count: "<<count_db;
                   out << pageHeader_101;
 
@@ -203,12 +203,18 @@ void ExportCSV::startExportProcess(){
                   out<<fromDateTime+";";
                   out<<locale.toString(iTemp,'f',1);
                   out<<";";
-                  out<< locale.toString(iHumid,'f',1)+";;";
+                  out<< locale.toString(iHumid,'f',1)+";";
+                   if((rangeControl&&iTemp<tempArray[startTempAverage])||(rangeControl&&iTemp>tempArray[endTempAverage])||(rangeControl&&iHumid<humidArray[startHumidAverage])||(rangeControl&&iHumid>humidArray[endHumidAverage])){
+                       out<<yes<<";";
+                     }
+                   else{
+                       out<<no<<";";
+                     }
                   if(rangeControl){
-                      out<<yes;
+                      out<<yes<<"\n";
                     }
                   else{
-                      out<<no;
+                      out<<no<<"\n";
                     }
                   count_db++;
                 }
@@ -219,11 +225,11 @@ void ExportCSV::startExportProcess(){
                   middleOfHumid.push_back(iHumid);
                 }
               else if(calculateAverageEveryNMinutes&&PrintMeasure) {
-                  QString result="\nСреднее значение тепературы: ";
+                  QString result="Среднее значение тепературы: ";
                   result+=QString::number((std::accumulate(middleOfTemp.begin(),middleOfTemp.end(),0))/middleOfTemp.size());
                   result+="°С, среднее значение влажности:  ";
                   result+=QString::number((std::accumulate(middleOfHumid.begin(),middleOfHumid.end(),0))/middleOfHumid.size());
-                  result+="\n";
+                  result+="\n\n";
                   out<<result;
                   middleOfTemp.clear();
                   middleOfHumid.clear();

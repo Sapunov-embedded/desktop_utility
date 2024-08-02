@@ -499,8 +499,10 @@ void MainWindow::setProgressBar(){
 
 void MainWindow::on_JournalButton_clicked()
 {
-  SerialPM->getBlockSize();
-  ui->progressBar->setMaximum(storage.getBlockSizeValue());
+  parsed->ExportServiceAndDataPoints();
+  auto lol = parsed->getArrayValues();
+  Journal j("Moskow","Igor&Co","igor",lol);
+  j.createJournal("test_report.pdf");
 }
 
 

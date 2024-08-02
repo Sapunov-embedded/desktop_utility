@@ -27,6 +27,8 @@ grapthics::grapthics(ExportDataFromBytes *exp,QWidget *parent) :
   ui->graphicsView->yAxis->setLabel("Температрура/Влажность/Давление/Точка россы");
   ui->graphicsView->xAxis->setLabel("Время в мин");
 
+
+
   ui->snDevice->setText(storage.getSnDevice());
 
   for(uint8_t it=0;it<6;++it){
@@ -62,6 +64,10 @@ void grapthics::drawGraph(){
   QVector<double> dewPoint;
   QVector<double> time;
   expData->ExportServiceAndDataPoints();
+
+  ui->fromDateTime->setText("с "+storage.getFromDateDB().toString("dd.MM.yyyy hh:mm"));
+  ui->ToDateTime->setText("по "+storage.getToDateDB().toString("dd.MM.yyyy hh:mm"));
+
   const QVector<ExportDataFromBytes::Data>& data=expData->getArrayValues();
   qDebug() << "Data size:" << data.size();
   if (data.isEmpty()) {
@@ -249,10 +255,10 @@ void grapthics::on_Print_clicked()
 
 void grapthics::setupPrinter(QPrinter &printer, const QString &filePath)
 {
-  printer.setOutputFormat(QPrinter::PdfFormat);
   printer.setOutputFileName(filePath);
-  printer.setResolution(300);  // Используем разрешение 300 DPI
+  printer.setResolution(600);
   printer.setPaperSize(QPrinter::A4);
+  printer.setFullPage(true);
 }
 
 void grapthics::setupPainter(QPainter &painter, QPrinter &printer)
@@ -265,85 +271,109 @@ void grapthics::setupPainter(QPainter &painter, QPrinter &printer)
 
 void grapthics::renderContent(QPainter &painter, QPrinter &printer)
 {
-  QSize contentSize = this->ui->graphicsView->size();
-  QRect pageRect = printer.pageRect();
-  int pageWidth = pageRect.width();
-  int pageHeight = pageRect.height();
+    QSize contentSize = this->ui->graphicsView->size();
+    QRect pageRect = printer.pageRect();
+    int pageWidth = pageRect.width();
+    int pageHeight = pageRect.height();
 
+    qreal scaleFactor = 5;
+    qreal xOffset = (pageWidth - (contentSize.width() * scaleFactor)) / 2.0;
+    qreal yOffset = 50;
 
-  qreal scaleFactor = 9;
-  qreal xOffset = (pageWidth - (contentSize.width() * scaleFactor)) / 2.0;
-  qreal yOffset = 50;
+    // Draw text
+    QFont font = painter.font();
+    font.setPointSize(12);
+    painter.setFont(font);
 
-  painter.save();
-  painter.translate(xOffset, yOffset);
-  painter.scale(scaleFactor, scaleFactor);
+    qreal textYPos = yOffset+200;
+    QString text = graphHeader + " с " + storage.getFromDateDB().toString("dd.MM.yyyy hh:mm") + " по " + storage.getToDateDB().toString("dd.MM.yyyy hh:mm");
+    painter.drawText(xOffset, textYPos, text);
 
+    // Calculate the height of the text to determine the offset
+    QFontMetrics metrics(font);
+    int textHeight = metrics.height();
 
-  this->ui->graphicsView->render(&painter);
-  painter.restore();
+    // Adjust yOffset to ensure the content is drawn below the text
+    yOffset += textHeight + 300;  // Adding a 20-pixel margin for clarity
 
-
-  QFont font = painter.font();
-  font.setPointSize(12);
-  painter.setFont(font);
-
-
-  qreal textYPos = yOffset + (contentSize.height() * scaleFactor) + 150;
-  painter.drawText(xOffset, textYPos, "График регистрации температуры и влажности");
+    // Render the graphics view content
+    painter.save();
+    painter.translate(xOffset, yOffset);
+    painter.scale(scaleFactor, scaleFactor);
+    this->ui->graphicsView->render(&painter);
+    painter.restore();
 }
+
 
 void grapthics::on_printToPdf_clicked()
 {
   QString filePath = QFileDialog::getSaveFileName(this, "Save PDF", "", "*.pdf");
-   if (filePath.isEmpty())
-       return;
+  if (filePath.isEmpty())
+    return;
 
-   QPrinter printer(QPrinter::HighResolution);
-   printer.setOutputFormat(QPrinter::PdfFormat);
-   printer.setOutputFileName(filePath);
-  // printer.setResolution(1200);
-   printer.setPaperSize(QPrinter::A4);
+  QPrinter printer(QPrinter::HighResolution);
+  printer.setOutputFormat(QPrinter::PdfFormat);
 
-   if (!printer.isValid()) {
-       qWarning() << "Printer is not valid.";
-       return;
-   }
+  printer.setOutputFileName(filePath);
+  setupPrinter(printer, filePath);
 
-   QPainter painter;
-   if (!painter.begin(&printer)) {
-       qWarning() << "Failed to begin painting.";
-       return;
-   }
 
-   renderContent(painter, printer);
-   painter.end();
+  if (!printer.isValid()) {
+      qWarning() << "Printer is not valid.";
+      return;
+    }
+
+  QPainter painter;
+  if (!painter.begin(&printer)) {
+      qWarning() << "Failed to begin painting.";
+      return;
+    }
+
+
+  //  qDebug() << "Printing to PDF:";
+  //  qDebug() << "File Path:" << filePath;
+  //  qDebug() << "Printer Resolution:" << printer.resolution();
+
+  renderContent(painter, printer);
+  painter.end();
 }
 
 void grapthics::print()
 {
   QPrinter printer(QPrinter::HighResolution);
+  printer.setOutputFormat(QPrinter::NativeFormat);
 
-     setupPrinter(printer, QString());
+  setupPrinter(printer, QString());
 
-     QPrintDialog printDialog(&printer, this);
-     if (printDialog.exec() != QDialog::Accepted) {
-         qWarning() << "Print dialog was cancelled.";
-         return;
-     }
+  QPrintDialog printDialog(&printer, this);
+  if (printDialog.exec() != QDialog::Accepted) {
+      qWarning() << "Print dialog was cancelled.";
+      return;
+    }
 
-     QPainter painter;
-     if (!painter.begin(&printer)) {
-         qWarning() << "Failed to begin painting.";
-         return;
-     }
+  QPainter painter;
+  if (!painter.begin(&printer)) {
+      qWarning() << "Failed to begin painting.";
+      return;
+    }
 
-     renderContent(painter, printer);
 
-     painter.end();
+  //  qDebug() << "Printing to physical printer:";
+  //  qDebug() << "Printer Resolution:" << printer.resolution();
+
+  renderContent(painter, printer);
+
+  painter.end();
 }
 
-
+void grapthics::debugRenderContent(const QSize &contentSize, const QRect &pageRect, qreal scaleFactor, qreal xOffset, qreal yOffset)
+{
+  qDebug() << "Content Size:" << contentSize;
+  qDebug() << "Page Rect:" << pageRect;
+  qDebug() << "Scale Factor:" << scaleFactor;
+  qDebug() << "X Offset:" << xOffset;
+  qDebug() << "Y Offset:" << yOffset;
+}
 
 
 

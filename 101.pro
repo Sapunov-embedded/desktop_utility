@@ -15,6 +15,7 @@ SOURCES += \
     exportdatafrombytes.cpp \
     exportpdf.cpp \
     grapthics.cpp \
+    journal.cpp \
     logging.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -30,6 +31,7 @@ HEADERS += \
     exportdatafrombytes.h \
     exportpdf.h \
     grapthics.h \
+    journal.h \
     logging.h \
     mainwindow.h \
     qcustomplot.h \

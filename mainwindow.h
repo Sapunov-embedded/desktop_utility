@@ -11,6 +11,7 @@
 #include "exportcsv.h"
 #include "exportdatafrombytes.h"
 #include "exportpdf.h"
+#include "journal.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

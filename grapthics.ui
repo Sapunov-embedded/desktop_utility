@@ -532,27 +532,27 @@
   <widget class="QLabel" name="fromDateTime">
    <property name="geometry">
     <rect>
-     <x>750</x>
-     <y>40</y>
-     <width>91</width>
-     <height>16</height>
+     <x>740</x>
+     <y>38</y>
+     <width>101</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>10.10.2010 11:00 </string>
+    <string>с 10.10.2010 11:00 </string>
    </property>
   </widget>
   <widget class="QLabel" name="ToDateTime">
    <property name="geometry">
     <rect>
-     <x>860</x>
-     <y>40</y>
-     <width>91</width>
-     <height>16</height>
+     <x>849</x>
+     <y>38</y>
+     <width>111</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>10.10.2010 11:00 </string>
+    <string>по 10.10.2010 11:00 </string>
    </property>
   </widget>
  </widget>
@@ -560,7 +560,7 @@
   <customwidget>
    <class>QCustomPlot</class>
    <extends>QGraphicsView</extends>
-   <header>qcustomplot.h</header>
+   <header location="global">qcustomplot.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

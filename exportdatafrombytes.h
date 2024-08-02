@@ -18,6 +18,7 @@ public:
   ExportDataFromBytes();
   struct Data{
     QDateTime date;
+    //eTemp=array[0], eHumid=array[1], iTemp=array[2], iHumid=array[3]
     std::array <float,4>values;
     Data();
     Data(const QDateTime& date, const std::array<float, 4>& values);

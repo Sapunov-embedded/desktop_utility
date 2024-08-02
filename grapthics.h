@@ -54,7 +54,7 @@ private slots:
   void setupPrinter(QPrinter &printer, const QString &filePath);
    void setupPainter(QPainter &painter, QPrinter &printer);
    void renderContent(QPainter &painter, QPrinter &printer);
-
+void debugRenderContent(const QSize &contentSize, const QRect &pageRect, qreal scaleFactor, qreal xOffset, qreal yOffset);
 
 private:
     Ui::grapthics *ui;
@@ -68,6 +68,7 @@ private:
     QCPItemLine *LowerTempControlLine;
     QCPItemLine *UpperHumidControlLine;
     QCPItemLine *LowerHumidControlLine;
+    QString graphHeader="График регистрации температуры за период:";
 };
 
 #endif // GRAPTHICS_H
