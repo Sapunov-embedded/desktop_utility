@@ -11,6 +11,7 @@
 #include <QDateTime>
 #include <QString>
 #include "exportdatafrombytes.h"
+#include "deviceinfostorage.h"
 
 class Journal : public QObject
 {
@@ -18,6 +19,14 @@ class Journal : public QObject
 
 public:
   Journal(const QString &location, const QString &organization, const QString &responsiblePerson,QVector<ExportDataFromBytes::Data> &exp);
+
+  struct MidleOfDay{
+    QDate date;
+    float minTemp;
+    float maxTemp;
+    float minHumid;
+    float maxHumid;
+  };
 
 public slots:
  void createJournal(const QString &fileName);
@@ -35,10 +44,10 @@ private:
      QDate nextCheckDate;
 
      QVector<ExportDataFromBytes::Data> &entries;
-
+     QVector<MidleOfDay> reportData;
      void drawHeader(QTextDocument &document) const;
-     void drawEntries(QPainter &painter) const;
-
+     void drawEntries(QTextTable &table) const;
+     void calculateRangeOfEachDay();
 };
 
 #endif // JOURNAL_H

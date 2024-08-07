@@ -60,35 +60,7 @@
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QColumnView" name="columnView">
-   <property name="geometry">
-    <rect>
-     <x>-5</x>
-     <y>1</y>
-     <width>721</width>
-     <height>251</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>721</width>
-     <height>251</height>
-    </size>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>721</width>
-     <height>251</height>
-    </size>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="plus">
    <property name="geometry">
     <rect>
      <x>525</x>
@@ -105,7 +77,7 @@
      <normaloff>../../../../Farmsib/Icons/free-icon-plus-232446.png</normaloff>../../../../Farmsib/Icons/free-icon-plus-232446.png</iconset>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
+  <widget class="QPushButton" name="minus">
    <property name="geometry">
     <rect>
      <x>555</x>
@@ -122,7 +94,7 @@
      <normaloff>../../../../Farmsib/Icons/free-icon-minus-232445.png</normaloff>../../../../Farmsib/Icons/free-icon-minus-232445.png</iconset>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_3">
+  <widget class="QPushButton" name="upButton">
    <property name="geometry">
     <rect>
      <x>585</x>
@@ -139,7 +111,7 @@
      <normaloff>../../../../Farmsib/Icons/free-icon-arrow-up-4655143.png</normaloff>../../../../Farmsib/Icons/free-icon-arrow-up-4655143.png</iconset>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_4">
+  <widget class="QPushButton" name="addUser">
    <property name="geometry">
     <rect>
      <x>615</x>
@@ -156,7 +128,7 @@
      <normaloff>../../../../Farmsib/Icons/free-icon-checked-232444.png</normaloff>../../../../Farmsib/Icons/free-icon-checked-232444.png</iconset>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_5">
+  <widget class="QPushButton" name="deleteUser">
    <property name="geometry">
     <rect>
      <x>645</x>
@@ -173,7 +145,7 @@
      <normaloff>../../../../Farmsib/Icons/free-icon-close-1828527.png</normaloff>../../../../Farmsib/Icons/free-icon-close-1828527.png</iconset>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_6">
+  <widget class="QPushButton" name="update">
    <property name="geometry">
     <rect>
      <x>675</x>
@@ -188,6 +160,16 @@
    <property name="icon">
     <iconset>
      <normaloff>../../../../Farmsib/Icons/free-icon-refresh-560512.png</normaloff>../../../../Farmsib/Icons/free-icon-refresh-560512.png</iconset>
+   </property>
+  </widget>
+  <widget class="QTableView" name="tableView">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>701</width>
+     <height>251</height>
+    </rect>
    </property>
   </widget>
  </widget>

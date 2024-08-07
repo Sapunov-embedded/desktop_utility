@@ -16,6 +16,7 @@ MainWindow::MainWindow(SerialPortManager *SerialPM, ExportCSV *CSV,ExportDataFro
 
   ui->setupUi(this);
 
+  us.hide();
 
   ui->mainConsole_1->setPlainText("Устройство не подключено.\n");
 
@@ -470,6 +471,8 @@ bool MainWindow::validationTimeDate(){
 
 void MainWindow::on_ReadDataFromDeviceButton_clicked()
 {
+  SerialPM->getBlockSize();
+  ui->progressBar->setMaximum(storage.getBlockSizeValue());
   SerialPM->GetAllData();
 }
 
@@ -508,8 +511,7 @@ void MainWindow::on_JournalButton_clicked()
 
 void MainWindow::on_SaveToDataBaseButton_clicked()
 {
-  SerialPM->getBlockSize();
-  ui->progressBar->setMaximum(storage.getBlockSizeValue());
+  us.show();
 }
 
 

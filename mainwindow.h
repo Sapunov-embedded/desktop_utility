@@ -12,6 +12,7 @@
 #include "exportdatafrombytes.h"
 #include "exportpdf.h"
 #include "journal.h"
+#include "users.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -133,5 +134,6 @@ private:
     bool validationTimeDate();
     grapthics g;
     ExportPDF window;
+    Users us;
 };
 #endif // MAINWINDOW_H
