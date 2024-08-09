@@ -52,6 +52,20 @@ bool Users::initializeDatabase() {
   // connect(ui->tableView, &QTableView::customContextMenuRequested, this, &MainWindow::showContextMenu);
   ui->tableView->setWindowTitle("QTableView Example");
   ui->tableView->setColumnHidden(0, true);
+
+  QSqlQuery query;
+  bool success = query.exec("CREATE TABLE IF NOT EXISTS DeviceInfo ("
+                            "DataBlockId INTEGER PRIMARY KEY AUTOINCREMENT, "
+                            "UserID  INTEGER, "
+                            "SerialNumber INTEGER, "
+                            "DataStart TEXT, "
+                            "DataEnd TEXT)");
+
+  if (!success) {
+      qDebug() << "Error creating table:" << query.lastError().text();
+  } else {
+      qDebug() << "Table created successfully";
+  }
   return true;
 }
 
@@ -141,7 +155,7 @@ void Users::on_addUser_clicked()
 //     QString filter = QString("%1 = '%2'").arg("UserID").arg(id);
 
 //     model->setFilter(filter);
-     model->setTable("Device");
+     model->setTable("DeviceInfo");
      model->select();
    // }
 }
