@@ -25,11 +25,21 @@ private slots:
 
   void on_minus_clicked();
 
+  void on_addUser_clicked();
+
+  void on_deleteUser_clicked();
+
+
 private:
     Ui::Users *ui;
     bool initializeDatabase();
     bool saveData(const QString &name, int age);
     void restoreData();
+    QString filePath="FS_Service.db";
+    QSqlDatabase db;
+    QSqlTableModel *model;
+    int UserId=-1;
+
 };
 
 #endif // USERS_H

@@ -17,7 +17,7 @@ MainWindow::MainWindow(SerialPortManager *SerialPM, ExportCSV *CSV,ExportDataFro
   ui->setupUi(this);
 
   us.hide();
-
+  us.setWindowFlags (us.windowFlags() & ~Qt::WindowContextHelpButtonHint);//disable button "?" near close button
   ui->mainConsole_1->setPlainText("Устройство не подключено.\n");
 
   ui->progressBar->setMinimum(0);

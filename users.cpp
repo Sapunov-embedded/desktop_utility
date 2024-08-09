@@ -6,69 +6,77 @@ Users::Users(QWidget *parent) :
     ui(new Ui::Users)
 {
     ui->setupUi(this);
+
     initializeDatabase();
 }
 
 Users::~Users()
 {
+  db.close();
+  QSqlDatabase::removeDatabase(filePath);
     delete ui;
 }
 
 bool Users::initializeDatabase() {
   // Set up the database connection
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    //db.setDatabaseName("example.db");
-  db.setDatabaseName("FS_Service.db");
+   db = QSqlDatabase::addDatabase("QSQLITE");
+// db.setDatabaseName("example.db");
+  db.setDatabaseName(filePath);
 
 
-    if (!db.open()) {
-        qDebug() << "Error: connection with database failed";
+  if (!db.open()) {
+      qDebug() << "Error: connection with database failed";
     } else {
-        qDebug() << "Database: connection ok";
+      qDebug() << "Database: connection ok";
     }
+      qDebug()<<db.tables();
+  // Create and configure the model
+  model = new QSqlTableModel(this, db);
+  model->setTable("User");
+  model->select(); // This will load the data from the table into the model
 
-    // Create and configure the model
-    QSqlTableModel *model = new QSqlTableModel(this, db);
-    model->setTable("User");
-    model->select(); // This will load the data from the table into the model
 
-    // Debugging output
-        qDebug() << "Rows:" << model->rowCount();
-        qDebug() << "Columns:" << model->columnCount();
-        qDebug()<<db.tables();
-      //  qDebug()<
+  model->setHeaderData(1,Qt::Horizontal, tr("Организация"));
+  model->setHeaderData(2,Qt::Horizontal, tr("Адрес"));
+  model->setHeaderData(3,Qt::Horizontal, tr("Ответсвенное лицо"));
 
-    // Optionally, set headers for the columns
-//    model->setHeaderData(0, Qt::Horizontal, QObject::tr("Column 1"));
-//    model->setHeaderData(1, Qt::Horizontal, QObject::tr("Column 2"));
-//    model->setHeaderData(2, Qt::Horizontal, QObject::tr("Column 3"));
-    model->removeColumn(0);
-    // Set the model to the table view
-    ui->tableView->setModel(model);
+  // Set the model to the table view
+  ui->tableView->setModel(model);
 
-    // Additional table view setup
-    ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->tableView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->tableView->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
-    ui->tableView->setContextMenuPolicy(Qt::CustomContextMenu);
-    // connect(ui->tableView, &QTableView::customContextMenuRequested, this, &MainWindow::showContextMenu);
-    ui->tableView->setWindowTitle("QTableView Example");
-    return true;
+  // Additional table view setup
+  ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+  ui->tableView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+  ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+  ui->tableView->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
+  ui->tableView->setContextMenuPolicy(Qt::CustomContextMenu);
+  // connect(ui->tableView, &QTableView::customContextMenuRequested, this, &MainWindow::showContextMenu);
+  ui->tableView->setWindowTitle("QTableView Example");
+  ui->tableView->setColumnHidden(0, true);
+  return true;
 }
 
 bool Users::saveData(const QString &name, int age) {
-    QSqlQuery query;
-    query.prepare("INSERT INTO people (name, age) VALUES (:name, :age)");
-    query.bindValue(":name", name);
-    query.bindValue(":age", age);
+  QSqlQuery query;
 
-    if (!query.exec()) {
-        qDebug() << "Error: Could not insert data -" << query.lastError();
-        return false;
+  query.prepare("INSERT INTO User (UserID, Organization, Location, ResponsiblePerson) VALUES (:UserID, :Organization, :Location, :ResponsiblePerson)");
+
+  query.bindValue(":Organization", name);
+  query.bindValue(":UserID", age);
+  query.bindValue(":Location", name);
+  query.bindValue(":ResponsiblePerson", name);
+
+    // Debugging: Print the query and bound values
+    qDebug() << "Prepared query:" << query.lastQuery();
+    qDebug() << "Bound values:";
+    for (const auto &key : query.boundValues().keys()) {
+        qDebug() << key << "=" << query.boundValue(key);
+    }
+  if (!query.exec()) {
+      qDebug() << "Error: Could not insert data -" << query.lastError();
+      return false;
     }
 
-    return true;
+  return true;
 }
 
 void Users::restoreData() {
@@ -83,26 +91,11 @@ void Users::restoreData() {
     }
 }
 
-//int main(int argc, char *argv[]) {
-//    QCoreApplication a(argc, argv);
-
-//    if (!initializeDatabase()) {
-//        return -1;
-//    }
-
-//    // Save some data
-//    saveData("Alice", 30);
-//    saveData("Bob", 25);
-
-//    // Restore and print the data
-//    restoreData();
-
-//    return a.exec();
-//}
 
 void Users::on_plus_clicked()
 {
-    saveData("lol",29);
+  int row=model->rowCount();
+  model->insertRow(row);
 }
 
 
@@ -110,6 +103,84 @@ void Users::on_plus_clicked()
 
 void Users::on_minus_clicked()
 {
-    restoreData();
+  // Get the last row index (zero-based)
+  int row = model->rowCount() - 1;
+
+  if (row >= 0) {  // Check if there's a row to remove
+      model->removeRow(row);
+      model->submitAll();
+      model->select();
+  }
 }
+
+
+void Users::on_addUser_clicked()
+{
+    // Assuming adding a user involves more operations; if not, this code might not be necessary.
+    if (!model->submitAll()) {
+        qDebug() << "Error adding user:" << model->lastError().text();
+        model->database().rollback();
+    } else {
+        model->database().commit();
+   }
+//    QModelIndexList selectedIndexes = ui->tableView->selectionModel()->selectedRows();
+
+//    if (selectedIndexes.isEmpty()) {
+//        qDebug() << "No row selected";
+//        return;
+//      }
+//    else{
+//    QModelIndex index = selectedIndexes.first();
+
+//    int row = index.row();
+
+//    int id = model->data(model->index(row, 0)).toInt();
+//    UserId=id;
+
+//     model->setTable("Device");
+//     QString filter = QString("%1 = '%2'").arg("UserID").arg(id);
+
+//     model->setFilter(filter);
+     model->setTable("Device");
+     model->select();
+   // }
+}
+
+
+void Users::on_deleteUser_clicked()
+{
+  QModelIndexList selectedIndexes = ui->tableView->selectionModel()->selectedRows();
+
+  if (selectedIndexes.isEmpty()) {
+      qDebug() << "No row selected";
+      return;
+    }
+
+  QModelIndex index = selectedIndexes.first();
+
+  int row = index.row();
+
+  int id = model->data(model->index(row, 0)).toInt();
+
+  QSqlQuery query;
+   query.prepare("DELETE FROM User WHERE UserID = :UserID");
+   query.bindValue(":UserID", id);
+
+   if (!query.exec()) {
+       qDebug() << "Error deleting row:" << query.lastError().text();
+   } else {
+        model->submitAll();
+       model->select();
+   }
+
+  model->submitAll();
+
+}
+
+
+
+
+
+
+
 
