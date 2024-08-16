@@ -11,7 +11,7 @@ SerialPortManager::SerialPortManager():serial(new QSerialPort(this)),storage(Dev
   serial->setParity(QSerialPort::NoParity);
   serial->setStopBits(QSerialPort::TwoStop);
   serial->setFlowControl(QSerialPort::NoFlowControl);
-  connect(serial, &QSerialPort::readyRead, this, &SerialPortManager::handleReadyRead);//*
+  connect(serial, &QSerialPort::readyRead, this, &SerialPortManager::handleReadyRead);
 };
 
 
@@ -19,12 +19,10 @@ SerialPortManager::~SerialPortManager()
 {
   delete serial;
 };
-void SerialPortManager::on_Button_connect_clicked(){};
+
 
 //This function is asking "Who are you?" the connected device
-bool SerialPortManager::askSerialPort()
-{
-  //array hex commands for building request "Who are you?", command 57.
+//array hex commands for building request "Who are you?", command 57.
   /*
 #0      0xF0            - to flash interrupt, ignored at MCU side
 #1      0xEA,0xE5       - header
@@ -33,35 +31,29 @@ bool SerialPortManager::askSerialPort()
 #4      data1           - actual temperature in milliCelsius, LSB
 #5      cs              - control sum = sum of bytes 1..4
 */
-
+bool SerialPortManager::askSerialPort()
+{
   if(serial->isOpen()){
       receivedData.clear();
       writeData(createCommand(0x15,0x00,0x00));
       serial->waitForBytesWritten(300);
-
 
       //* ------------update
       QEventLoop loop;
       connect(this, &SerialPortManager::dataReady, &loop, &QEventLoop::quit);
       QTimer::singleShot(500, &loop, &QEventLoop::quit);
       loop.exec();
-
-      qDebug() << "Data received in ask port " << receivedData;
       //*--------------update
+
       QString deviceName;
-      //   deviceInfo=receivedData;                                                //*
-
       storage.setDeviceInfo(receivedData);
-
       QByteArray deviceInfo=storage.getDeviceInfo();
 
       for(uint8_t it=0;it<3;++it){
-          deviceName+=deviceInfo[it];                                       //*
-
+          deviceName+=deviceInfo[it];
         }
 
       storage.setModelDevice(deviceName);
-
 
       if(deviceName != "101" && deviceName != "211"){
           qDebug()<<serial->portName()<<" no get correct answer not given\n";
@@ -70,7 +62,6 @@ bool SerialPortManager::askSerialPort()
         }
       else{
           qDebug()<<"hello "<<deviceName<<"\n";
-          QString ModelDevice=deviceName;
           QString PortName=serial->portName();
           QString numberPort="";
 
@@ -84,14 +75,13 @@ bool SerialPortManager::askSerialPort()
       qDebug()<<serial->portName()<<"not open\n";
       return false;
     }
-}
+};
 
 void SerialPortManager::auto_search_com_ports(){
   const QList<QSerialPortInfo> serialPortInfos = QSerialPortInfo::availablePorts();
 
   for (const QSerialPortInfo &p : serialPortInfos) {
       serial->setPortName(p.portName());
-
       if (serial->open(QIODevice::ReadWrite)) {
           if(askSerialPort()){
               updateData();
@@ -102,7 +92,7 @@ void SerialPortManager::auto_search_com_ports(){
 };
 
 //connect button on manual connection section
-void SerialPortManager::on_pushButton_11_clicked(){
+void SerialPortManager::manualPortConnect(){
   if (serial->open(QIODevice::ReadWrite)) {
       if(askSerialPort()){
           updateData();
@@ -116,9 +106,8 @@ void SerialPortManager::on_pushButton_11_clicked(){
 void SerialPortManager::closeSerialPort(){
   if (serial->isOpen()){
       qDebug()<<serial->portName()<<" serial was closed\n";
-      resetSpeed();
       serial->close();
-      StatusUpdate(false);
+      statusUpdate(false);
     }
 };
 
@@ -133,17 +122,10 @@ void SerialPortManager::writeData(const QByteArray &data){
 };
 
 
-void SerialPortManager::on_Disconnect_device_clicked(){
-  closeSerialPort();
-};
-
-
 //-------------------------------------------------------------
 void SerialPortManager::readFwVersion(){
   if(serial->isOpen()){
-      // fwVersion.clear();
       QString fwVersion;
-
       delay(300);
       writeData(createCommand(0x3D,0x00,0x00)); //command #58, data1=0, data2=0
       serial->waitForBytesWritten(200);
@@ -162,7 +144,6 @@ void SerialPortManager::readFwVersion(){
         }
       storage.setFwVersion(fwVersion);
     }
-
 };
 
 void SerialPortManager::readSnDevice(){
@@ -202,11 +183,12 @@ void SerialPortManager::updateData(){
   readFwVersion();
   receivedData.clear();
   getTempHumid();
-  GetVerificationDate();
-  StatusUpdate(true);
+  receivedData.clear();
+  getVerificationDate();
+  statusUpdate(true);
 };
 
-void SerialPortManager::on_readDateTimeFromDevice_clicked(){
+void SerialPortManager::readDateTimeFromDevice(){
   if(serial->isOpen()){
       receivedData.clear();
       QDateTime dataTime;
@@ -230,51 +212,40 @@ void SerialPortManager::on_readDateTimeFromDevice_clicked(){
     }
 };
 
-void SerialPortManager::on_writeDateTimeFromDevice_clicked(){
+void SerialPortManager::writeDateTimeFromDevice(){
   if(serial->isOpen()){
       receivedData.clear();
       serial->waitForReadyRead(500);//timeout
 
-      QDateTime dataTime=storage.getDateTime();
-
+      QDateTime dataTime=storage.getDateTime();      
       QString hour = QString::number(dataTime.time().hour());
-
       QString minuts = QString::number(dataTime.time().minute());
 
       writeData(createCommand(0x27,hour.toUInt(), minuts.toUInt()));
-
       serial->waitForBytesWritten(500);
+
       //-----------
-
-      serial->waitForReadyRead(500);//timeout
-
+      serial->waitForReadyRead(500);//timeout      
       QString month = QString::number(dataTime.date().month());
-
       QString day = QString::number(dataTime.date().day());
-
       QString year = QString::number(dataTime.date().year());
-
       QByteArray year_array= year.toUtf8();
-
       uint8_t result = (year_array[2]-'0')*10+(year_array[3]-'0');
-
       writeData(createCommand(0x28,result, 0x00));
-
       serial->waitForBytesWritten(500);
-
       //------------
+
       serial->waitForReadyRead(500);
       writeData(createCommand(0x29,month.toUInt(), day.toUInt()));
-
       serial->waitForBytesWritten(100);
     }
 };
 
-void SerialPortManager::StatusUpdate(const bool &status){
+void SerialPortManager::statusUpdate(const bool &status){
   isConnected=status;
 };
 
-void SerialPortManager::PortNumUpdate(const uint8_t &Nport){
+void SerialPortManager::portNumUpdate(const uint8_t &Nport){
   QString str="COM"+QString::number(Nport);
   serial->setPortName(str);
 };
@@ -301,7 +272,6 @@ void SerialPortManager::handleReadyRead(){
   while(serial->bytesAvailable()){
       receivedData.append(serial->readAll());
     }
-
   emit dataReady();
 };
 
@@ -309,9 +279,9 @@ void SerialPortManager::delay(int milliseconds) {
   QEventLoop loop;
   QTimer::singleShot(milliseconds, &loop, &QEventLoop::quit);
   loop.exec();
-}
+};
 
-
+//get current values from device
 void SerialPortManager::getTempHumid(){
   if(serial->isOpen()){
       receivedData.clear();
@@ -323,36 +293,34 @@ void SerialPortManager::getTempHumid(){
       QTimer::singleShot(1000, &loop, &QEventLoop::quit);
       loop.exec();
 
-
       uint16_t temp = (static_cast<uint16_t>(static_cast<uint8_t>(receivedData[0]) << 8)) | static_cast<uint8_t>(receivedData[1]);
       uint16_t humid = (static_cast<uint16_t>(static_cast<uint8_t>(receivedData[4]) << 8)) | static_cast<uint8_t>(receivedData[5]);
 
       storage.setTemperature(temp*0.1);
       storage.setHumid(humid*0.1);
     }
-}
+};
 
-//only up to 32byte, because need loop for recive all data
-void SerialPortManager::ReadFlashAddr(const uint8_t cmd,const uint8_t lng, const uint8_t addr,const  int countBytes){
+//only up to 32byte, mean need loop for receive all data
+void SerialPortManager::readFlashAddr(const uint8_t cmd,const uint8_t lng, const uint8_t addr,const  int byteCount){
   if(serial->isOpen()){
       receivedData.clear();
       serial->clear();
       writeData(createCommand(cmd,lng,addr));
       delay(800);
 
-      while(receivedData.size()<countBytes){
+      while(receivedData.size()<byteCount){
           QEventLoop loop;
           connect(this, &SerialPortManager::dataReady, &loop, &QEventLoop::quit);
           QTimer::singleShot(1000, &loop, &QEventLoop::quit);
           loop.exec();
           processBarValue=receivedData.size();
-
         }
     }
-}
+};
 
 //create mask user control range
-void SerialPortManager::ControlSettings(){
+void SerialPortManager::controlSettings(){
   uint8_t count=0;
   uint8_t res=receivedData[1];
 
@@ -368,17 +336,17 @@ void SerialPortManager::ControlSettings(){
         }
     }
   storage.setControlSettings(controllSettings);
-}
+};
 
 //write one byte to eeprom device
-void SerialPortManager::WriteToFlashByte(const uint8_t address, const uint8_t byte){
+void SerialPortManager::writeToFlashByte(const uint8_t address, const uint8_t byte){
   if(serial->isOpen()){
       writeData(createCommand(0x08,byte,address));
     }
   if(serial->waitForBytesWritten()){
       qDebug()<<"Byte written";
     }
-}
+};
 
 //func for create button push value from true/false mask
 //   1    2   4   8
@@ -387,8 +355,8 @@ void SerialPortManager::WriteToFlashByte(const uint8_t address, const uint8_t by
 // | # | # | # | # |  RH%
 //or 0b00000000 where each bit = cell status
 void SerialPortManager::createButtonsMaskByte(){
-
   uint8_t count_true=0;
+
   for(uint8_t it=0;it<8;++it){
       if(controllSettings[it+1]==true&&it+1==1){
           count_true+=1;
@@ -399,35 +367,33 @@ void SerialPortManager::createButtonsMaskByte(){
             }
         }
     }
-
   storage.setRangeValue(count_true);
 };
 
 //write to device new controll periods
-void SerialPortManager::WriteControllSettings(){
+void SerialPortManager::writeControllSettings(){
   createButtonsMaskByte();
-  WriteToFlashByte(0x19,storage.getRangeValue());
+  writeToFlashByte(0x19,storage.getRangeValue());
   delay(300);
 };
 
 //get volume level from device
-void SerialPortManager::GetVolumeLevel(){
+void SerialPortManager::getVolumeLevel(){
   delay(500);
-  ReadFlashAddr(0x0A,0x01,0x4D,4);
+  readFlashAddr(0x0A,0x01,0x4D,4);
   storage.setVolumeLevel(receivedData[0]);
 };
 
 //set volume level on device
-void SerialPortManager::SetVolumeLevel(uint8_t level){
+void SerialPortManager::setVolumeLevel(uint8_t level){
   storage.setVolumeLevel(level);
-  WriteToFlashByte(0x4D,level);
+  writeToFlashByte(0x4D,level);
   delay(300);
   qDebug()<<level<<" level sound saved";
 };
 
 //receive verification date from device(BCD format) YY YY MM DD
-void SerialPortManager::GetVerificationDate(){
-
+void SerialPortManager::getVerificationDate(){
   QString year;
   QString mounth;
   QString day;
@@ -441,17 +407,15 @@ void SerialPortManager::GetVerificationDate(){
 
   QDate VerificationDate;
   VerificationDate.setDate(year.toInt(), mounth.toInt(),day.toInt());
-//  QDate verDate;
- // verDate.setDate(year.toInt(), mounth.toInt(),day.toInt());
+
   storage.setVerificationDate(VerificationDate);
   qDebug()<<VerificationDate;
-
 };
 
 //write new current verification date to device
-void SerialPortManager::SetVerficationDate(){
+void SerialPortManager::setVerficationDate(){
   delay(300);
-  QDate VerificationDate;
+  QDate VerificationDate=storage.getVerificationDate();
 
   uint8_t date[4];
   date[0] = static_cast<uint8_t>(VerificationDate.year()/100);
@@ -460,7 +424,8 @@ void SerialPortManager::SetVerficationDate(){
   date[3] = static_cast<uint8_t>((VerificationDate.day()%100)&0xFF);
 
   for(uint8_t it=0;it<4;++it){
-      WriteToFlashByte((0x12+it),ByteToBcd(date[it]));
+      writeToFlashByte((0x12+it),ByteToBcd(date[it]));
+      qDebug()<<"set bytes"<<ByteToBcd(date[it]);
       delay(500);
     }
   writeData(createCommand(0x21,0x00,0x00));
@@ -475,7 +440,7 @@ uint8_t SerialPortManager::BcdToByte(uint8_t Value)
   uint8_t higher=(Value>>4)&0x0F;
   uint8_t lower = Value&0x0F;
   return higher*10+lower;
-}
+};
 
 //convert byte value to bcd, 20(dec) = 0x20(hex)
 uint8_t SerialPortManager::ByteToBcd(uint8_t Value)
@@ -487,12 +452,11 @@ uint8_t SerialPortManager::ByteToBcd(uint8_t Value)
       bcdhigh++;
       Value -= 10;
     }
-
   return  (uint8_t)((uint8_t)(bcdhigh << 4) | Value);
-}
+};
 
 //after find device try to set high speed uart
-void SerialPortManager::autoSelectBaudRate(){
+void SerialPortManager::setHighBaudRate(){
   if(serial->isOpen()){
       unsigned int b = 230400;
       uint8_t byte_1= b/10000;
@@ -524,34 +488,27 @@ void SerialPortManager::saveSettings(){
       writeData(createCommand(0x40,0x00,0x00));
       serial->waitForBytesWritten();
     }
-}
-
-//debug func
-void SerialPortManager::readloop(){
-  receivedData.clear();
-  writeData((createCommand(0x39,0x00,0x00)));
-  if(serial->waitForBytesWritten()){
-    }
 };
 
-void SerialPortManager::GetControlRange(){
-  ReadFlashAddr(0x0A,0x04,0x18,8);
-  ControlSettings();
+//one byte contain value setted control range on device
+void SerialPortManager::getControlRange(){
+  readFlashAddr(0x0A,0x04,0x18,8);
+  controlSettings();
 };
 
-void SerialPortManager::SetControlRange(){
-  WriteControllSettings();
+void SerialPortManager::setControlRange(){
+  writeControllSettings();
   saveSettings();
 };
 
-int SerialPortManager::getBlock(){
+void SerialPortManager::getBlock(){
   if(serial->isOpen()&&storage.getBlockSizeValue()!=0){
       delay(1000);
+      setHighBaudRate();
+      delay(1000);
       int32_t bytes=storage.getBlockSizeValue();
-      ReadFlashAddr(0x38,0x00,0x00,bytes);
+      readFlashAddr(0x38,0x00,0x00,bytes);
 
-      //      if(receivedData.size()==bytes){
-      //      qDebug()<<"i all receve";
       storage.setDataBlock(receivedData);
 
       uint8_t from=21;
@@ -585,84 +542,14 @@ int SerialPortManager::getBlock(){
               break;
             }
         }
-
-
-      HexToFile("C:/Users/sapunov.i/Documents/101/report.txt",receivedData);
-      //        }
-      //      else{
-      //          qDebug()<<"receve only "<<receivedData.size();
-      //        }
-      //serial->setBaudRate(9600);
+      resetSpeed();
     }
-  return 0;
+  //return 0;
 };
 
-void SerialPortManager::GetAllData(){
+void SerialPortManager::getAllData(){
   getBlock();
 };
-
-//temp just for export to txt
-void SerialPortManager::HexToFile(QString FileName,  QByteArray &arr)
-{
-  QFile file(FileName);
-
-  if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-      QTextStream out(&file);
-      // QString str="";
-
-      for(int i = 0; i < arr.size(); i+=6){
-          uint8_t flags=arr[i]>>4;
-          bool flag1=flags & 0x01;
-          bool flag2 = flags & 0x02;
-          bool flag3 = flags & 0x04;
-          bool flag4 = flags & 0x08;
-
-          out<<i<<". ";
-          if(flag1&&!flag2){
-              uint8_t startBit=6;
-              int16_t extTemp=exportBits(arr,startBit,11,i);
-              if(extTemp>1023){
-                  extTemp|=1<<15;
-                  extTemp|=1<<14;
-                  extTemp|=1<<13;
-                  extTemp|=1<<12;
-                  extTemp|=1<<11;
-                }
-              uint16_t extHumid=exportBits(arr,startBit,10,i);
-              int16_t intTemp=exportBits(arr,startBit,11,i);
-              if(intTemp>1023){
-                  intTemp|=1<<15;
-                  intTemp|=1<<14;
-                  intTemp|=1<<13;
-                  intTemp|=1<<12;
-                  intTemp|=1<<11;
-                }
-              uint16_t intHumid=exportBits(arr,startBit,10,i);
-
-              float eTemp= (float)extTemp/10;
-              float eHumid = (float)extHumid/10;
-              float iTemp= (float)intTemp/10;
-              float iHumid = (float) intHumid/10;
-              out<<"ExpT: "+QString::number(eTemp)+", ExpHumid: "+QString::number(eHumid)+", Temp: "+QString::number(iTemp)+", Humid: "+QString::number(iHumid)+"\n";
-
-            }
-          if((flag2&&flag1)||(flag2&&!flag1)){
-              uint8_t startBit=5;
-              uint16_t ranges=exportBits(arr,startBit,16,i);
-              uint16_t DaysAfter2015=exportBits(arr,startBit,16,i);
-              uint16_t Minutes=exportBits(arr,startBit,11,i);
-
-              if(flag2&&flag1){
-                  out<<"Startup range ";
-                }
-
-              out<<"Range value: "+QString::number(ranges)+", Days after 01.01.2015: "+QString::number(DaysAfter2015)+", Minutes: "+QString::number(Minutes)+"\n";
-            }
-        }
-    }
-  file.close();
-}
-
 
 uint16_t SerialPortManager::exportBits(QByteArray &data,uint8_t &startBit,uint8_t bitlengh,uint32_t iter ){
   uint16_t value=0;
@@ -674,22 +561,6 @@ uint16_t SerialPortManager::exportBits(QByteArray &data,uint8_t &startBit,uint8_
     }
   startBit+=bitlengh;
   return value;
-};
-
-void SerialPortManager::ReadAllMem(){
-  if(serial->isOpen()){
-      int32_t bytes=storage.getBlockSizeValue();
-      ReadFlashAddr(0x38,0x01,0x00,bytes);
-      //     if(receivedData.size()==bytes+4){
-      //   qDebug()<<"i all receve";
-      HexToFile("C:/Users/sapunov.i/Documents/101/report.txt",receivedData);
-      //        }
-      //      else{
-      //          qDebug()<<"receve only "<<receivedData.size();
-      //        }
-      //      serial->setBaudRate(9600);
-    }
-
 };
 
 void SerialPortManager::getBlockSize(){
@@ -710,7 +581,6 @@ void SerialPortManager::getBlockSize(){
       uint8_t byte3=receivedData[2];
       uint8_t byte4=receivedData[3];
       uint32_t result=(byte1<<0)|(byte2<<8)|(byte3<<16)|(byte4<<24);
-
 
       storage.setBlockSizeValue(result);
       qDebug()<<storage.getBlockSizeValue();

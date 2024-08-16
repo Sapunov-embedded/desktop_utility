@@ -6,7 +6,6 @@
 #include <QObject>
 #include <QSerialPort>
 #include <QSerialPortInfo>
-
 #include <QEventLoop>
 #include <QTimer>
 #include <QtMath>
@@ -22,14 +21,9 @@ class SerialPortManager:public QObject
 public:
   SerialPortManager();
 
-  QByteArray createCommand(uint8_t cmd, uint8_t data_1, uint8_t data_2);
-
-  bool getConnectStatus();
-
-  void delay(int milliseconds);
-
   QString getPortName();
   uint8_t getPortNumber();
+  bool getConnectStatus();
 
   uint32_t processBarValue=0;
 
@@ -39,84 +33,48 @@ public:
   //or 0b00000000
   bool controllSettings[9]{false};
 
-  uint8_t BcdToByte(uint8_t Value);
-  uint8_t ByteToBcd(uint8_t Value);
-
-  void setSpeed(QString speed);
-
-  void readFwVersion();
-
-  void readSnDevice();
-
+  void setSpeed(QString speed);//debug ver
 
   ~SerialPortManager();
 
 public slots:
-  void on_Button_connect_clicked();
-
+  //connect
   void auto_search_com_ports();
-
+  void manualPortConnect();
   void closeSerialPort();
-
-  void writeData(const QByteArray &data);
-
-  void on_Disconnect_device_clicked();
-
-  void on_pushButton_11_clicked();
-
-  void autoSelectBaudRate();
-
-  void updateData();
-
-  void on_readDateTimeFromDevice_clicked();
-
-  void on_writeDateTimeFromDevice_clicked();
-
-  void StatusUpdate(const bool &status);
-
+  //setters
+  void setHighBaudRate();
+  void setVerficationDate();
+  void setVolumeLevel(uint8_t level);
+  void setControlRange();
+  //getters
   void getTempHumid();
-
-  void PortNumUpdate(const uint8_t &Nport);
+  void getVolumeLevel();
+  void getVerificationDate();
+  void getControlRange();
+  void getAllData();
+  void getBlockSize();//public for debug
 
   //----separate read and write and sync with signal/slots
   void handleReadyRead();
-  //*
 
-  void ReadFlashAddr(const uint8_t cmd,const uint8_t lng, const uint8_t addr, const int countBytes);
-
-  void WriteToFlashByte(const uint8_t address, const uint8_t byte);
-
-  void ControlSettings();
-
-  void WriteControllSettings();
-
-  void GetVolumeLevel();
-
-  void SetVolumeLevel(uint8_t level);
-
-  void GetVerificationDate();
-
-  void SetVerficationDate();
-
-  void GetControlRange();
-
-  void SetControlRange();
-
-  void GetAllData();
-
+  void writeControllSettings();
+  void writeDateTimeFromDevice();
+  void readDateTimeFromDevice();
+  void readFwVersion();
   void saveSettings();
-
-  void readloop();
-
-  void HexToFile(QString FileName, QByteArray &arr);//temp
-
-  void ReadAllMem();
-
-  void getBlockSize();//public for debug
-
+  void portNumUpdate(const uint8_t &Nport);
 
 private slots:
+  void getBlock();
   void createButtonsMaskByte();
+  void readSnDevice();
+  void writeData(const QByteArray &data);
+  void updateData();
+  void statusUpdate(const bool &status);
+  void readFlashAddr(const uint8_t cmd,const uint8_t lng, const uint8_t addr, const int byteCount);
+  void writeToFlashByte(const uint8_t address, const uint8_t byte);
+  void controlSettings();
 
 signals:
   void dataReady();
@@ -127,14 +85,17 @@ signals:
   void fwNumberReady();
 
 private:
+  uint8_t BcdToByte(uint8_t Value);
+  uint8_t ByteToBcd(uint8_t Value);
   uint16_t exportBits(QByteArray &data,uint8_t &startBit,uint8_t bitlengh,uint32_t iter);
-  int getBlock();
   void resetSpeed();
+  void delay(int milliseconds);
   bool askSerialPort();
-  QSerialPort *serial;
-  DeviceInfoStorage &storage;
   bool isConnected;
+  QSerialPort *serial;
   QByteArray receivedData;
+  QByteArray createCommand(uint8_t cmd, uint8_t data_1, uint8_t data_2);
+  DeviceInfoStorage &storage;
 };
 
 #endif // SERIALPORTMANAGER_H

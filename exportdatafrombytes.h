@@ -12,26 +12,25 @@ class ExportDataFromBytes: public QObject
 {
   Q_OBJECT
 
-
-
 public:
   ExportDataFromBytes();
+
   struct Data{
     QDateTime date;
     //eTemp=array[0], eHumid=array[1], iTemp=array[2], iHumid=array[3]
     std::array <float,4>values;
+
     Data();
     Data(const QDateTime& date, const std::array<float, 4>& values);
-
   };
-  //uint16_t getValue();
+
   const QVector<Data>& getArrayValues()const;
   std::pair<float,float> getTempMaxMin();
   std::pair<float,float> getHumidMaxMin();
-  std::pair<QDateTime,QDateTime> getStartEndDate();
   std::pair<int8_t,int8_t> getTempRange();
   std::pair<uint8_t,uint8_t> getHumidRange();
-
+  std::pair<QDateTime,QDateTime> getStartEndDate();
+  bool getRangeControlStatus();
 public slots:
   void ExportServiceAndDataPoints();
 signals:
@@ -39,7 +38,7 @@ signals:
 
 private:
   uint16_t exportBits(QByteArray &data,uint8_t &startBit,uint8_t bitlengh,uint32_t iter);
-  uint16_t getBytes();
+ // uint16_t getBytes();
   QVector<Data> storageParsedData;
   DeviceInfoStorage &storage;
   float maxT=70;
@@ -52,6 +51,7 @@ private:
   uint8_t endTempAverage=0;
   uint8_t startHumidAverage=0;
   uint8_t endHumidAverage=0;
+  bool cntrlIsOn=false;
 };
 
 #endif // EXPORTDATAFROMBYTES_H

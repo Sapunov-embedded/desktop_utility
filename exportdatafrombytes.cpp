@@ -15,18 +15,15 @@ uint16_t ExportDataFromBytes::exportBits(QByteArray &data,uint8_t &startBit,uint
   return value;
 };
 
-//uint16_t ExportDataFromBytes::getValue(){
-//  return getBytes();
+
+//uint16_t ExportDataFromBytes::getBytes(){
+//  uint16_t result=0;
+// // result=exportBits(array,stbit,bitlangth,iter);
+//  return result;
 //}
 
-uint16_t ExportDataFromBytes::getBytes(){
-  uint16_t result=0;
- // result=exportBits(array,stbit,bitlangth,iter);
-  return result;
-}
-
 void ExportDataFromBytes::ExportServiceAndDataPoints(){
-    storageParsedData.clear();
+  storageParsedData.clear();
   //copy data from storage class
   QByteArray data = storage.getDataBlock();
 
@@ -45,8 +42,6 @@ void ExportDataFromBytes::ExportServiceAndDataPoints(){
   endDateTime=storage.getToDateDB();
 
   uint32_t count_db=0;
-
-
 
   bool* arr=storage.getControlSettings();
 
@@ -69,6 +64,7 @@ void ExportDataFromBytes::ExportServiceAndDataPoints(){
             }
         }
     }
+
   uint8_t tempArray[]{0,2,8,15,25,30};
   uint8_t humidArray[]{0,20,30,50,65,80};
   startTempAverage=tempArray[startTempAverage];
@@ -86,7 +82,7 @@ void ExportDataFromBytes::ExportServiceAndDataPoints(){
 
       if(flag1&&!flag2){
           uint8_t startBit=4;
-          bool rangeControl=exportBits(data,startBit,1,i);
+          cntrlIsOn=exportBits(data,startBit,1,i);
           startBit++;
           int16_t extTemp=exportBits(data,startBit,11,i);
           //for negative numbers
@@ -135,13 +131,11 @@ void ExportDataFromBytes::ExportServiceAndDataPoints(){
           uint16_t DaysAfter2015=exportBits(data,startBit,16,i);
           uint16_t Minutes=exportBits(data,startBit,11,i);
           target=start.addDays(DaysAfter2015);
-         // fromDateTime=target.toString("dd.MM.yyyy");
           n_time.setHMS(0,0,0);
           time.setHMS(0,0,0);
           n_time=time.addSecs(Minutes*60);
-         // fromDateTime+=" "+n_time.toString("HH:mm");
         }
-     }
+    }
 
 };
 
@@ -169,4 +163,8 @@ std::pair<int8_t,int8_t> ExportDataFromBytes::getTempRange(){
 };
 std::pair<uint8_t,uint8_t> ExportDataFromBytes::getHumidRange(){
   return std::make_pair(startHumidAverage,endHumidAverage);
+};
+
+bool ExportDataFromBytes::getRangeControlStatus(){
+  return cntrlIsOn;
 };

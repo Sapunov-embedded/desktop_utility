@@ -2,40 +2,39 @@
 #include "ui_users.h"
 
 Users::Users(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::Users)
+  QDialog(parent),
+  ui(new Ui::Users),
+  storage(DeviceInfoStorage::getInstanse())
 {
-    ui->setupUi(this);
-
-    initializeDatabase();
+  ui->setupUi(this);
+  initializeDatabase();
 }
 
 Users::~Users()
 {
   db.close();
   QSqlDatabase::removeDatabase(filePath);
-    delete ui;
+  delete ui;
 }
 
 bool Users::initializeDatabase() {
   // Set up the database connection
-   db = QSqlDatabase::addDatabase("QSQLITE");
-// db.setDatabaseName("example.db");
+  db = QSqlDatabase::addDatabase("QSQLITE");
   db.setDatabaseName(filePath);
-
 
   if (!db.open()) {
       qDebug() << "Error: connection with database failed";
     } else {
       qDebug() << "Database: connection ok";
+      QSqlQuery query;
+      query.exec("PRAGMA foreign_keys = ON;");
     }
-      qDebug()<<db.tables();
+  qDebug()<<db.tables();
+
   // Create and configure the model
   model = new QSqlTableModel(this, db);
   model->setTable("User");
-  model->select(); // This will load the data from the table into the model
-
-
+  model->select(); // This is load the data from the table into the model
   model->setHeaderData(1,Qt::Horizontal, tr("Организация"));
   model->setHeaderData(2,Qt::Horizontal, tr("Адрес"));
   model->setHeaderData(3,Qt::Horizontal, tr("Ответсвенное лицо"));
@@ -49,61 +48,48 @@ bool Users::initializeDatabase() {
   ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tableView->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
   ui->tableView->setContextMenuPolicy(Qt::CustomContextMenu);
-  // connect(ui->tableView, &QTableView::customContextMenuRequested, this, &MainWindow::showContextMenu);
   ui->tableView->setWindowTitle("QTableView Example");
   ui->tableView->setColumnHidden(0, true);
 
-  QSqlQuery query;
-  bool success = query.exec("CREATE TABLE IF NOT EXISTS DeviceInfo ("
-                            "DataBlockId INTEGER PRIMARY KEY AUTOINCREMENT, "
-                            "UserID  INTEGER, "
-                            "SerialNumber INTEGER, "
-                            "DataStart TEXT, "
-                            "DataEnd TEXT)");
-
-  if (!success) {
-      qDebug() << "Error creating table:" << query.lastError().text();
-  } else {
-      qDebug() << "Table created successfully";
-  }
+  // connect(ui->tableView, &QTableView::customContextMenuRequested, this, &MainWindow::showContextMenu);
   return true;
 }
 
-bool Users::saveData(const QString &name, int age) {
-  QSqlQuery query;
+//bool Users::saveData(const QString &name, int age) {
+//  QSqlQuery query;
 
-  query.prepare("INSERT INTO User (UserID, Organization, Location, ResponsiblePerson) VALUES (:UserID, :Organization, :Location, :ResponsiblePerson)");
+//  query.prepare("INSERT INTO User (UserID, Organization, Location, ResponsiblePerson) VALUES (:UserID, :Organization, :Location, :ResponsiblePerson)");
 
-  query.bindValue(":Organization", name);
-  query.bindValue(":UserID", age);
-  query.bindValue(":Location", name);
-  query.bindValue(":ResponsiblePerson", name);
+//  query.bindValue(":Organization", name);
+//  query.bindValue(":UserID", age);
+//  query.bindValue(":Location", name);
+//  query.bindValue(":ResponsiblePerson", name);
 
-    // Debugging: Print the query and bound values
-    qDebug() << "Prepared query:" << query.lastQuery();
-    qDebug() << "Bound values:";
-    for (const auto &key : query.boundValues().keys()) {
-        qDebug() << key << "=" << query.boundValue(key);
-    }
-  if (!query.exec()) {
-      qDebug() << "Error: Could not insert data -" << query.lastError();
-      return false;
-    }
+//  // Debugging: Print the query and bound values
+//  qDebug() << "Prepared query:" << query.lastQuery();
+//  qDebug() << "Bound values:";
+//  for (const auto &key : query.boundValues().keys()) {
+//      qDebug() << key << "=" << query.boundValue(key);
+//    }
+//  if (!query.exec()) {
+//      qDebug() << "Error: Could not insert data -" << query.lastError();
+//      return false;
+//    }
 
-  return true;
-}
+//  return true;
+//}
 
-void Users::restoreData() {
-    QSqlQuery query("SELECT id, name, age FROM people");
+//void Users::restoreData() {
+//  QSqlQuery query("SELECT id, name, age FROM people");
 
-    while (query.next()) {
-        int id = query.value(0).toInt();
-        QString name = query.value(1).toString();
-        int age = query.value(2).toInt();
+//  while (query.next()) {
+//      int id = query.value(0).toInt();
+//      QString name = query.value(1).toString();
+//      int age = query.value(2).toInt();
 
-        qDebug() << "ID:" << id << "Name:" << name << "Age:" << age;
-    }
-}
+//      qDebug() << "ID:" << id << "Name:" << name << "Age:" << age;
+//    }
+//}
 
 
 void Users::on_plus_clicked()
@@ -112,9 +98,7 @@ void Users::on_plus_clicked()
   model->insertRow(row);
 }
 
-
-
-
+//delete only last row
 void Users::on_minus_clicked()
 {
   // Get the last row index (zero-based)
@@ -124,77 +108,306 @@ void Users::on_minus_clicked()
       model->removeRow(row);
       model->submitAll();
       model->select();
-  }
+    }
 }
 
 
 void Users::on_addUser_clicked()
+
 {
-    // Assuming adding a user involves more operations; if not, this code might not be necessary.
-    if (!model->submitAll()) {
-        qDebug() << "Error adding user:" << model->lastError().text();
-        model->database().rollback();
+  s_n=storage.getSnDevice();
+  qDebug()<<storage.getSnDevice();
+
+  //create device data table
+  QSqlQuery query;
+  bool success = query.exec(QString("CREATE TABLE IF NOT EXISTS DeviceData%1 ("
+                                    "DT DATETIME NOT NULL, "
+                                    "DataBlockID INTEGER, "
+                                    "Tint FLOAT, "
+                                    "HInt FLOAT, "
+                                    "TExt FLOAT, "
+                                    "HExt FLOAT, "
+                                    "Ctrl BIT, "
+                                    "FOREIGN KEY (DataBlockID) REFERENCES DataBlock(DataBlockID)ON DELETE CASCADE)").arg(s_n));
+
+  if (!success) {
+      qDebug() << "Error creating table:" << query.lastError().text();
     } else {
-        model->database().commit();
-   }
-//    QModelIndexList selectedIndexes = ui->tableView->selectionModel()->selectedRows();
+      qDebug() << "Table created successfully";
+    }
 
-//    if (selectedIndexes.isEmpty()) {
-//        qDebug() << "No row selected";
-//        return;
-//      }
-//    else{
-//    QModelIndex index = selectedIndexes.first();
 
-//    int row = index.row();
+  // Assuming adding a user involves more operations; if not, this code might not be necessary.
+  if (!model->submitAll()) {
+      qDebug() << "Error adding user:" << model->lastError().text();
+      model->database().rollback();
+    } else {
+      model->database().commit();
+      qDebug()<<"database commit successfully";
+    }
 
-//    int id = model->data(model->index(row, 0)).toInt();
-//    UserId=id;
+  QString tableName=model->tableName();
 
-//     model->setTable("Device");
-//     QString filter = QString("%1 = '%2'").arg("UserID").arg(id);
+  if(tableName=="User"){
+      int id = getSelectedValueFromColum(0);
+      model->setTable("Device");
+      QString filter = QString("%1 = '%2' AND %3 = '%4'")
+          .arg("UserID").arg(id)
+          .arg("SerialNumber").arg(s_n);
+      model->setFilter(filter);
+      model->select();
 
-//     model->setFilter(filter);
-     model->setTable("DeviceInfo");
-     model->select();
-   // }
+      // Device table show with filter
+      QString queryStr = "SELECT SerialNumber FROM Device WHERE SerialNumber = :SerialNumber AND UserID = :User";
+      QSqlQuery query;
+      query.prepare(queryStr);
+      query.bindValue(":SerialNumber", s_n);
+      query.bindValue(":User", id);
+
+      if (query.exec()) {
+          if (query.next()) {
+              // The value exists in the table
+              qDebug() << "SerialNumber exists. Displaying all matching rows:";
+            } else {
+              // The value does not exist in the table
+              qDebug() << "SerialNumber does not exist. Adding to the table.";
+              // Step 2: Add the new value with additional information
+              QSqlQuery insertQuery;
+              insertQuery.prepare("INSERT INTO Device (DeviceTypeID,UserID,SerialNumber,VerificationDate) VALUES (:DeviceTypeID,:UserID,:SerialNumber,:VerificationDate)");
+              insertQuery.bindValue(":DeviceTypeID", storage.getModelDevice());
+              insertQuery.bindValue(":UserID", id);
+              insertQuery.bindValue(":SerialNumber", s_n);
+              insertQuery.bindValue(":VerificationDate", storage.getVerificationDate().toString("yyyy-MM-dd"));
+
+              if (insertQuery.exec()) {
+                  qDebug() << "New Device added successfully.";
+                  model->select();
+                } else {
+                  qDebug() << "Failed to add Device:" << insertQuery.lastError().text();
+                }
+            }
+        } else {
+          // Handle query execution error
+          qDebug() << "Query execution failed:" << query.lastError().text();
+        }
+    }
+  if(tableName=="Device"){
+      //Data block show
+      int id = getSelectedValueFromColum(0);
+      model->setTable("DataBlock");
+      setFilter(QString("%1 = '%2'").arg("DeviceID").arg(id));
+      model->select();
+
+      QString queryStr = "SELECT FirstTime FROM DataBlock WHERE FirstTime = :FirstTime AND LastTime = :LastTime AND DeviceID = :DeviceID";
+      QSqlQuery query;
+      query.prepare(queryStr);
+      query.bindValue(":FirstTime", storage.getFromDateDB().toString("yyyy-MM-dd hh:mm"));
+      query.bindValue(":LastTime", storage.getToDateDB().toString("yyyy-MM-dd hh:mm"));
+      query.bindValue(":DeviceID", id);
+
+      if (query.exec()) {
+          if (query.next()) {
+              // The value exists in the table
+              qDebug() << "FirstTime exists. Displaying all matching rows:";
+            } else {
+              // The value does not exist in the table
+              qDebug() << "FirstTime does not exist. Adding to the table.";
+
+              // Step 2: Add the new value with additional information
+              QSqlQuery insertQuery;
+              insertQuery.prepare("INSERT INTO DataBlock (DeviceID,FirstTime,LastTime,DataBlockType,IntervalInMin) VALUES (:DeviceID,:FirstTime,:LastTime, :DataBlockType, :IntervalInMin)");
+              insertQuery.bindValue(":DeviceID", id);
+              insertQuery.bindValue(":FirstTime", storage.getFromDateDB().toString("yyyy-MM-dd hh:mm"));
+              insertQuery.bindValue(":LastTime", storage.getToDateDB().toString("yyyy-MM-dd hh:mm"));
+              insertQuery.bindValue(":DataBlockType", storage.getModelDevice());
+              insertQuery.bindValue(":IntervalInMin", 1);
+
+              if (insertQuery.exec()) {
+                  qDebug() << "New DataBlock added successfully.";
+                  model->select();
+                } else {
+                  qDebug() << "Failed to add DataBlock:" << insertQuery.lastError().text();
+                }
+            }
+        } else {
+          // Handle query execution error
+          qDebug() << "Query execution failed:" << query.lastError().text();
+        }
+    }
+  if(tableName=="DataBlock"){
+      //Data block show
+      int id = getSelectedValueFromColum(0);
+      int devId=getSelectedValueFromColum(1);
+      ExportDataFromBytes exp;
+      exp.ExportServiceAndDataPoints();
+      bool ctrl=exp.getRangeControlStatus();
+
+      //add range control settings in to DeviceControl table
+      QSqlQuery Query;
+      Query.prepare("INSERT INTO DeviceControl (DT, DataBlockID, DeviceID, TIntCheck, HIntCheck, TExtCheck, HExtCheck, TIntMin, TIntMax, HIntMin, HIntMax, TExtMin, TExtMax, HExtMin, HExtMax) "
+                    "VALUES (:DT, :DataBlockID, :DeviceID, :TIntCheck, :HIntCheck, :TExtCheck, :HExtCheck, :TIntMin, :TIntMax, :HIntMin, :HIntMax, :TExtMin, :TExtMax, :HExtMin, :HExtMax)");
+
+      Query.bindValue(":DT",exp.getStartEndDate().first.toString("yyyy-MM-dd hh:mm"));
+      Query.bindValue(":DataBlockID", id);
+      Query.bindValue(":DeviceID",devId);
+      Query.bindValue(":TIntCheck",ctrl);
+      Query.bindValue(":HIntCheck",ctrl);
+      Query.bindValue(":TExtCheck",ctrl);//temp set inner sensor data
+      Query.bindValue(":HExtCheck",ctrl);//temp set inner sensor data
+      Query.bindValue(":TIntMin",static_cast<int>(exp.getTempRange().first));
+      Query.bindValue(":TIntMax",static_cast<int>(exp.getTempRange().second));
+      Query.bindValue(":HIntMin",static_cast<int>(exp.getHumidRange().first));
+      Query.bindValue(":HIntMax",static_cast<int>(exp.getHumidRange().second));
+      Query.bindValue(":TExtMin",static_cast<int>(exp.getTempRange().first));//temp set inner sensor data
+      Query.bindValue(":TExtMax",static_cast<int>(exp.getTempRange().second));//temp set inner sensor data
+      Query.bindValue(":HExtMin",static_cast<int>(exp.getHumidRange().first));//temp set inner sensor data
+      Query.bindValue(":HExtMax",static_cast<int>(exp.getHumidRange().second));//temp set inner sensor data
+      if(!Query.exec()){
+          qDebug()<<"Device control data not write, "<<Query.lastError();
+        }
+      else{
+          qDebug()<<"Device control data write!!!!!!";
+        }
+      //---------------
+
+      model->setTable(QString("DeviceData%1").arg(s_n));
+      setFilter(QString("%1 = '%2'").arg("DataBlockID").arg(id));
+      model->select();
+
+      QString queryStr = QString("SELECT DataBlockID FROM DeviceData%1 WHERE DataBlockID = :DataBlockID ").arg(s_n);
+      QSqlQuery query;
+      query.prepare(queryStr);
+      query.bindValue(":DataBlockID", id);
+
+      if (query.exec()) {
+          if (query.next()) {
+              // The value exists in the table
+              qDebug() << "DataBlockID exists. Displaying all matching rows:";
+
+            } else {
+              // The value does not exist in the table
+              qDebug() << "DataBlockID does not exist. Adding to the table.";
+
+              // Step 2: Add the new value with additional information
+              QVector<ExportDataFromBytes::Data> values=exp.getArrayValues();
+              QSqlQuery insertQuery;
+              insertQuery.prepare(QString("INSERT INTO DeviceData%1 (DT,DataBlockID,Tint,HInt,TExt,HExt,Ctrl) VALUES (:DT,:DataBlockID,:Tint, :HInt, :TExt,:HExt,:Ctrl)").arg(s_n));
+              db.transaction();
+              for(const auto& it:values){
+                  insertQuery.bindValue(":DT",it.date.toString("yyyy-MM-dd hh:mm"));
+                  insertQuery.bindValue(":DataBlockID",id );
+                  insertQuery.bindValue(":Tint", it.values[2]);
+                  insertQuery.bindValue(":HInt", it.values[3]);
+                  insertQuery.bindValue(":TExt", it.values[0]);
+                  insertQuery.bindValue(":HExt", it.values[1]);
+                  insertQuery.bindValue(":Ctrl", ctrl);
+
+                  if (insertQuery.exec()) {
+                      // qDebug() << "sentance added successfully.";
+
+                    } else {
+                      //  qDebug() << "Failed to add user:" << insertQuery.lastError().text();
+                    }
+                  model->select();
+                }
+            }
+        } else {
+          // Handle query execution error
+          qDebug() << "Query execution failed:" << query.lastError().text();
+        }
+    }
 }
 
 
 void Users::on_deleteUser_clicked()
 {
-  QModelIndexList selectedIndexes = ui->tableView->selectionModel()->selectedRows();
+  int row = getSelectedIndex().row();
 
-  if (selectedIndexes.isEmpty()) {
-      qDebug() << "No row selected";
-      return;
+  // int id = model->data(model->index(row, 0)).toInt();
+  QString firstColumnName = model->headerData(0, Qt::Horizontal).toString();
+  // Get the data from the first column of the selected row
+  QVariant idVariant = model->data(model->index(row, 0));
+
+  // Convert to int, considering whether the data is text or already an int
+  bool ok = false;
+  int id = idVariant.toInt(&ok);
+
+  if (!ok) {
+      qDebug() << "Conversion to int failed for value:" << idVariant;
+
     }
 
-  QModelIndex index = selectedIndexes.first();
-
-  int row = index.row();
-
-  int id = model->data(model->index(row, 0)).toInt();
-
+  // Prepare the deletion query
   QSqlQuery query;
-   query.prepare("DELETE FROM User WHERE UserID = :UserID");
-   query.bindValue(":UserID", id);
+  QString queryString = QString("DELETE FROM %1 WHERE %2 = :value")
+      .arg(model->tableName(),firstColumnName);
+  query.prepare(queryString);
+  query.bindValue(":value", id);
 
-   if (!query.exec()) {
-       qDebug() << "Error deleting row:" << query.lastError().text();
-   } else {
-        model->submitAll();
-       model->select();
-   }
+  if (!query.exec()) {
+      qDebug() << "Error deleting row:" << query.lastError().text();
+
+    } else {
+      model->submitAll();
+      model->select();
+    }
 
   model->submitAll();
 
 }
 
 
+void Users::deleteTable(QString tableName){
+  QSqlQuery query;
+
+  // Construct the SQL query to drop the table
+  QString sqlQuery = QString("DROP TABLE IF EXISTS %1").arg(tableName);
+
+  // Execute the query
+  if (!query.exec(sqlQuery)) {
+      qDebug() << "Error deleting table:" << query.lastError().text();
+
+    }
+
+  qDebug() << "Table" << tableName << "deleted successfully.";
+}
+
+void Users::setFilter(QString filter){
+  model->setFilter(filter);
+};
+
+QModelIndex Users::getSelectedIndex(){
+  QModelIndexList selectedIndexes = ui->tableView->selectionModel()->selectedRows();
+  QModelIndex index;
+  if (selectedIndexes.isEmpty()) {
+      qDebug() << "No row selected";
+    }
+  else{
+      index  = selectedIndexes.first();
+    }
+
+  return index;
+};
 
 
 
+void Users::on_upButton_clicked()
+{
+  model->setTable("User");
+  model->select();
+}
 
-
-
+int Users::getSelectedValueFromColum(int columNumber){
+  QModelIndexList selectedIndexes = ui->tableView->selectionModel()->selectedRows();
+  QModelIndex index;
+  if (selectedIndexes.isEmpty()) {
+      qDebug() << "No row selected";
+    }
+  else{
+      index  = selectedIndexes.first();
+      int row = index.row();
+      int id = model->data(model->index(row, columNumber)).toInt();
+      return id;
+    }
+  return -1;
+};

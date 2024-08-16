@@ -41,13 +41,9 @@ MainWindow::MainWindow(SerialPortManager *SerialPM, ExportCSV *CSV,ExportDataFro
   //Auto connect
   connect(ui->Button_connect, &QPushButton::clicked,this, [this,SerialPM](){
       ProcessConnect();
-
       SerialPM->auto_search_com_ports();
-
       if(SerialPM->getConnectStatus()){
-
           ShowHideConnectWindow();
-
         }
       else {
           ui->mainConsole_1->setText("ТМФЦ устройство не найдено.");
@@ -66,11 +62,8 @@ MainWindow::MainWindow(SerialPortManager *SerialPM, ExportCSV *CSV,ExportDataFro
   //manual connect
   connect(ui->pushButton_11, &QPushButton::clicked,this, [this,SerialPM](){
       ProcessConnect();
-
-      SerialPM->PortNumUpdate(ui->numberComPort_2->value());
-
-      SerialPM->on_pushButton_11_clicked();
-
+      SerialPM->portNumUpdate(ui->numberComPort_2->value());
+      SerialPM->manualPortConnect();
       if (!SerialPM->getConnectStatus()) {
           qDebug()<<"can't open port\n";
           ui->mainConsole_1->setText(SerialPM->getPortName()+" порт не найден или отсутствует в системе.");
@@ -92,7 +85,7 @@ MainWindow::MainWindow(SerialPortManager *SerialPM, ExportCSV *CSV,ExportDataFro
     },Qt::AutoConnection);
 
   connect(ui->readDateTimeFromDevice, &QPushButton::clicked,this, [this,SerialPM](){
-      SerialPM->on_readDateTimeFromDevice_clicked();
+      SerialPM->readDateTimeFromDevice();
       ui->textBrowser->insertPlainText("Дата и время устройства: "+storage.getDateTime().toString("dd.MM.yyyy hh:mm")+"\n");
 
       ui->dateEdit->setDate(storage.getDateTime().date());
@@ -100,7 +93,7 @@ MainWindow::MainWindow(SerialPortManager *SerialPM, ExportCSV *CSV,ExportDataFro
     },Qt::AutoConnection);
 
   connect(ui->writeDateTimeFromDevice, &QPushButton::clicked,this, [this,SerialPM](){
-      SerialPM->on_writeDateTimeFromDevice_clicked();//temp
+      SerialPM->writeDateTimeFromDevice();
       ui->textBrowser->insertPlainText("Дата и время обновлено на устройстве.\n");
     },Qt::AutoConnection);
 
@@ -172,7 +165,6 @@ void MainWindow::on_SelectPort_2_stateChanged(int arg1)
 void MainWindow::on_pushButton_11_clicked(){};
 
 void MainWindow::readFwVersion(){
-
   SerialPM->readFwVersion();
   ui->FW_version_text->setText(storage.getFwVersion());
   qDebug()<<"fwVersion: "<<storage.getFwVersion();
@@ -231,7 +223,7 @@ void MainWindow::ShowHideConnectWindow(){
   ui->Disconnected_device->hide();
   ui->Connected_device->show();
   //------
-  SerialPM->on_readDateTimeFromDevice_clicked();
+  SerialPM->readDateTimeFromDevice();
   set_lcd_datatime();
   initVerificationDate();
   on_readFlash_clicked();
@@ -246,7 +238,7 @@ void MainWindow::on_getTempButton_clicked()
   SerialPM->getTempHumid();
   ui->lcd_temp->display(storage.getTemperature());
   ui->lcd_humid->display(qRound(storage.getHumid()));
-  SerialPM->on_readDateTimeFromDevice_clicked();
+  SerialPM->readDateTimeFromDevice();
   set_lcd_datatime();
 }
 
@@ -265,7 +257,7 @@ void MainWindow::set_lcd_datatime(){
 
 void MainWindow::on_readFlash_clicked()
 {
-  SerialPM->GetControlRange();
+  SerialPM->getControlRange();
 
   ui->indicate_16->setStyleSheet("background-color:rgb(255, 255, 255); ");
   ui->indicate_48->setStyleSheet("background-color:rgb(255, 255, 255); ");
@@ -313,7 +305,7 @@ void MainWindow::on_readFlash_clicked()
           ui->indicate_240->setStyleSheet("background-color:black; ");
         }
     }
-  SerialPM->GetVolumeLevel();
+  SerialPM->getVolumeLevel();
   uint8_t VolumeLevel=storage.getVolumeLevel();
   qDebug()<<VolumeLevel;
   ui->VolumeLevel->setCurrentText(QString::number(VolumeLevel));
@@ -372,7 +364,7 @@ void MainWindow::on_refresh_clicked()
 //write to flash control settings
 void MainWindow::on_WriteToFlash_clicked()
 {
-  SerialPM->SetControlRange();
+  SerialPM->setControlRange();
 }
 
 //mask squers
@@ -429,20 +421,20 @@ void MainWindow::on_indicate_1_clicked(bool checked)
 //write to device new settings volume level
 void MainWindow::on_WriteVolumeLevel_clicked()
 {
-  SerialPM->SetVolumeLevel(ui->VolumeLevel->currentText().toUShort());
+  SerialPM->setVolumeLevel(ui->VolumeLevel->currentText().toUShort());
   SerialPM->saveSettings();
 
 }
 
 void MainWindow::on_VerificationDate_userDateChanged(const QDate &date)
 {
- storage.setVerificationDate(date);
+  storage.setVerificationDate(date);
   endVerificationDate();
 }
 
 void MainWindow::on_pushButton_clicked()
 {
-  SerialPM->SetVerficationDate();
+  SerialPM->setVerficationDate();
 
 }
 
@@ -450,7 +442,7 @@ void MainWindow::on_pushButton_clicked()
 //while its settup higher speed 57600
 void MainWindow::on_AutoSpeed_clicked()
 {
-  SerialPM->autoSelectBaudRate();
+  SerialPM->setHighBaudRate();
 }
 
 //for debug manual spped set(for sofware side)
@@ -460,7 +452,7 @@ void MainWindow::on_speed_currentIndexChanged(const QString &arg1)
 }
 
 void  MainWindow::initVerificationDate(){
-  SerialPM->GetVerificationDate();
+  SerialPM->getVerificationDate();
   ui->VerificationDate->setDate(storage.getVerificationDate());
   endVerificationDate();
 }
@@ -473,7 +465,7 @@ void MainWindow::on_ReadDataFromDeviceButton_clicked()
 {
   SerialPM->getBlockSize();
   ui->progressBar->setMaximum(storage.getBlockSizeValue());
-  SerialPM->GetAllData();
+  SerialPM->getAllData();
 }
 
 void MainWindow::endVerificationDate(){
@@ -485,9 +477,9 @@ void MainWindow::endVerificationDate(){
 void MainWindow::on_ReportButton_clicked()
 {
 
-      window.setWindowTitle("Export to PDF and Print Example");
-      window.resize(400, 300);
-      window.show();
+  window.setWindowTitle("Export to PDF and Print Example");
+  window.resize(400, 300);
+  window.show();
 }
 
 

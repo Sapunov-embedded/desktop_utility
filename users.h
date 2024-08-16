@@ -6,6 +6,9 @@
 #include <QSqlQuery>
 #include <QSqlTableModel>
 #include <QSqlError>
+#include "deviceinfostorage.h"
+#include "exportdatafrombytes.h"
+
 #include <QDebug>
 
 namespace Ui {
@@ -22,24 +25,26 @@ public:
 
 private slots:
   void on_plus_clicked();
-
   void on_minus_clicked();
-
+  void on_upButton_clicked();
   void on_addUser_clicked();
-
   void on_deleteUser_clicked();
-
 
 private:
     Ui::Users *ui;
-    bool initializeDatabase();
-    bool saveData(const QString &name, int age);
-    void restoreData();
-    QString filePath="FS_Service.db";
     QSqlDatabase db;
     QSqlTableModel *model;
+    DeviceInfoStorage &storage;
+    QString filePath="FS_Service.db";
+    QString s_n;
+    QModelIndex getSelectedIndex();
     int UserId=-1;
-
+    bool initializeDatabase();
+    void setFilter(QString filter);
+    void deleteTable(QString tableName);
+    int getSelectedValueFromColum(int columNumber);
+    //  void restoreData();
+    // bool saveData(const QString &name, int age);
 };
 
 #endif // USERS_H
