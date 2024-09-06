@@ -27,6 +27,9 @@ public:
   QDateTime getFromDateDB();
   QDateTime getToDateDB();
   bool* getControlSettings();
+  QString getDataBasePath();
+  QString getCsvPath();
+  QString getPdfPath();
 
   //setters
   void setModelDevice(QString deviceModel);
@@ -44,6 +47,9 @@ public:
   void setFromDateDB(QDateTime from);
   void setToDateDB(QDateTime to);
   void setControlSettings(bool* array);
+  void setDataBasePath(QString path);
+  void setCsvPath(QString path);
+  void setPdfPath(QString path);
   ~ DeviceInfoStorage();
 
 private:
@@ -65,6 +71,10 @@ private:
   QByteArray DataBlock;
   QDateTime FromDB;
   QDateTime ToDB;
+  QString AdobePath;
+  QString DBasePath;
+  QString CsvPath;
+  QString PdfPath;
   bool controllSettings[9]{false};
 };
 

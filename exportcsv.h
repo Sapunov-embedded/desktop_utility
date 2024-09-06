@@ -3,6 +3,8 @@
 
 #include <QFile>
 #include <QTextStream>
+#include <QDesktopServices>
+#include <QUrl>
 #include <QDate>
 #include <QLocale>
 #include <vector>
@@ -50,7 +52,7 @@ signals:
   void exportDone();
 
 private:
-  QString defaultFileAddr="C:/Users/sapunov.i/Documents/101/DB.csv";
+  QString defaultFileAddr="DB.csv";
   uint16_t exportBits(QByteArray &data,uint8_t &startBit,uint8_t bitlengh,uint32_t iter);
   DeviceInfoStorage &storage;
   QDateTime FromDb;

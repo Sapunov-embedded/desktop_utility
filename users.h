@@ -8,7 +8,8 @@
 #include <QSqlError>
 #include "deviceinfostorage.h"
 #include "exportdatafrombytes.h"
-
+#include "applicationconfiguration.h"
+//#include <QAbstractButton>
 #include <QDebug>
 
 namespace Ui {
@@ -20,7 +21,7 @@ class Users : public QDialog
     Q_OBJECT
 
 public:
-    explicit Users(QWidget *parent = nullptr);
+    explicit Users(ApplicationConfiguration &config,QWidget *parent = nullptr);
     ~Users();
 
 private slots:
@@ -30,11 +31,18 @@ private slots:
   void on_addUser_clicked();
   void on_deleteUser_clicked();
 
+  void on_update_clicked();
+
+
+
+  void on_buttonBox_accepted();
+
 private:
     Ui::Users *ui;
     QSqlDatabase db;
     QSqlTableModel *model;
     DeviceInfoStorage &storage;
+    ApplicationConfiguration &appConfig;
     QString filePath="FS_Service.db";
     QString s_n;
     QModelIndex getSelectedIndex();
@@ -43,6 +51,7 @@ private:
     void setFilter(QString filter);
     void deleteTable(QString tableName);
     int getSelectedValueFromColum(int columNumber);
+    QString getSelectedStringValue(int columN);
     //  void restoreData();
     // bool saveData(const QString &name, int age);
 };

@@ -9,6 +9,8 @@
 #include <QPrinter>
 #include <QPainter>
 #include <QDateTime>
+#include <QDesktopServices>
+#include <QUrl>
 #include <QString>
 #include "exportdatafrombytes.h"
 #include "deviceinfostorage.h"
@@ -20,12 +22,12 @@ class Journal : public QObject
 public:
   Journal(const QString &location, const QString &organization, const QString &responsiblePerson,QVector<ExportDataFromBytes::Data> &exp);
 
-  struct MidleOfDay{
-    QDate date;
-    float minTemp;
-    float maxTemp;
-    float minHumid;
-    float maxHumid;
+  struct MiddleOfDay{
+    QDateTime date;
+    float middleTempFirstHalf;
+    float middleTempSecondHalf;
+    float middleHumidFirstHalf;
+    float middleHumidSecondHalf;
   };
 
 public slots:
@@ -41,10 +43,10 @@ private:
      QString product;
      QString sensorType;
      QString serialNumber;
-     QDate nextCheckDate;
-
+     QString nextCheckDate;
+     DeviceInfoStorage &storage;
      QVector<ExportDataFromBytes::Data> &entries;
-     QVector<MidleOfDay> reportData;
+     QVector<MiddleOfDay> reportData;
      void drawHeader(QTextDocument &document) const;
      void drawEntries(QTextTable &table) const;
      void calculateRangeOfEachDay();

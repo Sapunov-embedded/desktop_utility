@@ -32,8 +32,8 @@
    <string>Список пользователей</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>../../../../Farmsib/Icons/free-icon-first-aid-kit-2992082.png</normaloff>../../../../Farmsib/Icons/free-icon-first-aid-kit-2992082.png</iconset>
+   <iconset resource="icons.qrc">
+    <normaloff>:/resources/free-icon-first-aid-kit-2992082.png</normaloff>:/resources/free-icon-first-aid-kit-2992082.png</iconset>
   </property>
   <property name="autoFillBackground">
    <bool>true</bool>
@@ -73,8 +73,8 @@
     <string/>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../../../../Farmsib/Icons/free-icon-plus-232446.png</normaloff>../../../../Farmsib/Icons/free-icon-plus-232446.png</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/resources/free-icon-plus-232446.png</normaloff>:/resources/free-icon-plus-232446.png</iconset>
    </property>
   </widget>
   <widget class="QPushButton" name="minus">
@@ -90,8 +90,8 @@
     <string/>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../../../../Farmsib/Icons/free-icon-minus-232445.png</normaloff>../../../../Farmsib/Icons/free-icon-minus-232445.png</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/resources/free-icon-minus-232445.png</normaloff>:/resources/free-icon-minus-232445.png</iconset>
    </property>
   </widget>
   <widget class="QPushButton" name="upButton">
@@ -107,8 +107,8 @@
     <string/>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../../../../Farmsib/Icons/free-icon-arrow-up-4655143.png</normaloff>../../../../Farmsib/Icons/free-icon-arrow-up-4655143.png</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/resources/icons8-пользователь-30.png</normaloff>:/resources/icons8-пользователь-30.png</iconset>
    </property>
   </widget>
   <widget class="QPushButton" name="addUser">
@@ -124,8 +124,8 @@
     <string/>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../../../../Farmsib/Icons/free-icon-checked-232444.png</normaloff>../../../../Farmsib/Icons/free-icon-checked-232444.png</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/resources/free-icon-checked-232444.png</normaloff>:/resources/free-icon-checked-232444.png</iconset>
    </property>
   </widget>
   <widget class="QPushButton" name="deleteUser">
@@ -141,8 +141,8 @@
     <string/>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../../../../Farmsib/Icons/free-icon-close-1828527.png</normaloff>../../../../Farmsib/Icons/free-icon-close-1828527.png</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/resources/free-icon-close-1828527.png</normaloff>:/resources/free-icon-close-1828527.png</iconset>
    </property>
   </widget>
   <widget class="QPushButton" name="update">
@@ -158,8 +158,8 @@
     <string/>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../../../../Farmsib/Icons/free-icon-refresh-560512.png</normaloff>../../../../Farmsib/Icons/free-icon-refresh-560512.png</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/resources/free-icon-refresh-560512.png</normaloff>:/resources/free-icon-refresh-560512.png</iconset>
    </property>
   </widget>
   <widget class="QTableView" name="tableView">
@@ -172,8 +172,36 @@
     </rect>
    </property>
   </widget>
+  <widget class="QProgressBar" name="downloadProgress">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>270</y>
+     <width>101</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="value">
+    <number>24</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="SavedLabel">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>270</y>
+     <width>61</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Сохранено</string>
+   </property>
+  </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

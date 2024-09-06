@@ -57,6 +57,15 @@ QDateTime DeviceInfoStorage::getToDateDB(){
 bool* DeviceInfoStorage::getControlSettings(){
   return controllSettings;
 };
+QString  DeviceInfoStorage::getDataBasePath(){
+  return DBasePath;
+};
+QString  DeviceInfoStorage::getCsvPath(){
+  return CsvPath;
+};
+QString  DeviceInfoStorage::getPdfPath(){
+  return PdfPath;
+};
 
 //setters
 void DeviceInfoStorage::setModelDevice(QString deviceModel){
@@ -111,4 +120,13 @@ void DeviceInfoStorage::setControlSettings(bool* array){
     }
 };
 
+void  DeviceInfoStorage::setDataBasePath(QString path){
+  DBasePath=path;
+};
+void  DeviceInfoStorage::setCsvPath(QString path){
+  CsvPath=path;
+};
+void  DeviceInfoStorage::setPdfPath(QString path){
+  PdfPath=path;
+};
 DeviceInfoStorage::~DeviceInfoStorage(){};

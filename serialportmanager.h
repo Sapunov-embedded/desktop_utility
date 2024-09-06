@@ -10,7 +10,7 @@
 #include <QTimer>
 #include <QtMath>
 
-#include <QFile>//temp
+#include <QFile>
 
 #include "deviceinfostorage.h"
 
@@ -79,10 +79,10 @@ private slots:
 signals:
   void dataReady();
   void blockDataReady();
-  void deviceInfoReady();
-  void rangeReady();
-  void dataTimeReady();
-  void fwNumberReady();
+//  void deviceInfoReady();
+//  void rangeReady();
+//  void dataTimeReady();
+//  void fwNumberReady();
 
 private:
   uint8_t BcdToByte(uint8_t Value);

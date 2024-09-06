@@ -25,9 +25,7 @@ grapthics::grapthics(ExportDataFromBytes *exp,QWidget *parent) :
   ui->graphicsView->yAxis->setRange((-30),100);
   ui->graphicsView->xAxis->setRange(0,30);
   ui->graphicsView->yAxis->setLabel("Температрура/Влажность/Давление/Точка россы");
-  ui->graphicsView->xAxis->setLabel("Время в мин");
-
-
+  ui->graphicsView->xAxis->setLabel("Время");
 
   ui->snDevice->setText(storage.getSnDevice());
 
@@ -47,6 +45,10 @@ grapthics::grapthics(ExportDataFromBytes *exp,QWidget *parent) :
   ui->graphicsView->graph(4)->setVisible(false);
   ui->graphicsView->graph(5)->setPen(dewPen);
   ui->graphicsView->graph(5)->setVisible(false);
+
+  ui->graphicsView->setInteraction(QCP::iRangeZoom, true);
+  ui->graphicsView->setInteraction(QCP::iRangeDrag, true);
+  //customPlot->axisRect()->setRangeZoomFactor(1.2); // Adjust the zoom sensitivity
 }
 
 grapthics::~grapthics()
@@ -69,23 +71,26 @@ void grapthics::drawGraph(){
   ui->ToDateTime->setText("по "+storage.getToDateDB().toString("dd.MM.yyyy hh:mm"));
 
   const QVector<ExportDataFromBytes::Data>& data=expData->getArrayValues();
-  qDebug() << "Data size:" << data.size();
+
   if (data.isEmpty()) {
       qWarning("Data is empty!");
       return;
     }
-  double step=0;
-  qint64 distance=data[0].date.secsTo(data[data.size()-1].date)/60;
+
+  //set start and end point value on xAxis
+  qint64 startEpoch = storage.getFromDateDB().toSecsSinceEpoch();
+  qint64 endEpoch = storage.getToDateDB().toSecsSinceEpoch();
+  double step=static_cast<double>(startEpoch);
+
+  //fill vector for draw entries
   for(int it=0;it<data.size();++it){
-      if(it%RangeInMinutes==0){
-          eTemp.push_back(static_cast<double>(data[it].values[0]));
-          eHumid.push_back(static_cast<double>(data[it].values[1]));
-          iTemp.push_back(static_cast<double>(data[it].values[2]));
-          iHumid.push_back(static_cast<double>(data[it].values[3]));
-          pPressure.push_back(calculatePartialPressure(data[it].values[2],data[it].values[3]));
-          dewPoint.push_back(calculateDewPoint(data[it].values[2],data[it].values[3]));
-          time.push_back(step+=RangeInMinutes);
-        }
+      eTemp.push_back(static_cast<double>(data[it].values[0]));
+      eHumid.push_back(static_cast<double>(data[it].values[1]));
+      iTemp.push_back(static_cast<double>(data[it].values[2]));
+      iHumid.push_back(static_cast<double>(data[it].values[3]));
+      pPressure.push_back(calculatePartialPressure(data[it].values[2],data[it].values[3]));
+      dewPoint.push_back(calculateDewPoint(data[it].values[2],data[it].values[3]));
+      time.push_back(step+=RangeInSeconds);
     }
 
   ui->graphicsView->graph(0)->setData(time,iTemp);
@@ -96,10 +101,13 @@ void grapthics::drawGraph(){
   ui->graphicsView->graph(5)->setData(time,dewPoint);
 
   ui->graphicsView->yAxis->setRange((expData->getTempMaxMin().first)-20,100);
-  ui->graphicsView->xAxis->setRange(0,distance);
+  ui->graphicsView->xAxis->setRange(startEpoch, endEpoch);
+  QSharedPointer<QCPAxisTickerDateTime> dateTicker(new QCPAxisTickerDateTime);
+  dateTicker->setTickOrigin(storage.getFromDateDB().toSecsSinceEpoch());
+  dateTicker->setDateTimeFormat("dd.MM.yyyy");
 
+  ui->graphicsView->xAxis->setTicker(dateTicker);
   ui->graphicsView->replot();
-
 }
 
 void grapthics::on_inTemp_stateChanged(int arg1)
@@ -188,7 +196,7 @@ void grapthics::on_pushButton_2_clicked()
 
 void grapthics::on_comboBox_currentIndexChanged(int index)
 {
-  RangeInMinutes= ui->comboBox->itemText(index).toInt();
+  RangeInSeconds= ui->comboBox->itemText(index).toInt();
 }
 
 double grapthics::calculatePartialPressure(float Temp, float Humid){
@@ -271,37 +279,37 @@ void grapthics::setupPainter(QPainter &painter, QPrinter &printer)
 
 void grapthics::renderContent(QPainter &painter, QPrinter &printer)
 {
-    QSize contentSize = this->ui->graphicsView->size();
-    QRect pageRect = printer.pageRect();
-    int pageWidth = pageRect.width();
-    int pageHeight = pageRect.height();
+  QSize contentSize = this->ui->graphicsView->size();
+  QRect pageRect = printer.pageRect();
+  int pageWidth = pageRect.width();
+  int pageHeight = pageRect.height();
 
-    qreal scaleFactor = 5;
-    qreal xOffset = (pageWidth - (contentSize.width() * scaleFactor)) / 2.0;
-    qreal yOffset = 50;
+  qreal scaleFactor = 5;
+  qreal xOffset = (pageWidth - (contentSize.width() * scaleFactor)) / 2.0;
+  qreal yOffset = 50;
 
-    // Draw text
-    QFont font = painter.font();
-    font.setPointSize(12);
-    painter.setFont(font);
+  // Draw text
+  QFont font = painter.font();
+  font.setPointSize(12);
+  painter.setFont(font);
 
-    qreal textYPos = yOffset+200;
-    QString text = graphHeader + " с " + storage.getFromDateDB().toString("dd.MM.yyyy hh:mm") + " по " + storage.getToDateDB().toString("dd.MM.yyyy hh:mm");
-    painter.drawText(xOffset, textYPos, text);
+  qreal textYPos = yOffset+200;
+  QString text = graphHeader + " с " + storage.getFromDateDB().toString("dd.MM.yyyy hh:mm") + " по " + storage.getToDateDB().toString("dd.MM.yyyy hh:mm");
+  painter.drawText(xOffset, textYPos, text);
 
-    // Calculate the height of the text to determine the offset
-    QFontMetrics metrics(font);
-    int textHeight = metrics.height();
+  // Calculate the height of the text to determine the offset
+  QFontMetrics metrics(font);
+  int textHeight = metrics.height();
 
-    // Adjust yOffset to ensure the content is drawn below the text
-    yOffset += textHeight + 300;  // Adding a 20-pixel margin for clarity
+  // Adjust yOffset to ensure the content is drawn below the text
+  yOffset += textHeight + 300;  // Adding a 20-pixel margin for clarity
 
-    // Render the graphics view content
-    painter.save();
-    painter.translate(xOffset, yOffset);
-    painter.scale(scaleFactor, scaleFactor);
-    this->ui->graphicsView->render(&painter);
-    painter.restore();
+  // Render the graphics view content
+  painter.save();
+  painter.translate(xOffset, yOffset);
+  painter.scale(scaleFactor, scaleFactor);
+  this->ui->graphicsView->render(&painter);
+  painter.restore();
 }
 
 

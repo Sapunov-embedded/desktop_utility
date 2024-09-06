@@ -32,8 +32,8 @@
    <string>Создание xls-таблицы блока данных</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>../../../../Farmsib/Icons/free-icon-first-aid-kit-2992082.png</normaloff>../../../../Farmsib/Icons/free-icon-first-aid-kit-2992082.png</iconset>
+   <iconset resource="icons.qrc">
+    <normaloff>:/resources/free-icon-first-aid-kit-2992082.png</normaloff>:/resources/free-icon-first-aid-kit-2992082.png</iconset>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
@@ -314,7 +314,9 @@
    </widget>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

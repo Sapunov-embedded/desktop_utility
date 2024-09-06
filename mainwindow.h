@@ -13,6 +13,7 @@
 #include "exportpdf.h"
 #include "journal.h"
 #include "users.h"
+#include "applicationconfiguration.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -23,7 +24,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-  explicit  MainWindow(SerialPortManager *SerialPM,ExportCSV *CSV,ExportDataFromBytes *parsedData,QWidget *parent = nullptr);
+  explicit  MainWindow(Users *user, SerialPortManager *SerialPM,ExportCSV *CSV,ExportDataFromBytes *parsedData,ApplicationConfiguration *config,QWidget *parent = nullptr);
 
 
     ~MainWindow();
@@ -76,25 +77,9 @@ private slots:
 
     void on_readFlash_clicked();
 
-    void on_indicate_240_clicked(bool checked);
-
     void on_refresh_clicked();
 
     void on_WriteToFlash_clicked();
-
-    void on_indicate_112_clicked(bool checked);
-
-    void on_indicate_48_clicked(bool checked);
-
-    void on_indicate_16_clicked(bool checked);
-
-    void on_indicate_8_clicked(bool checked);
-
-    void on_indicate_4_clicked(bool checked);
-
-    void on_indicate_2_clicked(bool checked);
-
-    void on_indicate_1_clicked(bool checked);
 
     void on_WriteVolumeLevel_clicked();
 
@@ -110,7 +95,7 @@ private slots:
 
     void endVerificationDate();
 
-    void on_ReportButton_clicked();
+   // void on_ReportButton_clicked();
 
     void on_progressBar_valueChanged(int value);
 
@@ -120,20 +105,23 @@ private slots:
 
     void on_SaveToDataBaseButton_clicked();
 
-    void on_test_clicked();
+    void JournalCreated();
+
+    void checkControlRange();
 
 private:
     Ui::MainWindow *ui;
     SerialPortManager *SerialPM;
     DeviceInfoStorage &storage;
+    ExportDataFromBytes *parsed;
+    ApplicationConfiguration *appConfig;
     ExportCSV *CSV;
     QTimer *timer;
     QVBoxLayout *layout;
-    ExportDataFromBytes *parsed;
     void initVerificationDate();
     bool validationTimeDate();
     grapthics g;
     ExportPDF window;
-    Users us;
+    Users *us;
 };
 #endif // MAINWINDOW_H

@@ -1,0 +1,52 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/close (1).png</file>
+        <file>resources/close.png</file>
+        <file>resources/connect_solid_icon_236261.png</file>
+        <file>resources/disconnect_solid_icon_236244.png</file>
+        <file>resources/free-icon-add-10263114.png</file>
+        <file>resources/free-icon-add-10890063.png</file>
+        <file>resources/free-icon-add-database-8463872.png</file>
+        <file>resources/free-icon-arrow-up-4655143.png</file>
+        <file>resources/free-icon-cancel-443152.png</file>
+        <file>resources/free-icon-check-14035695.png</file>
+        <file>resources/free-icon-checked-232444.png</file>
+        <file>resources/free-icon-close-1828527.png</file>
+        <file>resources/free-icon-download-file-6795719.png</file>
+        <file>resources/free-icon-downloading-data-5478906.png</file>
+        <file>resources/free-icon-first-aid-kit-2992082.png</file>
+        <file>resources/free-icon-first-aid-kit-14661896.png</file>
+        <file>resources/free-icon-line-graph-5716695.png</file>
+        <file>resources/free-icon-minus-232445.png</file>
+        <file>resources/free-icon-minus-10263924.png</file>
+        <file>resources/free-icon-plus-232446.png</file>
+        <file>resources/free-icon-plus-1089316.png</file>
+        <file>resources/free-icon-power-657947.png</file>
+        <file>resources/free-icon-power-button-4943421.png</file>
+        <file>resources/free-icon-power-on-3686918.png</file>
+        <file>resources/free-icon-refresh-560512.png</file>
+        <file>resources/free-icon-refresh-758907.png</file>
+        <file>resources/free-icon-substract-399425.png</file>
+        <file>resources/free-icon-switch-arrows-8625337.png</file>
+        <file>resources/free-icon-synchronization-4768017.png</file>
+        <file>resources/free-icon-synchronization-7440378.png</file>
+        <file>resources/free-icon-syncronization-3541982.png</file>
+        <file>resources/free-icon-table-cell-6099734.png</file>
+        <file>resources/free-icon-up-arrow-10570191.png</file>
+        <file>resources/free-icon-upload-2550343.png</file>
+        <file>resources/free-icon-user-7182164.png</file>
+        <file>resources/free-icon-views-2013621.png</file>
+        <file>resources/generatetables_ok_home_out_edit_generar_1491.png</file>
+        <file>resources/icons8-минус-24.png</file>
+        <file>resources/icons8-пользователь-30.png</file>
+        <file>resources/notebook_writing_study_notes_journal_icon_261304.png</file>
+        <file>resources/pdf.png</file>
+        <file>resources/pngwing.com.png</file>
+        <file>resources/printer.png</file>
+        <file>resources/report_clipboard_medical_checklist_healthcare_icon_140244.png</file>
+        <file>resources/rotation.png</file>
+        <file>resources/TMFC.BMP</file>
+        <file>resources/TMFC.JPG</file>
+        <file>resources/TMFC.png</file>
+    </qresource>
+</RCC>

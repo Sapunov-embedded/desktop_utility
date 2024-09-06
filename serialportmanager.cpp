@@ -23,7 +23,7 @@ SerialPortManager::~SerialPortManager()
 
 //This function is asking "Who are you?" the connected device
 //array hex commands for building request "Who are you?", command 57.
-  /*
+/*
 #0      0xF0            - to flash interrupt, ignored at MCU side
 #1      0xEA,0xE5       - header
 #2      comd            - command
@@ -111,10 +111,11 @@ void SerialPortManager::closeSerialPort(){
     }
 };
 
+//prepared query to send to device
 void SerialPortManager::writeData(const QByteArray &data){
   const qint64 written = serial->write(data);
   if (written == data.size()) {
-      qDebug()<<written<<" bytes was written\n";
+      qDebug()<<written<<" bytes was written";
     } else {
       qDebug()<<"Failed to write all data to port %1.\n"
                 "Error: "<<serial->errorString()<<"\n";
@@ -123,12 +124,13 @@ void SerialPortManager::writeData(const QByteArray &data){
 
 
 //-------------------------------------------------------------
+//separate command to get fw
 void SerialPortManager::readFwVersion(){
   if(serial->isOpen()){
       QString fwVersion;
       delay(300);
       writeData(createCommand(0x3D,0x00,0x00)); //command #58, data1=0, data2=0
-      serial->waitForBytesWritten(200);
+      serial->waitForBytesWritten(500);
 
       //----------------update
       QEventLoop loop;
@@ -141,11 +143,19 @@ void SerialPortManager::readFwVersion(){
           for(const char& it:qAsConst(receivedData)){
               fwVersion+=QString::number(it);
             }
+          storage.setFwVersion(fwVersion);
         }
-      storage.setFwVersion(fwVersion);
+      else{
+          qDebug()<<"fw getting fail, repeat";
+          receivedData.clear();
+          delay(500);
+          readFwVersion();
+        }
+      qDebug()<<"fw: "<<fwVersion;
     }
 };
 
+//s.n included in answear from device(question "who are you?")
 void SerialPortManager::readSnDevice(){
   if(serial->isOpen()){
       QString snDevice;
@@ -155,7 +165,7 @@ void SerialPortManager::readSnDevice(){
           for(int it=10;it<16;++it){
               str+=QString::number(deviceInfo[it]);
             }
-          snDevice=str;
+          snDevice=str; //not need
           storage.setSnDevice(str);
           qDebug()<<"s.n "<<str;
         }
@@ -163,6 +173,7 @@ void SerialPortManager::readSnDevice(){
 };
 
 //----------------------------------------------------------
+//build correct request for send to device
 QByteArray SerialPortManager::createCommand(uint8_t cmd, uint8_t data_1, uint8_t data_2){
   QByteArray cmd_arr;
   cmd_arr.resize(7);
@@ -176,6 +187,7 @@ QByteArray SerialPortManager::createCommand(uint8_t cmd, uint8_t data_1, uint8_t
   return cmd_arr;
 };
 
+//The list of func for filling begin information from device
 void SerialPortManager::updateData(){
   receivedData.clear();
   readSnDevice();
@@ -185,6 +197,15 @@ void SerialPortManager::updateData(){
   getTempHumid();
   receivedData.clear();
   getVerificationDate();
+  receivedData.clear();
+  getVolumeLevel();
+  receivedData.clear();
+  getControlRange();
+  receivedData.clear();
+  getBlockSize();
+  receivedData.clear();
+  readDateTimeFromDevice();
+  receivedData.clear();
   statusUpdate(true);
 };
 
@@ -206,9 +227,16 @@ void SerialPortManager::readDateTimeFromDevice(){
       if(receivedData.size()==5){
           dataTime.setTime(QTime(receivedData[0],receivedData[1],0));
           dataTime.setDate(QDate(2000+receivedData[4],receivedData[3],receivedData[2]));
-          qDebug()<<dataTime;
+          qDebug()<<"dataTime"<<dataTime.toString("dd.MM.yyyy hh:mm");
+          storage.setDateTime(dataTime);
         }
-      storage.setDateTime(dataTime);
+      else{
+          delay(500);
+          qDebug()<<"Read divice datetime fail, repeat";
+          readDateTimeFromDevice();
+        }
+
+
     }
 };
 
@@ -217,7 +245,7 @@ void SerialPortManager::writeDateTimeFromDevice(){
       receivedData.clear();
       serial->waitForReadyRead(500);//timeout
 
-      QDateTime dataTime=storage.getDateTime();      
+      QDateTime dataTime=storage.getDateTime();
       QString hour = QString::number(dataTime.time().hour());
       QString minuts = QString::number(dataTime.time().minute());
 
@@ -225,7 +253,7 @@ void SerialPortManager::writeDateTimeFromDevice(){
       serial->waitForBytesWritten(500);
 
       //-----------
-      serial->waitForReadyRead(500);//timeout      
+      serial->waitForReadyRead(500);//timeout
       QString month = QString::number(dataTime.date().month());
       QString day = QString::number(dataTime.date().day());
       QString year = QString::number(dataTime.date().year());
@@ -285,6 +313,7 @@ void SerialPortManager::delay(int milliseconds) {
 void SerialPortManager::getTempHumid(){
   if(serial->isOpen()){
       receivedData.clear();
+      delay(300);
       writeData(createCommand(0x14,0x00,0x00));
       serial->waitForBytesWritten(500);
 
@@ -293,11 +322,17 @@ void SerialPortManager::getTempHumid(){
       QTimer::singleShot(1000, &loop, &QEventLoop::quit);
       loop.exec();
 
-      uint16_t temp = (static_cast<uint16_t>(static_cast<uint8_t>(receivedData[0]) << 8)) | static_cast<uint8_t>(receivedData[1]);
-      uint16_t humid = (static_cast<uint16_t>(static_cast<uint8_t>(receivedData[4]) << 8)) | static_cast<uint8_t>(receivedData[5]);
-
-      storage.setTemperature(temp*0.1);
-      storage.setHumid(humid*0.1);
+      if(receivedData.size()==8){
+          uint16_t temp = (static_cast<uint16_t>(static_cast<uint8_t>(receivedData[0]) << 8)) | static_cast<uint8_t>(receivedData[1]);
+          uint16_t humid = (static_cast<uint16_t>(static_cast<uint8_t>(receivedData[4]) << 8)) | static_cast<uint8_t>(receivedData[5]);
+          storage.setTemperature(temp*0.1);
+          storage.setHumid(humid*0.1);
+          qDebug()<<"temp: "<<temp*0.1<<"humid"<<humid*0.1;
+        }else{
+          delay(500);
+          qDebug()<<"tempHumid getting fail,repeat";
+          getTempHumid();
+        }
     }
 };
 
@@ -310,6 +345,7 @@ void SerialPortManager::readFlashAddr(const uint8_t cmd,const uint8_t lng, const
       delay(800);
 
       while(receivedData.size()<byteCount){
+         qDebug()<< receivedData.size();
           QEventLoop loop;
           connect(this, &SerialPortManager::dataReady, &loop, &QEventLoop::quit);
           QTimer::singleShot(1000, &loop, &QEventLoop::quit);
@@ -336,6 +372,7 @@ void SerialPortManager::controlSettings(){
         }
     }
   storage.setControlSettings(controllSettings);
+  qDebug()<<"controllSettings"<<controllSettings;
 };
 
 //write one byte to eeprom device
@@ -380,8 +417,9 @@ void SerialPortManager::writeControllSettings(){
 //get volume level from device
 void SerialPortManager::getVolumeLevel(){
   delay(500);
-  readFlashAddr(0x0A,0x01,0x4D,4);
+  readFlashAddr(0x0A,0x01,0x4D,5);
   storage.setVolumeLevel(receivedData[0]);
+  qDebug()<<"VolumeLevel "<<storage.getVolumeLevel();
 };
 
 //set volume level on device
@@ -407,9 +445,11 @@ void SerialPortManager::getVerificationDate(){
 
   QDate VerificationDate;
   VerificationDate.setDate(year.toInt(), mounth.toInt(),day.toInt());
-
+  if(!VerificationDate.isValid()){
+      qDebug()<<"no valid ver date, getted "<<deviceInfo;
+    }
   storage.setVerificationDate(VerificationDate);
-  qDebug()<<VerificationDate;
+  qDebug()<<"VerificationDate"<<VerificationDate.toString("dd.MM.yyyy");
 };
 
 //write new current verification date to device
@@ -522,14 +562,13 @@ void SerialPortManager::getBlock(){
       fromDateTime.setDate(dateFrom);
       fromDateTime.setTime(timeFrom);
       storage.setFromDateDB(fromDateTime);
-      for(int it=receivedData.size()-6;it>0;it-=6){
+      for(int it=receivedData.size()-1;it>0;it-=6){
           uint8_t flags=receivedData[it]>>4;
           bool flag1 = flags & 0x01;
           bool flag2 = flags & 0x02;
           bool flag3 = flags & 0x04;
           bool flag4 = flags & 0x08;
-
-          if((flag2&&!flag1&&!flag3&&!flag4)){
+          if((flag2||flag3)&&!flag1&&!flag4){
               uint8_t startBit=5;
               uint16_t ranges=exportBits(receivedData,startBit,16,it);
               uint16_t DaysAfter2015=exportBits(receivedData,startBit,16,it);
@@ -539,12 +578,16 @@ void SerialPortManager::getBlock(){
               ToDb.setDate(start.addDays(DaysAfter2015));
               ToDb.setTime(time.addSecs(Minutes*60));
               storage.setToDateDB(ToDb);
+              qDebug()<<"we find end date!block number "<<it;
               break;
+            }else{
+               storage.setToDateDB(fromDateTime);
+
             }
         }
       resetSpeed();
+      emit blockDataReady();
     }
-  //return 0;
 };
 
 void SerialPortManager::getAllData(){
@@ -583,7 +626,7 @@ void SerialPortManager::getBlockSize(){
       uint32_t result=(byte1<<0)|(byte2<<8)|(byte3<<16)|(byte4<<24);
 
       storage.setBlockSizeValue(result);
-      qDebug()<<storage.getBlockSizeValue();
+      qDebug()<<"block size"<<storage.getBlockSizeValue();
     }
 };
 

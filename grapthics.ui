@@ -32,8 +32,8 @@
    <string>Графическое отображение данных</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>../../../../Farmsib/Icons/free-icon-first-aid-kit-2992082.png</normaloff>../../../../Farmsib/Icons/free-icon-first-aid-kit-2992082.png</iconset>
+   <iconset resource="icons.qrc">
+    <normaloff>:/resources/free-icon-first-aid-kit-2992082.png</normaloff>:/resources/free-icon-first-aid-kit-2992082.png</iconset>
   </property>
   <widget class="QCustomPlot" name="graphicsView">
    <property name="geometry">
@@ -76,8 +76,8 @@
      <string>Закрыть</string>
     </property>
     <property name="icon">
-     <iconset>
-      <normaloff>../../../../Farmsib/Icons/close (1).png</normaloff>../../../../Farmsib/Icons/close (1).png</iconset>
+     <iconset resource="icons.qrc">
+      <normaloff>:/resources/close (1).png</normaloff>:/resources/close (1).png</iconset>
     </property>
    </widget>
    <widget class="QColumnView" name="columnView">
@@ -259,8 +259,8 @@
      <string>Обновить</string>
     </property>
     <property name="icon">
-     <iconset>
-      <normaloff>../../../../Farmsib/Icons/rotation.png</normaloff>../../../../Farmsib/Icons/rotation.png</iconset>
+     <iconset resource="icons.qrc">
+      <normaloff>:/resources/rotation.png</normaloff>:/resources/rotation.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -282,8 +282,8 @@
      <string>    В файл</string>
     </property>
     <property name="icon">
-     <iconset>
-      <normaloff>../../../../Farmsib/Icons/pdf.png</normaloff>../../../../Farmsib/Icons/pdf.png</iconset>
+     <iconset resource="icons.qrc">
+      <normaloff>:/resources/pdf.png</normaloff>:/resources/pdf.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -305,8 +305,8 @@
      <string>На печать</string>
     </property>
     <property name="icon">
-     <iconset>
-      <normaloff>../../../../Farmsib/Icons/printer.png</normaloff>../../../../Farmsib/Icons/printer.png</iconset>
+     <iconset resource="icons.qrc">
+      <normaloff>:/resources/printer.png</normaloff>:/resources/printer.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -563,7 +563,9 @@
    <header location="global">qcustomplot.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>closeGraph</sender>

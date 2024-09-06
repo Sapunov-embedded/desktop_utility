@@ -1,13 +1,16 @@
 #include "users.h"
 #include "ui_users.h"
 
-Users::Users(QWidget *parent) :
+Users::Users(ApplicationConfiguration &config,QWidget *parent) :
   QDialog(parent),
   ui(new Ui::Users),
-  storage(DeviceInfoStorage::getInstanse())
+  storage(DeviceInfoStorage::getInstanse()),
+  appConfig(config)
 {
   ui->setupUi(this);
   initializeDatabase();
+  ui->downloadProgress->hide();
+  ui->SavedLabel->hide();
 }
 
 Users::~Users()
@@ -20,6 +23,7 @@ Users::~Users()
 bool Users::initializeDatabase() {
   // Set up the database connection
   db = QSqlDatabase::addDatabase("QSQLITE");
+  filePath=storage.getDataBasePath()+"/"+"FS_Service.db";
   db.setDatabaseName(filePath);
 
   if (!db.open()) {
@@ -48,7 +52,7 @@ bool Users::initializeDatabase() {
   ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tableView->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
   ui->tableView->setContextMenuPolicy(Qt::CustomContextMenu);
-  ui->tableView->setWindowTitle("QTableView Example");
+  // ui->tableView->setWindowTitle("QTableView Example");
   ui->tableView->setColumnHidden(0, true);
 
   // connect(ui->tableView, &QTableView::customContextMenuRequested, this, &MainWindow::showContextMenu);
@@ -111,10 +115,21 @@ void Users::on_minus_clicked()
     }
 }
 
-
+//for future: here using select every table and select filtered row = 0
+//            rewrite this for chose only first and last table and for
+//            intermediate tabels just only SELECT and INSERT values
+//            with getting current values for next table
 void Users::on_addUser_clicked()
-
 {
+  //crutch, because Device table has foreign key to user table, whitch i can't or want to delete
+  if(model->tableName()=="User"){
+      QSqlQuery query;
+      query.exec("PRAGMA foreign_keys = OFF;");
+    }
+  else{
+      QSqlQuery query;
+      query.exec("PRAGMA foreign_keys = ON;");
+    }
   s_n=storage.getSnDevice();
   qDebug()<<storage.getSnDevice();
 
@@ -135,7 +150,7 @@ void Users::on_addUser_clicked()
     } else {
       qDebug() << "Table created successfully";
     }
-
+  //------------
 
   // Assuming adding a user involves more operations; if not, this code might not be necessary.
   if (!model->submitAll()) {
@@ -150,7 +165,11 @@ void Users::on_addUser_clicked()
 
   if(tableName=="User"){
       int id = getSelectedValueFromColum(0);
+      appConfig.setCurrentUser(getSelectedStringValue(3),getSelectedStringValue(1),getSelectedStringValue(2));
+      appConfig.saveSettings();
       model->setTable("Device");
+      QSqlQuery query;
+      query.exec("PRAGMA foreign_keys = ON;");
       QString filter = QString("%1 = '%2' AND %3 = '%4'")
           .arg("UserID").arg(id)
           .arg("SerialNumber").arg(s_n);
@@ -159,7 +178,6 @@ void Users::on_addUser_clicked()
 
       // Device table show with filter
       QString queryStr = "SELECT SerialNumber FROM Device WHERE SerialNumber = :SerialNumber AND UserID = :User";
-      QSqlQuery query;
       query.prepare(queryStr);
       query.bindValue(":SerialNumber", s_n);
       query.bindValue(":User", id);
@@ -190,6 +208,8 @@ void Users::on_addUser_clicked()
           // Handle query execution error
           qDebug() << "Query execution failed:" << query.lastError().text();
         }
+      ui->tableView->selectRow(0);
+      on_addUser_clicked();
     }
   if(tableName=="Device"){
       //Data block show
@@ -199,7 +219,7 @@ void Users::on_addUser_clicked()
       model->select();
 
       QString queryStr = "SELECT FirstTime FROM DataBlock WHERE FirstTime = :FirstTime AND LastTime = :LastTime AND DeviceID = :DeviceID";
-      QSqlQuery query;
+      //  /*QSqlQuery*/ query;
       query.prepare(queryStr);
       query.bindValue(":FirstTime", storage.getFromDateDB().toString("yyyy-MM-dd hh:mm"));
       query.bindValue(":LastTime", storage.getToDateDB().toString("yyyy-MM-dd hh:mm"));
@@ -233,6 +253,8 @@ void Users::on_addUser_clicked()
           // Handle query execution error
           qDebug() << "Query execution failed:" << query.lastError().text();
         }
+      ui->tableView->selectRow(0);
+      on_addUser_clicked();
     }
   if(tableName=="DataBlock"){
       //Data block show
@@ -293,7 +315,13 @@ void Users::on_addUser_clicked()
               QSqlQuery insertQuery;
               insertQuery.prepare(QString("INSERT INTO DeviceData%1 (DT,DataBlockID,Tint,HInt,TExt,HExt,Ctrl) VALUES (:DT,:DataBlockID,:Tint, :HInt, :TExt,:HExt,:Ctrl)").arg(s_n));
               db.transaction();
+
+              ui->downloadProgress->setMaximum(values.size()-1);
+              ui->downloadProgress->show();
+              int downloadValue=0;
+
               for(const auto& it:values){
+                  ui->downloadProgress->setValue(downloadValue);
                   insertQuery.bindValue(":DT",it.date.toString("yyyy-MM-dd hh:mm"));
                   insertQuery.bindValue(":DataBlockID",id );
                   insertQuery.bindValue(":Tint", it.values[2]);
@@ -309,12 +337,16 @@ void Users::on_addUser_clicked()
                       //  qDebug() << "Failed to add user:" << insertQuery.lastError().text();
                     }
                   model->select();
+                  ++downloadValue;
                 }
             }
         } else {
           // Handle query execution error
           qDebug() << "Query execution failed:" << query.lastError().text();
         }
+    }
+  if(tableName==QString("DeviceData%1").arg(s_n)){
+      ui->SavedLabel->show();
     }
 }
 
@@ -335,6 +367,16 @@ void Users::on_deleteUser_clicked()
   if (!ok) {
       qDebug() << "Conversion to int failed for value:" << idVariant;
 
+    }
+
+  //crutch, because Device table has foreign key to user table, whitch i can't or want to delete
+  if(model->tableName()=="User"){
+      QSqlQuery query;
+      query.exec("PRAGMA foreign_keys = OFF;");
+    }
+  else{
+      QSqlQuery query;
+      query.exec("PRAGMA foreign_keys = ON;");
     }
 
   // Prepare the deletion query
@@ -393,8 +435,11 @@ QModelIndex Users::getSelectedIndex(){
 
 void Users::on_upButton_clicked()
 {
+  ui->downloadProgress->hide();
+  ui->SavedLabel->hide();
   model->setTable("User");
   model->select();
+  ui->tableView->setColumnHidden(0, true);
 }
 
 int Users::getSelectedValueFromColum(int columNumber){
@@ -411,3 +456,34 @@ int Users::getSelectedValueFromColum(int columNumber){
     }
   return -1;
 };
+
+QString Users::getSelectedStringValue(int columN){
+  QModelIndexList selectedIndexes = ui->tableView->selectionModel()->selectedRows();
+  QModelIndex index;
+  if (selectedIndexes.isEmpty()) {
+      qDebug() << "No row selected";
+    }
+  else{
+      index  = selectedIndexes.first();
+      int row = index.row();
+      QString id = model->data(model->index(row, columN)).toString();
+      return id;
+    }
+  return "";
+};
+
+void Users::on_update_clicked()
+{
+  model->submitAll();
+  model->select();
+}
+
+
+
+
+void Users::on_buttonBox_accepted()
+{
+  model->submitAll();
+  model->database().commit();
+}
+

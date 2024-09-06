@@ -1,12 +1,7 @@
-QT       += core gui
-QT       += serialport
-QT       +=printsupport
-QT       += sql
+QT       += core gui serialport printsupport sql
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
-#CONFIG+=debug QMAKE_CXXFLAGS+=-fsanitize=address QMAKE_LFLAGS+=-fsanitize=address
-
+CONFIG += c++17 static
 
 SOURCES += \
     applicationconfiguration.cpp \
@@ -32,6 +27,7 @@ HEADERS += \
     exportdatafrombytes.h \
     exportpdf.h \
     grapthics.h \
+    ini.h \
     journal.h \
     logging.h \
     mainwindow.h \
@@ -45,12 +41,23 @@ FORMS += \
     mainwindow.ui \
     users.ui
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+RESOURCES += icons.qrc
+RC_FILE += icon.rc
 
-# Add libatomic for MinGW
-#win32: LIBS += -LC:/msys64/mingw64/lib -latomic
-#RC_ICONS = myappico.ico
-QMAKE_LFLAGS += -static -static-libgcc
+QMAKE_LFLAGS += -static #-static-libgcc -static-libstdc++
+
+LIBS += -LC:/Qt/5.12.12/static/lib \
+        -lQt5Core \
+        -lQt5Gui \
+        -lQt5Widgets \
+        -lQt5SerialPort \
+        -lqtharfbuzz \
+        -lz \
+        -lpcre2-16 \
+        -ldouble-conversion \
+       -ljpeg \
+        -lpng16
+
+
+
+

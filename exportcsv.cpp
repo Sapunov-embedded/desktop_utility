@@ -20,6 +20,8 @@ uint16_t ExportCSV::exportBits(QByteArray &data,uint8_t &startBit,uint8_t bitlen
 };
 
 void ExportCSV::startExportProcess(){
+  defaultFileAddr=storage.getCsvPath()+"/TMFC_"+storage.getModelDevice()+storage.getFromDateDB().toString("_dd_MM_yyyy_hh_mm")+"_"+storage.getToDateDB().toString("dd_MM_yyyy_hh_mm")+".csv";
+  qDebug()<<defaultFileAddr;
   QFile f(defaultFileAddr);
   if(f.open( QIODevice::WriteOnly)){
       QTextStream out(&f);
@@ -254,7 +256,9 @@ void ExportCSV::startExportProcess(){
             }
         }
     }
-  f.close();
+ f.close();
+      QUrl fileUrl = QUrl::fromLocalFile(defaultFileAddr);
+      QDesktopServices::openUrl(fileUrl);
 };
 
 //setters

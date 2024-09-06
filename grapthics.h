@@ -52,16 +52,19 @@ private slots:
   void on_printToPdf_clicked();
 
   void setupPrinter(QPrinter &printer, const QString &filePath);
-   void setupPainter(QPainter &painter, QPrinter &printer);
-   void renderContent(QPainter &painter, QPrinter &printer);
-void debugRenderContent(const QSize &contentSize, const QRect &pageRect, qreal scaleFactor, qreal xOffset, qreal yOffset);
+
+  void setupPainter(QPainter &painter, QPrinter &printer);
+
+  void renderContent(QPainter &painter, QPrinter &printer);
+
+  void debugRenderContent(const QSize &contentSize, const QRect &pageRect, qreal scaleFactor, qreal xOffset, qreal yOffset);
 
 private:
     Ui::grapthics *ui;
     DeviceInfoStorage& storage;
     QPen iTempPen,eTempPen,iHumidPen,eHumidPen,dewPen,pPressurePen;
     ExportDataFromBytes *expData;
-    uint64_t RangeInMinutes=1;
+    uint64_t RangeInSeconds=60;
     double calculatePartialPressure(float Temp, float Humid);
     double calculateDewPoint(float temperature, float relativeHumidity);
     QCPItemLine *UpperTempControlLine;

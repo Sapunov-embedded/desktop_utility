@@ -2,7 +2,8 @@
 #include "dialog.h"
 #include "exportcsv.h"
 #include "exportdatafrombytes.h"
-
+#include "applicationconfiguration.h"
+#include "users.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
@@ -11,7 +12,9 @@ int main(int argc, char *argv[])
     ExportCSV CSV;
     ExportDataFromBytes parsedData;
     SerialPortManager SerialPM;
-    MainWindow w(&SerialPM,&CSV,&parsedData);
+    ApplicationConfiguration appConfig;
+    Users us(appConfig);
+    MainWindow w(&us,&SerialPM,&CSV,&parsedData,&appConfig);
     w.show();
     Dialog d(&CSV);
     d.hide();
