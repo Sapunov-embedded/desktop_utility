@@ -3,10 +3,10 @@
 #include "dialog.h"
 #include "users.h"
 
-#include <QDirIterator>
+//#include <QDirIterator>
+//#include <QFileDialog>
+//#include <QIODevice>
 #include <QDebug>  //for debug
-#include <QFileDialog>
-#include <QIODevice>
 
 MainWindow::MainWindow(Users *user,SerialPortManager *SerialPM, ExportCSV *CSV,ExportDataFromBytes *parsedData,ApplicationConfiguration *config, QWidget *parent)
   : QMainWindow(parent),
@@ -24,15 +24,14 @@ MainWindow::MainWindow(Users *user,SerialPortManager *SerialPM, ExportCSV *CSV,E
   ui->progressBar->setMaximum(storage.getBlockSizeValue());
 
   layout->addWidget(ui->lcdDate);
-  // setLayout(layout);
-
   layout->addWidget(ui->lcdHours);
-  // setLayout(layout);
 
   ui->SaveToDataBaseButton->setEnabled(false);
   ui->JournalButton->setEnabled(false);
-  ui->toolButton_12->setEnabled(false);
-  ui->toolButton_13->setEnabled(false);
+  ui->graphButton->setEnabled(false);
+  ui->tableButton->setEnabled(false);
+
+
 
   QString stylebutton=R"(
       QToolButton {
@@ -58,45 +57,37 @@ background-color:rgb(197, 197, 197);
   ui->indicate_1->setStyleSheet(stylebutton);
 
   connect(ui->indicate_8, &QToolButton::toggled, this, [this](bool checked) {
-      qDebug()<<"8 "<<checked;
       saveNewMask(8,checked);
       checkControlRange();
-  });
+    });
   connect(ui->indicate_7, &QToolButton::toggled, this, [this](bool checked) {
-      qDebug()<<"7 "<<checked;
       saveNewMask(7,checked);
       checkControlRange();
-  });
+    });
   connect(ui->indicate_6, &QToolButton::toggled, this, [this](bool checked) {
-      qDebug()<<"6 "<<checked;
       saveNewMask(6,checked);
       checkControlRange();
-  });
+    });
   connect(ui->indicate_5, &QToolButton::toggled, this, [this](bool checked) {
-      qDebug()<<"5 "<<checked;
       saveNewMask(5,checked);
       checkControlRange();
-  });
+    });
   connect(ui->indicate_4, &QToolButton::toggled, this, [this](bool checked) {
-      qDebug()<<"4 "<<checked;
       saveNewMask(4,checked);
       checkControlRange();
-  });
+    });
   connect(ui->indicate_3, &QToolButton::toggled, this, [this](bool checked) {
-      qDebug()<<"3 "<<checked;
       saveNewMask(3,checked);
       checkControlRange();
-  });
+    });
   connect(ui->indicate_2, &QToolButton::toggled, this, [this](bool checked) {
-      qDebug()<<"2 "<<checked;
       saveNewMask(2,checked);
       checkControlRange();
-  });
+    });
   connect(ui->indicate_1, &QToolButton::toggled, this, [this](bool checked) {
-      qDebug()<<"1 "<<checked;
       saveNewMask(1,checked);
       checkControlRange();
-  });
+    });
 
 
   // connect(timer, &QTimer::timeout, this, &MainWindow::on_getTempButton_clicked);
@@ -123,14 +114,18 @@ background-color:rgb(197, 197, 197);
   //disconnect
   connect(ui->Disconnect_device, &QPushButton::clicked,this, [this,SerialPM](){
       SerialPM->closeSerialPort();
-      ui->pushButton_11->setEnabled(true);
+      ui->manualConButton->setEnabled(true);
       ui->SNumber_text->clear();
       ui->FW_version_text->clear();
+      ui->SaveToDataBaseButton->setEnabled(false);
+      ui->JournalButton->setEnabled(false);
+      ui->graphButton->setEnabled(false);
+      ui->tableButton->setEnabled(false);
       closeSerialPort();
     },Qt::AutoConnection);
 
   //manual connect
-  connect(ui->pushButton_11, &QPushButton::clicked,this, [this,SerialPM](){
+  connect(ui->manualConButton, &QPushButton::clicked,this, [this,SerialPM](){
       ProcessConnect();
       SerialPM->portNumUpdate(ui->numberComPort_2->value());
       SerialPM->manualPortConnect();
@@ -144,7 +139,7 @@ background-color:rgb(197, 197, 197);
     },Qt::AutoConnection);
 
   //------date and time pc
-  connect(ui->pushButton_10, &QPushButton::clicked,this, [this](){
+  connect(ui->timeFromPcButton, &QPushButton::clicked,this, [this](){
       storage.setDateTime(QDateTime::currentDateTime());
       ui->textBrowser->insertPlainText("Дата и время ПК: "+storage.getDateTime().toString("dd.MM.yyyy hh:mm")+"\n");
       ui->dateEdit->setDateTime(storage.getDateTime());
@@ -167,11 +162,11 @@ background-color:rgb(197, 197, 197);
       ui->textBrowser->insertPlainText("Дата и время обновлено на устройстве.\n");
     },Qt::AutoConnection);
 
-  connect(ui->pushButton_16, &QPushButton::clicked,this, [this](){
+  connect(ui->clearConsoleDisW, &QPushButton::clicked,this, [this](){
       ui->textBrowser->clear();
     },Qt::AutoConnection);
 
-  connect(ui->pushButton_18, &QPushButton::clicked,this, [this](){
+  connect(ui->clearConcoleConW, &QPushButton::clicked,this, [this](){
       ui->mainConsole_1->clear();
     },Qt::AutoConnection);
 
@@ -179,10 +174,12 @@ background-color:rgb(197, 197, 197);
   connect(SerialPM,&SerialPortManager::blockDataReady,this,[this](){
       ui->SaveToDataBaseButton->setEnabled(true);
       ui->JournalButton->setEnabled(true);
-      ui->toolButton_12->setEnabled(true);
-      ui->toolButton_13->setEnabled(true);
+      ui->graphButton->setEnabled(true);
+      ui->tableButton->setEnabled(true);
       ui->progressBar->setValue(ui->progressBar->maximum()); //for compensation expected and current recived data size(temp)
     });
+  Logging::logInfo("The app start");
+  ui->Button_connect->click();
 }
 
 MainWindow::~MainWindow()
@@ -190,29 +187,10 @@ MainWindow::~MainWindow()
   delete layout;
   delete timer;
   delete ui;
+   Logging::logInfo("The app was closed");
 }
 
-//--------------------------------------------------------------------------
-//table report window
-void MainWindow::on_toolButton_13_clicked()
-{
 
-  Dialog d(CSV);
-  d.setWindowFlags (d.windowFlags() & ~Qt::WindowContextHelpButtonHint);//disable button "?" near close button
-  d.exec();
-}
-
-//graphics window show
-void MainWindow::on_toolButton_12_clicked()
-{
-  g.show();
-}
-
-//-------------------------------------------------------------------------
-
-
-//Button Auto connect to device
-void MainWindow::on_Button_connect_clicked(){};
 
 void MainWindow::closeSerialPort()
 {
@@ -222,8 +200,6 @@ void MainWindow::closeSerialPort()
 
 }
 
-//auto disconnect button
-void MainWindow::on_Disconnect_device_clicked(){};
 
 //this is func for hide and show manual and auto connect buttons
 void MainWindow::on_SelectPort_2_stateChanged(int arg1)
@@ -238,13 +214,12 @@ void MainWindow::on_SelectPort_2_stateChanged(int arg1)
     }
 }
 
-//button manual connect
-void MainWindow::on_pushButton_11_clicked(){};
 
 void MainWindow::readFwVersion(){
   SerialPM->readFwVersion();
   ui->FW_version_text->setText(storage.getFwVersion());
   qDebug()<<"fwVersion: "<<storage.getFwVersion();
+  Logging::logInfo("getted fwVersion: "+storage.getFwVersion().toStdString());
 }
 
 void MainWindow::readSnDevice(){
@@ -257,11 +232,6 @@ void MainWindow::updateData(){
   SerialPM->getTempHumid();
 }
 
-void MainWindow::on_pushButton_10_clicked(){};
-
-void MainWindow::on_readDateTimeFromDevice_clicked(){};
-
-void MainWindow::on_writeDateTimeFromDevice_clicked(){};
 
 void MainWindow::on_dateEdit_userDateChanged(const QDate &date)
 {
@@ -269,10 +239,6 @@ void MainWindow::on_dateEdit_userDateChanged(const QDate &date)
   dt.setDate(date);
   storage.setDateTime(dt);
 }
-
-void MainWindow::on_pushButton_16_clicked(){};
-
-void MainWindow::on_pushButton_18_clicked(){};
 
 void MainWindow::on_timeEdit_userTimeChanged(const QTime &time)
 {
@@ -291,19 +257,46 @@ void MainWindow::ProcessConnect(){
 void MainWindow::ShowHideConnectWindow(){
   ui->SNumber_text->setText(storage.getSnDevice());
   ui->FW_version_text->setText(storage.getFwVersion());
- ui->model->setText("ТМФЦ "+storage.getModelDevice());
+  ui->model->setText("ТМФЦ "+storage.getModelDevice());
   ui->Disconnected_device->hide();
   ui->Connected_device->show();
-  //------
-//  SerialPM->readDateTimeFromDevice();
   set_lcd_datatime();
   ui->lcd_temp->display(storage.getTemperature());
   ui->lcd_humid->display(qRound(storage.getHumid()));
   ui->progressBar->setMaximum(storage.getBlockSizeValue());
   qDebug()<<"block size "<<storage.getBlockSizeValue();
+  Logging::logInfo("block size "+QString::number(storage.getBlockSizeValue()).toStdString());
   initVerificationDate();
   on_readFlash_clicked();
-
+  //-----------------------------------------------------
+  if(storage.getModelDevice()=="101"){
+  //    ui->interval_211_inside->setEnabled(false);
+   //   ui->interval_211_outside->setEnabled(false);
+   //   ui->intervals_101->setEnabled(true);
+      ui->interval_211_inside->hide();
+      ui->interval_211_outside->hide();
+      ui->intervals_101->show();
+      ui->switchSensorBox->setEnabled(false);
+    }
+  if(storage.getModelDevice()=="211"){
+    //  ui->intervals_101->setEnabled(false);
+    //  ui->interval_211_inside->setEnabled(true);
+    //  ui->interval_211_outside->setEnabled(true);
+      ui->interval_211_inside->show();
+      ui->interval_211_outside->show();
+      ui->intervals_101->hide();
+      ui->switchSensorBox->setEnabled(true);
+      auto ranges=storage.getRangeFor211();
+      ui->InTempLower->setValue(std::get<0>(ranges));
+      ui->InTempUpper->setValue(std::get<1>(ranges));
+      ui->InHumidLower->setValue(std::get<2>(ranges));
+      ui->InHumidUpper->setValue(std::get<3>(ranges));
+      ui->OutTempLower->setValue(std::get<4>(ranges));
+      ui->OutTempUpper->setValue(std::get<5>(ranges));
+      ui->OutHumidLower->setValue(std::get<6>(ranges));
+      ui->OutHumidUpper->setValue(std::get<7>(ranges));
+    }
+  //-----------------------------------------------------
   ui->numberComPort_2->setValue(SerialPM->getPortNumber());
   ui->textBrowser->insertPlainText("Устройство подключено. Порт "+ SerialPM->getPortName() +"\nМодель ТМФЦ "+ storage.getModelDevice() +".\n");
 };
@@ -322,20 +315,15 @@ void MainWindow::set_lcd_datatime(){
   QDateTime dataTime=storage.getDateTime();
 
   ui->lcdDate->display(dataTime.toString("dd.MM.yyyy"));
-
   ui->lcdHours->display(dataTime.time().toString("HH:mm"));
-
   ui->dateEdit->setDate(dataTime.date());
-
   ui->timeEdit->setTime(dataTime.time());
-
 }
 
 void MainWindow::on_readFlash_clicked()
 {
   on_refresh_clicked();
   uint8_t VolumeLevel=storage.getVolumeLevel();
-  qDebug()<<"VolumeLevel"<<VolumeLevel;
   ui->VolumeLevel->setCurrentText(QString::number(VolumeLevel));
 }
 
@@ -380,7 +368,7 @@ void MainWindow::on_WriteToFlash_clicked()
 
 //mask squers
 void MainWindow::saveNewMask(uint8_t cell_number, bool checked){
-      SerialPM->controllSettings[cell_number]=checked;
+  SerialPM->controllSettings[cell_number]=checked;
 };
 
 //write to device new settings volume level
@@ -388,7 +376,6 @@ void MainWindow::on_WriteVolumeLevel_clicked()
 {
   SerialPM->setVolumeLevel(ui->VolumeLevel->currentText().toUShort());
   SerialPM->saveSettings();
-
 }
 
 void MainWindow::on_VerificationDate_userDateChanged(const QDate &date)
@@ -397,27 +384,14 @@ void MainWindow::on_VerificationDate_userDateChanged(const QDate &date)
   endVerificationDate();
 }
 
-void MainWindow::on_pushButton_clicked()
-{
-  SerialPM->setVerficationDate();
-
-}
-
-
-//while its settup higher speed 57600
+// its settup higher speed 230000
 void MainWindow::on_AutoSpeed_clicked()
 {
   SerialPM->setHighBaudRate();
 }
 
-//for debug manual spped set(for sofware side)
-void MainWindow::on_speed_currentIndexChanged(const QString &arg1)
-{
-  SerialPM->setSpeed(arg1);
-}
 
 void  MainWindow::initVerificationDate(){
- // SerialPM->getVerificationDate();
   ui->VerificationDate->setDate(storage.getVerificationDate());
   endVerificationDate();
 }
@@ -432,29 +406,20 @@ void MainWindow::on_ReadDataFromDeviceButton_clicked()
   SerialPM->getAllData();
   if(ui->generateAllReports->isChecked()){
       on_JournalButton_clicked();
-      on_toolButton_13_clicked();
+      emit ui->tableButton->clicked();
     }
 }
 
 void MainWindow::endVerificationDate(){
   QDate dt=storage.getVerificationDate();
-  int endYear=dt.year()+2;
-  ui->verificationDateEnd->setText(QString::number(dt.day())+"."+QString::number(dt.month())+"."+QString::number(endYear));
+  QDate dt2=dt.addYears(2);
+  ui->verificationDateEnd->setText(dt2.toString("dd.MM.yyyy"));
 };
 
-//void MainWindow::on_ReportButton_clicked()
+//void MainWindow::on_progressBar_valueChanged(int value)
 //{
-
-//  window.setWindowTitle("Export to PDF and Print Example");
-//  window.resize(400, 300);
-//  window.show();
+//  value=SerialPM->processBarValue;
 //}
-
-
-void MainWindow::on_progressBar_valueChanged(int value)
-{
-  value=SerialPM->processBarValue;
-}
 
 void MainWindow::setProgressBar(){
   MainWindow::ui->progressBar->setValue(SerialPM->processBarValue);
@@ -466,7 +431,6 @@ void MainWindow::on_JournalButton_clicked()
   auto arr = parsed->getArrayValues();
   Journal *j = new Journal(appConfig->getCityN(),appConfig->getCompanyN(),appConfig->getResPerson(), arr);
 
-  // Correctly connect the signal and slot
   connect(j, &Journal::JournalCreateDone, this, &MainWindow::JournalCreated);
 
   j->createJournal(storage.getPdfPath()+"/TMFC_"+storage.getModelDevice()+storage.getFromDateDB().toString("_dd_MM_yyyy_hh_mm")+"_"+storage.getToDateDB().toString("dd_MM_yyyy_hh_mm")+".pdf");
@@ -481,7 +445,7 @@ void MainWindow::on_SaveToDataBaseButton_clicked()
 
 
 void  MainWindow::JournalCreated(){
-   ui->textBrowser->insertPlainText("Журнал успешно сохранен\n");
+  ui->textBrowser->insertPlainText("Журнал успешно сохранен\n");
 };
 
 void MainWindow::checkControlRange(){
@@ -492,16 +456,16 @@ void MainWindow::checkControlRange(){
 
   for(uint8_t it=1;it<=4;++it){
       if(SerialPM->controllSettings[it]&&startTemp==0){
-         startTemp=it;
-         endTemp=it;
+          startTemp=it;
+          endTemp=it;
         } else if(SerialPM->controllSettings[it]){
           endTemp=it;
         }
     }
-  for(uint8_t it=4;it<=8;++it){
+  for(uint8_t it=5;it<=8;++it){
       if(SerialPM->controllSettings[it]&&startHumid==0){
-         startHumid=it;
-         endHumid=it;
+          startHumid=it;
+          endHumid=it;
         } else if(SerialPM->controllSettings[it]){
           endHumid=it;
         }
@@ -509,25 +473,130 @@ void MainWindow::checkControlRange(){
 
   uint8_t tempResult=endTemp-startTemp;
   uint8_t humidResult=endHumid-startHumid;
-  qDebug()<<humidResult;
 
-  if(tempResult>0){
-      for(uint8_t it = tempResult; it > 1; --it) {
+  if(tempResult>1){
+      for(uint8_t it = endTemp; it !=1 ; --it) {
           QString str = QString("indicate_%1").arg(it);
           auto button = findChild<QToolButton*>(str);
           if (button&&!button->isChecked()) {
               button->toggle();
-          }
-      }
+            }
+        }
     }
-  if(humidResult>0){
-      for(uint8_t it = humidResult; it > 1; --it) {
-          QString str = QString("indicate_%1").arg(it+4);
+  if(humidResult>1){
+      for(uint8_t it = endHumid; it != 5; --it) {
+          QString str = QString("indicate_%1").arg(it);
           auto button = findChild<QToolButton*>(str);
           if (button&&!button->isChecked()) {
               button->toggle();
-          }
-      }
+            }
+        }
     }
+}
+
+void MainWindow::updateRangeValues(){
+  int8_t InTempLowerControl=ui->InTempLower->value();
+
+  int8_t InTempUpperControl=ui->InTempUpper->value();
+
+  if(InTempUpperControl<InTempLowerControl){
+      InTempUpperControl=InTempLowerControl;
+      ui->InTempUpper->setValue(InTempUpperControl);
+    }
+
+  uint8_t InHumidLowerControl=ui->InHumidLower->value();
+
+  uint8_t InHumidUpperControl=ui->InHumidUpper->value();
+
+  if(InHumidUpperControl<InHumidLowerControl){
+      InHumidUpperControl=InHumidLowerControl;
+      ui->InHumidUpper->setValue(InHumidLowerControl);
+    }
+
+  int8_t OutTempLowerControl=ui->OutTempLower->value();
+
+  int8_t OutTempUpperControl=ui->OutTempUpper->value();
+
+  if(OutTempUpperControl<OutTempLowerControl){
+      OutTempUpperControl=OutTempLowerControl;
+      ui->OutTempUpper->setValue(OutTempLowerControl);
+    }
+
+  uint8_t OutHumidLowerControl=ui->OutHumidLower->value();
+
+  uint8_t OutHumidUpperControl=ui->OutHumidUpper->value();
+
+  if(OutHumidUpperControl<OutHumidLowerControl){
+      OutHumidUpperControl=OutHumidLowerControl;
+      ui->OutHumidUpper->setValue(OutHumidLowerControl);
+    }
+
+  storage.setRangeFor211(InTempLowerControl,InTempUpperControl,InHumidLowerControl,InHumidUpperControl,
+                         OutTempLowerControl,OutTempUpperControl,OutHumidLowerControl,OutHumidUpperControl);
+};
+
+void MainWindow::on_InTempLower_valueChanged(int arg1)
+{
+  updateRangeValues();
+}
+
+void MainWindow::on_InHumidLower_valueChanged(int arg1)
+{
+  updateRangeValues();
+}
+
+void MainWindow::on_InTempUpper_valueChanged(int arg1)
+{
+  updateRangeValues();
+}
+
+void MainWindow::on_OutTempLower_valueChanged(int arg1)
+{
+  updateRangeValues();
+}
+
+void MainWindow::on_OutHumidLower_valueChanged(int arg1)
+{
+  updateRangeValues();
+}
+
+void MainWindow::on_OutTempUpper_valueChanged(int arg1)
+{
+  updateRangeValues();
+}
+
+void MainWindow::on_OutHumidUpper_valueChanged(int arg1)
+{
+  updateRangeValues();
+}
+
+void MainWindow::on_InHumidUpper_valueChanged(int arg1)
+{
+  updateRangeValues();
+}
+
+void MainWindow::on_setVerDate_clicked()
+{
+  SerialPM->setVerificationDate();
+}
+
+void MainWindow::on_graphButton_clicked()
+{
+  g.show();
+}
+
+void MainWindow::on_tableButton_clicked()
+{
+  Dialog d(CSV);
+  d.setWindowFlags (d.windowFlags() & ~Qt::WindowContextHelpButtonHint);//disable button "?" near close button
+  d.exec();
+}
+
+
+
+
+void MainWindow::on_externalSensorButton_toggled(bool checked)
+{
+    storage.setSensorType211(!checked);
 }
 

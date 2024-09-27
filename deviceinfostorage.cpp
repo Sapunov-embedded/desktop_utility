@@ -67,6 +67,15 @@ QString  DeviceInfoStorage::getPdfPath(){
   return PdfPath;
 };
 
+  std::tuple<int8_t, int8_t, uint8_t, uint8_t,int8_t, int8_t, uint8_t, uint8_t> DeviceInfoStorage::getRangeFor211(){
+  return std::make_tuple(InTempLowerControl,InTempUpperControl,InHumidLowerControl,InHumidUpperControl,
+                         OutTempLowerControl,OutTempUpperControl,OutHumidLowerControl,OutHumidUpperControl);
+};
+
+  bool  DeviceInfoStorage::isInnerSensor(){
+    return isInSensor;
+  };
+
 //setters
 void DeviceInfoStorage::setModelDevice(QString deviceModel){
   ModelDevice=deviceModel;
@@ -115,7 +124,7 @@ void DeviceInfoStorage::setToDateDB(QDateTime to){
 };
 
 void DeviceInfoStorage::setControlSettings(bool* array){
-  for(uint8_t it=1;it<9;++it){
+  for(uint8_t it=1;it<=9;++it){
     controllSettings[it]=array[it];
     }
 };
@@ -129,4 +138,20 @@ void  DeviceInfoStorage::setCsvPath(QString path){
 void  DeviceInfoStorage::setPdfPath(QString path){
   PdfPath=path;
 };
+
+void DeviceInfoStorage::setRangeFor211(int8_t InTempLower, int8_t InTempUpper, uint8_t InHumidLower, uint8_t InHumidUpper,
+                                       int8_t OutTempLower, int8_t OutTempUpper, uint8_t OutHumidLower, uint8_t OutHumidUpper){
+  InTempLowerControl=InTempLower;
+  InTempUpperControl=InTempUpper;
+  InHumidLowerControl=InHumidLower;
+  InHumidUpperControl=InHumidUpper;
+  OutTempLowerControl=OutTempLower;
+  OutTempUpperControl=OutTempUpper;
+  OutHumidLowerControl=OutHumidLower;
+  OutHumidUpperControl=OutHumidUpper;
+};
+
+void DeviceInfoStorage::setSensorType211(bool isInner){
+  isInSensor=isInner;
+}
 DeviceInfoStorage::~DeviceInfoStorage(){};

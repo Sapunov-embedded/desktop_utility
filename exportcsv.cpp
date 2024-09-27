@@ -35,9 +35,16 @@ void ExportCSV::startExportProcess(){
 
       std::vector<float> middleOfTemp;
       std::vector<float> middleOfHumid;
+      QString deviceName=storage.getModelDevice();
 
       if(includeTableOfContents){
+          if(deviceName=="101"){
           out<<TMFC_101;
+            }else
+          if(deviceName=="211"){
+              out<<TMFC_211;
+            }
+
         }
 
       out<<"Серийный №;"+storage.getSnDevice()+";";
@@ -60,7 +67,13 @@ void ExportCSV::startExportProcess(){
       QString toDate=" по "+storage.getToDateDB().toString("dd.MM.yyyy hh:mm");
       out<<"c "<<fromDateTime<<toDate<<"\n";
 
-      out<<pageHeader_101;
+      if(deviceName=="101"){
+          out<<pageHeader_101;
+        }else
+        if(deviceName=="211"){
+            out<<pageHeader_211;
+          }
+
       QLocale locale(QLocale::German);
 
       uint32_t count_db=0;
@@ -69,16 +82,20 @@ void ExportCSV::startExportProcess(){
 
       uint8_t tempArray[]{0,2,8,15,25,30};
       uint8_t humidArray[]{0,20,30,50,65,80};
-      uint8_t startTempAverage=0;
-      uint8_t endTempAverage=0;
+      int8_t startTempAverage=0;
+      int8_t endTempAverage=0;
       uint8_t startHumidAverage=0;
       uint8_t endHumidAverage=0;
+      int8_t startExTempAverage=0;
+      int8_t endExTempAverage=0;
+      uint8_t startExHumidAverage=0;
+      uint8_t endExHumidAverage=0;
 
       bool PrintMeasure= false;
       bool IsFirstPage=true;
 
       bool* arr=storage.getControlSettings();
-
+       if(deviceName=="101"){
       //parse setted range control temp and humid
       for(uint8_t it=1;it<=9;++it){
           if(it<=4){
@@ -92,15 +109,34 @@ void ExportCSV::startExportProcess(){
           if(it<=9&&it>4){
               if(arr[it]&&!startHumidAverage){
                   startHumidAverage=it-4;
+                  qDebug()<<startHumidAverage<<"startHumidAverage";
                 }
               if(arr[it]){
                   endHumidAverage=it-3;
+                  qDebug()<<endHumidAverage<<"endHumidAverage";
                 }
             }
         }
-      //print range
-      QString celsias="°С";
-      out<<"("<<tempArray[startTempAverage]<<"-"<<tempArray[endTempAverage]<<")"<<celsias<<";("<<humidArray[startHumidAverage]<<"-"<<humidArray[endHumidAverage]<<")%\n";
+         }else if(deviceName=="211"){
+           auto ranges=storage.getRangeFor211();
+                startTempAverage=std::get<0>(ranges);
+                endTempAverage=std::get<1>(ranges);
+                startHumidAverage=std::get<2>(ranges);
+                endHumidAverage=std::get<3>(ranges);
+                startExTempAverage=std::get<4>(ranges);
+                endExTempAverage=std::get<5>(ranges);
+                startExHumidAverage=std::get<6>(ranges);
+                endExHumidAverage=std::get<7>(ranges);
+         }
+
+       //print range
+       QString celsias="°С";
+       if(deviceName=="101"){
+           out<<"("<<tempArray[startTempAverage]<<"-"<<tempArray[endTempAverage]<<")"<<celsias<<";("<<humidArray[startHumidAverage]<<"-"<<humidArray[endHumidAverage]<<")%\n";
+         }else if(deviceName=="211"){
+           out<<"("<<startTempAverage<<"-"<<endTempAverage<<")"<<celsias<<";("<<startHumidAverage<<"-"<<endHumidAverage<<");"
+                "("<<startExTempAverage<<"-"<<endExTempAverage<<")"<<celsias<<";("<<startExHumidAverage<<"-"<<endExHumidAverage<<")%\n";                                                                                                                                                     "%\n";
+         }
 
       uint8_t shift = 0;
       //main loop data parse
@@ -111,7 +147,7 @@ void ExportCSV::startExportProcess(){
           bool flag3 = flags & 0x04;
           bool flag4 = flags & 0x08;
 
-          if(flag1&&!flag2){
+          if(flag1&&!flag2&&!flag3&&!flag4){
 
               //if enable header every page, print logic here
               if (IsFirstPage&&count_db!=0) {
@@ -124,7 +160,7 @@ void ExportCSV::startExportProcess(){
                 }
 
               if (includeHeaderOnEveryPage && (count_db % (50 - shift) == 0)&&count_db!=0&&count_db!=49&&PrintMeasure) {
-                  //    qDebug()<<count_db % (50 - shift)<<" shift: "<<shift<<"count: "<<count_db;
+
                   out << pageHeader_101;
 
                   shift=1;
@@ -162,10 +198,6 @@ void ExportCSV::startExportProcess(){
               float iTemp= (float)intTemp/10;
               float iHumid = (float) intHumid/10;
 
-              //for 211 version device
-              //out<<locale.toString(eTemp,'f',1);
-              //out<<";";
-              //out<< locale.toString(eHumid,'f',1)+";";
 
               //output settings
               if(showEveryMinute){
@@ -201,17 +233,33 @@ void ExportCSV::startExportProcess(){
                 }
               //start of print
               if(PrintMeasure){
-                //  qDebug()<<"out data";
+
                   out<<fromDateTime+";";
                   out<<locale.toString(iTemp,'f',1);
                   out<<";";
                   out<< locale.toString(iHumid,'f',1)+";";
-                   if((rangeControl&&iTemp<tempArray[startTempAverage])||(rangeControl&&iTemp>tempArray[endTempAverage])||(rangeControl&&iHumid<humidArray[startHumidAverage])||(rangeControl&&iHumid>humidArray[endHumidAverage])){
+                  //for 211 version device
+                  if(deviceName=="211"){
+                  out<<locale.toString(eTemp,'f',1);
+                  out<<";";
+                  out<< locale.toString(eHumid,'f',1)+";";
+               }
+                  if(deviceName=="101"){
+                   if((rangeControl&&iTemp<tempArray[startTempAverage])||(rangeControl&&iTemp>tempArray[endTempAverage])||
+                      (rangeControl&&iHumid<humidArray[startHumidAverage])||(rangeControl&&iHumid>humidArray[endHumidAverage])){
                        out<<yes<<";";
                      }
                    else{
                        out<<no<<";";
                      }
+                    }else if((deviceName=="211"&&rangeControl)&&((iTemp<startTempAverage)||(iTemp>endTempAverage)||(iHumid<startHumidAverage)||(iHumid>endHumidAverage)||
+                                                                 (eTemp<startExTempAverage)||(eTemp>endExTempAverage)||(eHumid<startExHumidAverage)||(eHumid>endExHumidAverage))){
+
+                      out<<yes<<";";
+                    }
+                  else{
+                      out<<no<<";";
+                    }
                   if(rangeControl){
                       out<<yes<<"\n";
                     }

@@ -51,6 +51,10 @@ private:
   uint8_t endTempAverage=0;
   uint8_t startHumidAverage=0;
   uint8_t endHumidAverage=0;
+  int8_t startExTempAverage=0;
+  int8_t endExTempAverage=0;
+  uint8_t startExHumidAverage=0;
+  uint8_t endExHumidAverage=0;
   bool cntrlIsOn=false;
 };
 

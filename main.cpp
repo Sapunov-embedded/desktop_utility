@@ -5,9 +5,12 @@
 #include "applicationconfiguration.h"
 #include "users.h"
 #include <QApplication>
+#include <QDir>
 
 int main(int argc, char *argv[])
 {
+    QDir dir("logs");
+    dir.mkpath(".");
     QApplication a(argc, argv);
     ExportCSV CSV;
     ExportDataFromBytes parsedData;

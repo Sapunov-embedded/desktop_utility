@@ -6,6 +6,7 @@
 
 #include <QObject>
 #include<QDebug>
+#include <tuple>
 
 class DeviceInfoStorage:public QObject
 {
@@ -30,7 +31,8 @@ public:
   QString getDataBasePath();
   QString getCsvPath();
   QString getPdfPath();
-
+  std::tuple<int8_t, int8_t, uint8_t, uint8_t,int8_t, int8_t, uint8_t, uint8_t> getRangeFor211();
+  bool isInnerSensor();
   //setters
   void setModelDevice(QString deviceModel);
   void setDeviceInfo(QByteArray Info);
@@ -50,6 +52,9 @@ public:
   void setDataBasePath(QString path);
   void setCsvPath(QString path);
   void setPdfPath(QString path);
+  void setRangeFor211(int8_t InTempLower, int8_t InTempUpper, uint8_t InHumidLower, uint8_t InHumidUpper,
+                      int8_t OutTempLower, int8_t OutTempUpper, uint8_t OutHumidLower, uint8_t OutHumidUpper);
+  void setSensorType211(bool isInner);
   ~ DeviceInfoStorage();
 
 private:
@@ -75,7 +80,16 @@ private:
   QString DBasePath;
   QString CsvPath;
   QString PdfPath;
+  int8_t InTempLowerControl;
+  int8_t InTempUpperControl;
+  uint8_t InHumidLowerControl;
+  uint8_t InHumidUpperControl;
+  int8_t OutTempLowerControl;
+  int8_t OutTempUpperControl;
+  uint8_t OutHumidLowerControl;
+  uint8_t OutHumidUpperControl;
   bool controllSettings[9]{false};
+  bool isInSensor=true;
 };
 
 #endif // DEVICEINFOSTORAGE_H

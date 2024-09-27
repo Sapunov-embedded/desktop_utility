@@ -15,6 +15,16 @@ grapthics::grapthics(ExportDataFromBytes *exp,QWidget *parent) :
   LowerHumidControlLine=new QCPItemLine (ui->graphicsView);
   LowerHumidControlLine->setVisible(false);
 
+  UpperExTempControlLine=new QCPItemLine (ui->graphicsView);
+  UpperExTempControlLine->setVisible(false);
+  LowerExTempControlLine=new QCPItemLine (ui->graphicsView);
+  LowerExTempControlLine->setVisible(false);
+  UpperExHumidControlLine=new QCPItemLine (ui->graphicsView);
+  UpperExHumidControlLine->setVisible(false);
+  LowerExHumidControlLine=new QCPItemLine (ui->graphicsView);
+  LowerExHumidControlLine->setVisible(false);
+
+
   iTempPen.setColor(QColor(255, 0, 0));
   eTempPen.setColor(QColor(255, 0, 255));
   iHumidPen.setColor(QColor(0, 0, 255));
@@ -214,14 +224,28 @@ double grapthics::calculateDewPoint(float temperature, float relativeHumidity) {
 
 void grapthics::on_controlTemp_clicked(bool checked)
 {
-  if(checked){
+  QString model=storage.getModelDevice();
+  int8_t iTempL=0;
+  int8_t iTempU=0;
+
+  if(model=="101"){
       auto TempRange=expData->getTempRange();
+      iTempL=TempRange.first;
+      iTempU=TempRange.second;
+    } else if(model=="211"){
+      auto Range=storage.getRangeFor211();
+      iTempL=std::get<0>(Range);
+      iTempU=std::get<1>(Range);
+    }
+
+  if(checked){
+
       UpperTempControlLine->setVisible(true);
-      UpperTempControlLine->start->setCoords(ui->graphicsView->xAxis->range().lower, TempRange.first);
-      UpperTempControlLine->end->setCoords(ui->graphicsView->xAxis->range().upper, TempRange.first);
+      UpperTempControlLine->start->setCoords(ui->graphicsView->xAxis->range().lower, iTempL);
+      UpperTempControlLine->end->setCoords(ui->graphicsView->xAxis->range().upper, iTempL);
       LowerTempControlLine->setVisible(true);
-      LowerTempControlLine->start->setCoords(ui->graphicsView->xAxis->range().lower, TempRange.second);
-      LowerTempControlLine->end->setCoords(ui->graphicsView->xAxis->range().upper, TempRange.second);
+      LowerTempControlLine->start->setCoords(ui->graphicsView->xAxis->range().lower, iTempU);
+      LowerTempControlLine->end->setCoords(ui->graphicsView->xAxis->range().upper, iTempU);
       UpperTempControlLine->setPen(QPen(Qt::red));
       LowerTempControlLine->setPen(QPen(Qt::red));
       ui->graphicsView->replot();
@@ -236,14 +260,27 @@ void grapthics::on_controlTemp_clicked(bool checked)
 
 void grapthics::on_controlHumid_clicked(bool checked)
 {
+  QString model=storage.getModelDevice();
+  uint8_t iHumidL=0;
+  uint8_t iHumidU=0;
+
+  if(model=="101"){
+     auto HumidRange=expData->getHumidRange();
+      iHumidL=HumidRange.first;
+      iHumidU=HumidRange.second;
+    } else if(model=="211"){
+      auto Range=storage.getRangeFor211();
+      iHumidL=std::get<2>(Range);
+      iHumidU=std::get<3>(Range);
+    }
   if(checked){
-      auto HumidRange=expData->getHumidRange();
+
       UpperHumidControlLine->setVisible(true);
-      UpperHumidControlLine->start->setCoords(ui->graphicsView->xAxis->range().lower, HumidRange.first);
-      UpperHumidControlLine->end->setCoords(ui->graphicsView->xAxis->range().upper, HumidRange.first);
+      UpperHumidControlLine->start->setCoords(ui->graphicsView->xAxis->range().lower, iHumidL);
+      UpperHumidControlLine->end->setCoords(ui->graphicsView->xAxis->range().upper, iHumidL);
       LowerHumidControlLine->setVisible(true);
-      LowerHumidControlLine->start->setCoords(ui->graphicsView->xAxis->range().lower, HumidRange.second);
-      LowerHumidControlLine->end->setCoords(ui->graphicsView->xAxis->range().upper, HumidRange.second);
+      LowerHumidControlLine->start->setCoords(ui->graphicsView->xAxis->range().lower,iHumidU);
+      LowerHumidControlLine->end->setCoords(ui->graphicsView->xAxis->range().upper, iHumidU);
       UpperHumidControlLine->setPen(QPen(Qt::blue));
       LowerHumidControlLine->setPen(QPen(Qt::blue));
       ui->graphicsView->replot();
@@ -282,7 +319,7 @@ void grapthics::renderContent(QPainter &painter, QPrinter &printer)
   QSize contentSize = this->ui->graphicsView->size();
   QRect pageRect = printer.pageRect();
   int pageWidth = pageRect.width();
-  int pageHeight = pageRect.height();
+//  int pageHeight = pageRect.height();
 
   qreal scaleFactor = 5;
   qreal xOffset = (pageWidth - (contentSize.width() * scaleFactor)) / 2.0;
@@ -338,10 +375,6 @@ void grapthics::on_printToPdf_clicked()
     }
 
 
-  //  qDebug() << "Printing to PDF:";
-  //  qDebug() << "File Path:" << filePath;
-  //  qDebug() << "Printer Resolution:" << printer.resolution();
-
   renderContent(painter, printer);
   painter.end();
 }
@@ -366,9 +399,6 @@ void grapthics::print()
     }
 
 
-  //  qDebug() << "Printing to physical printer:";
-  //  qDebug() << "Printer Resolution:" << printer.resolution();
-
   renderContent(painter, printer);
 
   painter.end();
@@ -384,4 +414,48 @@ void grapthics::debugRenderContent(const QSize &contentSize, const QRect &pageRe
 }
 
 
+
+
+void grapthics::on_controlTempOut_clicked(bool checked)
+{
+  if(checked){
+      auto Range=storage.getRangeFor211();
+      UpperExTempControlLine->setVisible(true);
+      UpperExTempControlLine->start->setCoords(ui->graphicsView->xAxis->range().lower, std::get<4>(Range));
+      UpperExTempControlLine->end->setCoords(ui->graphicsView->xAxis->range().upper, std::get<4>(Range));
+      LowerExTempControlLine->setVisible(true);
+      LowerExTempControlLine->start->setCoords(ui->graphicsView->xAxis->range().lower,std::get<5>(Range));
+      LowerExTempControlLine->end->setCoords(ui->graphicsView->xAxis->range().upper,std::get<5>(Range));
+      UpperExTempControlLine->setPen(QPen(Qt::magenta));
+      LowerExTempControlLine->setPen(QPen(Qt::magenta));
+      ui->graphicsView->replot();
+    }
+  else{
+      UpperExTempControlLine->setVisible(false);
+      LowerExTempControlLine->setVisible(false);
+      ui->graphicsView->replot();
+    }
+}
+
+
+void grapthics::on_controlHumidOut_clicked(bool checked)
+{
+  if(checked){
+      auto Range=storage.getRangeFor211();
+      UpperExHumidControlLine->setVisible(true);
+      UpperExHumidControlLine->start->setCoords(ui->graphicsView->xAxis->range().lower, std::get<6>(Range));
+      UpperExHumidControlLine->end->setCoords(ui->graphicsView->xAxis->range().upper, std::get<6>(Range));
+      LowerExHumidControlLine->setVisible(true);
+      LowerExHumidControlLine->start->setCoords(ui->graphicsView->xAxis->range().lower,std::get<7>(Range));
+      LowerExHumidControlLine->end->setCoords(ui->graphicsView->xAxis->range().upper,std::get<7>(Range));
+      UpperExHumidControlLine->setPen(QPen(Qt::cyan));
+      LowerExHumidControlLine->setPen(QPen(Qt::cyan));
+      ui->graphicsView->replot();
+    }
+  else{
+      UpperExHumidControlLine->setVisible(false);
+      LowerExHumidControlLine->setVisible(false);
+      ui->graphicsView->replot();
+    }
+}
 

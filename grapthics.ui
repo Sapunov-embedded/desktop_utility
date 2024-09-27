@@ -168,24 +168,11 @@
      <string>Температура точки росы</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="square">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>592</y>
-      <width>53</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>кубик</string>
-    </property>
-   </widget>
    <widget class="QCheckBox" name="controlTemp">
     <property name="geometry">
      <rect>
-      <x>153</x>
-      <y>477</y>
+      <x>131</x>
+      <y>454</y>
       <width>81</width>
       <height>17</height>
      </rect>
@@ -197,7 +184,7 @@
    <widget class="QCheckBox" name="controlHumid">
     <property name="geometry">
      <rect>
-      <x>153</x>
+      <x>131</x>
       <y>500</y>
       <width>88</width>
       <height>17</height>
@@ -514,6 +501,32 @@
       <string>5</string>
      </property>
     </item>
+   </widget>
+   <widget class="QCheckBox" name="controlTempOut">
+    <property name="geometry">
+     <rect>
+      <x>131</x>
+      <y>477</y>
+      <width>101</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Контроль Т вн.</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="controlHumidOut">
+    <property name="geometry">
+     <rect>
+      <x>131</x>
+      <y>523</y>
+      <width>111</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Контроль Rh вн.</string>
+    </property>
    </widget>
   </widget>
   <widget class="QLabel" name="discription">

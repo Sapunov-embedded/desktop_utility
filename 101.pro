@@ -1,7 +1,9 @@
 QT       += core gui serialport printsupport sql
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++17 static
+CONFIG += c++17 #static
+
+
 
 SOURCES += \
     applicationconfiguration.cpp \
@@ -44,20 +46,13 @@ FORMS += \
 RESOURCES += icons.qrc
 RC_FILE += icon.rc
 
-QMAKE_LFLAGS += -static #-static-libgcc -static-libstdc++
 
-LIBS += -LC:/Qt/5.12.12/static/lib \
-        -lQt5Core \
-        -lQt5Gui \
-        -lQt5Widgets \
-        -lQt5SerialPort \
-        -lqtharfbuzz \
-        -lz \
-        -lpcre2-16 \
-        -ldouble-conversion \
-       -ljpeg \
-        -lpng16
+#QMAKE_LFLAGS += -static -static-libgcc -static-libstdc++
+
+# Явная ссылка на статические библиотеки
+#LIBS += -LC:/static/lib  -lQt5Core -lQt5Gui -lQt5Widgets -lQt5SerialPort -lqtharfbuzz -lz -lpcre2-16 -ldouble-conversion -ljasper -lmng -lsqlite3 #-lpq
 
 
-
+#QT_CONFIG -= opengl
+#CONFIG += no-icu -DNDEBUG
 

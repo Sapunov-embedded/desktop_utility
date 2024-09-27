@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Список пользователей</string>
+   <string>Сохранение в базу данных</string>
   </property>
   <property name="windowIcon">
    <iconset resource="icons.qrc">

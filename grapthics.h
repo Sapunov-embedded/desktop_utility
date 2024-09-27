@@ -59,6 +59,10 @@ private slots:
 
   void debugRenderContent(const QSize &contentSize, const QRect &pageRect, qreal scaleFactor, qreal xOffset, qreal yOffset);
 
+  void on_controlTempOut_clicked(bool checked);
+
+  void on_controlHumidOut_clicked(bool checked);
+
 private:
     Ui::grapthics *ui;
     DeviceInfoStorage& storage;
@@ -71,6 +75,13 @@ private:
     QCPItemLine *LowerTempControlLine;
     QCPItemLine *UpperHumidControlLine;
     QCPItemLine *LowerHumidControlLine;
+    QCPItemLine *LowerExTempControlLine;
+    QCPItemLine *UpperExHumidControlLine;
+    QCPItemLine *LowerExHumidControlLine;
+    QCPItemLine *UpperExTempControlLine;
+
+
+
     QString graphHeader="График регистрации температуры за период:";
 };
 

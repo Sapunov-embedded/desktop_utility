@@ -139,9 +139,9 @@
       <widget class="QGroupBox" name="groupBox_2">
        <property name="geometry">
         <rect>
-         <x>671</x>
+         <x>642</x>
          <y>180</y>
-         <width>271</width>
+         <width>301</width>
          <height>401</height>
         </rect>
        </property>
@@ -151,7 +151,7 @@
        <widget class="QToolButton" name="SaveToDataBaseButton">
         <property name="geometry">
          <rect>
-          <x>170</x>
+          <x>193</x>
           <y>30</y>
           <width>91</width>
           <height>71</height>
@@ -174,10 +174,10 @@
          <enum>Qt::ToolButtonTextUnderIcon</enum>
         </property>
        </widget>
-       <widget class="QToolButton" name="toolButton_12">
+       <widget class="QToolButton" name="graphButton">
         <property name="geometry">
          <rect>
-          <x>170</x>
+          <x>193</x>
           <y>100</y>
           <width>91</width>
           <height>71</height>
@@ -200,10 +200,10 @@
          <enum>Qt::ToolButtonTextUnderIcon</enum>
         </property>
        </widget>
-       <widget class="QToolButton" name="toolButton_13">
+       <widget class="QToolButton" name="tableButton">
         <property name="geometry">
          <rect>
-          <x>170</x>
+          <x>193</x>
           <y>170</y>
           <width>91</width>
           <height>71</height>
@@ -229,7 +229,7 @@
        <widget class="QToolButton" name="ReadDataFromDeviceButton">
         <property name="geometry">
          <rect>
-          <x>170</x>
+          <x>193</x>
           <y>240</y>
           <width>91</width>
           <height>71</height>
@@ -255,7 +255,7 @@
        <widget class="QToolButton" name="JournalButton">
         <property name="geometry">
          <rect>
-          <x>170</x>
+          <x>193</x>
           <y>310</y>
           <width>91</width>
           <height>71</height>
@@ -281,8 +281,8 @@
        <widget class="QCheckBox" name="generateAllReports">
         <property name="geometry">
          <rect>
-          <x>6</x>
-          <y>360</y>
+          <x>10</x>
+          <y>250</y>
           <width>161</width>
           <height>19</height>
          </rect>
@@ -291,8 +291,50 @@
          <string>Генерировать все отчеты</string>
         </property>
        </widget>
+       <widget class="QGroupBox" name="switchSensorBox">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>300</y>
+          <width>161</width>
+          <height>80</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Выбор датчика для журнала</string>
+        </property>
+        <widget class="QRadioButton" name="innerlSensorButton">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>27</y>
+           <width>84</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Внутренний</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="externalSensorButton">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>47</y>
+           <width>84</width>
+           <height>19</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Внешний</string>
+         </property>
+        </widget>
+       </widget>
       </widget>
-      <widget class="QPushButton" name="pushButton_16">
+      <widget class="QPushButton" name="clearConsoleDisW">
        <property name="geometry">
         <rect>
          <x>871</x>
@@ -384,7 +426,7 @@
         </property>
        </widget>
       </widget>
-      <widget class="QPushButton" name="pushButton_17">
+      <widget class="QPushButton" name="clearConsoleConW">
        <property name="geometry">
         <rect>
          <x>1111</x>
@@ -536,7 +578,7 @@
          <string>Читать</string>
         </property>
        </widget>
-       <widget class="QPushButton" name="pushButton_10">
+       <widget class="QPushButton" name="timeFromPcButton">
         <property name="geometry">
          <rect>
           <x>13</x>
@@ -921,7 +963,7 @@
         </datetime>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="setVerDate">
        <property name="geometry">
         <rect>
          <x>270</x>
@@ -934,66 +976,7 @@
         <string>Записать</string>
        </property>
       </widget>
-      <widget class="QGroupBox" name="groupBox">
-       <property name="geometry">
-        <rect>
-         <x>360</x>
-         <y>558</y>
-         <width>141</width>
-         <height>91</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>Интервалы внешние(211)</string>
-       </property>
-       <widget class="QSpinBox" name="spinBox">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>50</y>
-          <width>42</width>
-          <height>22</height>
-         </rect>
-        </property>
-       </widget>
-       <widget class="QSpinBox" name="spinBox_2">
-        <property name="geometry">
-         <rect>
-          <x>80</x>
-          <y>50</y>
-          <width>42</width>
-          <height>22</height>
-         </rect>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_4">
-        <property name="geometry">
-         <rect>
-          <x>24</x>
-          <y>30</y>
-          <width>31</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string> Т °C</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_31">
-        <property name="geometry">
-         <rect>
-          <x>87</x>
-          <y>29</y>
-          <width>31</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>RH%</string>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="groupBox_3">
+      <widget class="QGroupBox" name="intervals_101">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -1351,6 +1334,246 @@
         <enum>Qt::Horizontal</enum>
        </property>
       </widget>
+      <widget class="QGroupBox" name="interval_211_inside">
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>544</y>
+         <width>161</width>
+         <height>101</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Интервалы внутрение(211)</string>
+       </property>
+       <widget class="QSpinBox" name="InTempLower">
+        <property name="geometry">
+         <rect>
+          <x>35</x>
+          <y>42</y>
+          <width>42</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>-40</number>
+        </property>
+        <property name="maximum">
+         <number>70</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="InHumidLower">
+        <property name="geometry">
+         <rect>
+          <x>95</x>
+          <y>42</y>
+          <width>42</width>
+          <height>22</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_7">
+        <property name="geometry">
+         <rect>
+          <x>39</x>
+          <y>22</y>
+          <width>31</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string> Т °C</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_32">
+        <property name="geometry">
+         <rect>
+          <x>102</x>
+          <y>21</y>
+          <width>31</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>RH%</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="InHumidUpper">
+        <property name="geometry">
+         <rect>
+          <x>95</x>
+          <y>70</y>
+          <width>42</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="InTempUpper">
+        <property name="geometry">
+         <rect>
+          <x>35</x>
+          <y>70</y>
+          <width>42</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>-40</number>
+        </property>
+        <property name="maximum">
+         <number>70</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>43</y>
+          <width>21</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>От</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_33">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>73</y>
+          <width>21</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>До</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="interval_211_outside">
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>660</y>
+         <width>161</width>
+         <height>101</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Интервалы внешние(211)</string>
+       </property>
+       <widget class="QSpinBox" name="OutTempLower">
+        <property name="geometry">
+         <rect>
+          <x>35</x>
+          <y>42</y>
+          <width>42</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>-40</number>
+        </property>
+        <property name="maximum">
+         <number>70</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OutHumidLower">
+        <property name="geometry">
+         <rect>
+          <x>95</x>
+          <y>42</y>
+          <width>42</width>
+          <height>22</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_31">
+        <property name="geometry">
+         <rect>
+          <x>39</x>
+          <y>22</y>
+          <width>31</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string> Т °C</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_34">
+        <property name="geometry">
+         <rect>
+          <x>102</x>
+          <y>21</y>
+          <width>31</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>RH%</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OutHumidUpper">
+        <property name="geometry">
+         <rect>
+          <x>95</x>
+          <y>70</y>
+          <width>42</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OutTempUpper">
+        <property name="geometry">
+         <rect>
+          <x>35</x>
+          <y>70</y>
+          <width>42</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>-40</number>
+        </property>
+        <property name="maximum">
+         <number>70</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_4">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>43</y>
+          <width>21</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>От</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_35">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>73</y>
+          <width>21</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>До</string>
+        </property>
+       </widget>
+      </widget>
      </widget>
      <widget class="QWidget" name="Disconnected_device" native="true">
       <property name="geometry">
@@ -1445,7 +1668,7 @@
          <number>1</number>
         </property>
        </widget>
-       <widget class="QPushButton" name="pushButton_11">
+       <widget class="QPushButton" name="manualConButton">
         <property name="geometry">
          <rect>
           <x>130</x>
@@ -1526,7 +1749,7 @@
         <string>Ручное подключение:</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButton_18">
+      <widget class="QPushButton" name="clearConcoleConW">
        <property name="geometry">
         <rect>
          <x>871</x>

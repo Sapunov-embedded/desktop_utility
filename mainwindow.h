@@ -1,18 +1,28 @@
+// This class provides the main user interface of the application.
+// It manages the interaction with various components, including:
+// - Serial port communication through SerialPortManager.
+// - Data export to CSV and PDF formats via ExportCSV and ExportPDF.
+// - Graphical representation of data using the grapthics module.
+// - User configuration settings using ApplicationConfiguration.
+// Additionally, it handles device interaction, logging, and time/date management.
+// The class is designed to provide a cohesive interface for controlling
+// and monitoring connected devices, making data export and visualization seamless.
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "grapthics.h"
 #include <QDateTime>
 #include <QVBoxLayout>
 
-
-#include "serialportmanager.h"
-#include "exportcsv.h"
-#include "exportdatafrombytes.h"
-#include "exportpdf.h"
-#include "journal.h"
 #include "users.h"
+#include "journal.h"
+#include "logging.h"
+#include "exportcsv.h"
+#include "grapthics.h"
+#include "exportpdf.h"
+#include "serialportmanager.h"
+#include "exportdatafrombytes.h"
 #include "applicationconfiguration.h"
 
 QT_BEGIN_NAMESPACE
@@ -21,107 +31,73 @@ QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
   explicit  MainWindow(Users *user, SerialPortManager *SerialPM,ExportCSV *CSV,ExportDataFromBytes *parsedData,ApplicationConfiguration *config,QWidget *parent = nullptr);
 
 
-    ~MainWindow();
+  ~MainWindow();
 
 private slots:
+  // This slot shows or hides the buttons based on the current state or conditions.
+  void on_SelectPort_2_stateChanged(int arg1);
+  void on_dateEdit_userDateChanged(const QDate &date);
+  void on_timeEdit_userTimeChanged(const QTime &time);
+  void on_getTempButton_clicked();
+  void on_readFlash_clicked();
+  void on_refresh_clicked();
+  void on_WriteToFlash_clicked();
+  void on_WriteVolumeLevel_clicked();
+  void on_VerificationDate_userDateChanged(const QDate &date);
+  void on_AutoSpeed_clicked();
+  void on_ReadDataFromDeviceButton_clicked();
+  //  void on_progressBar_valueChanged(int value);
+  void on_JournalButton_clicked();
+  void on_SaveToDataBaseButton_clicked();
+  void on_InTempLower_valueChanged(int arg1);
+  void on_InHumidLower_valueChanged(int arg1);
+  void on_InTempUpper_valueChanged(int arg1);
+  void on_OutTempLower_valueChanged(int arg1);
+  void on_OutHumidLower_valueChanged(int arg1);
+  void on_OutTempUpper_valueChanged(int arg1);
+  void on_OutHumidUpper_valueChanged(int arg1);
+  void on_InHumidUpper_valueChanged(int arg1);
 
-    void saveNewMask(uint8_t cell_number, bool checked);
+  void on_setVerDate_clicked();
+  void on_graphButton_clicked();
+  void on_tableButton_clicked();
 
-    void on_toolButton_13_clicked();
+  void JournalCreated();
+  void checkControlRange();
+  void updateRangeValues();
+  void closeSerialPort();
+  void readFwVersion();
+  void readSnDevice();
+  void updateData();
+  void ProcessConnect();
+  void ShowHideConnectWindow();
+  void endVerificationDate();
+  void set_lcd_datatime();
+  void setProgressBar();
+  void saveNewMask(uint8_t cell_number, bool checked);
+  void initVerificationDate();
 
-    void on_toolButton_12_clicked();
 
-    void on_Button_connect_clicked();
-
-    void closeSerialPort();
-
-    void on_Disconnect_device_clicked();
-
-    void on_SelectPort_2_stateChanged(int arg1);
-
-    void on_pushButton_11_clicked();
-
-    void readFwVersion();
-
-    void readSnDevice();
-
-    void updateData();
-
-    void on_pushButton_10_clicked();
-
-    void on_readDateTimeFromDevice_clicked();
-
-    void on_writeDateTimeFromDevice_clicked();
-
-    void on_dateEdit_userDateChanged(const QDate &date);
-
-    void on_pushButton_16_clicked();
-
-    void on_pushButton_18_clicked();
-
-    void ProcessConnect();
-
-    void ShowHideConnectWindow();
-
-    void on_timeEdit_userTimeChanged(const QTime &time);
-
-    void on_getTempButton_clicked();
-
-    void set_lcd_datatime();
-
-    void on_readFlash_clicked();
-
-    void on_refresh_clicked();
-
-    void on_WriteToFlash_clicked();
-
-    void on_WriteVolumeLevel_clicked();
-
-    void on_VerificationDate_userDateChanged(const QDate &date);
-
-    void on_pushButton_clicked();
-
-    void on_AutoSpeed_clicked();
-
-    void on_speed_currentIndexChanged(const QString &arg1);
-
-    void on_ReadDataFromDeviceButton_clicked();
-
-    void endVerificationDate();
-
-   // void on_ReportButton_clicked();
-
-    void on_progressBar_valueChanged(int value);
-
-    void setProgressBar();
-
-    void on_JournalButton_clicked();
-
-    void on_SaveToDataBaseButton_clicked();
-
-    void JournalCreated();
-
-    void checkControlRange();
+  void on_externalSensorButton_toggled(bool checked);
 
 private:
-    Ui::MainWindow *ui;
-    SerialPortManager *SerialPM;
-    DeviceInfoStorage &storage;
-    ExportDataFromBytes *parsed;
-    ApplicationConfiguration *appConfig;
-    ExportCSV *CSV;
-    QTimer *timer;
-    QVBoxLayout *layout;
-    void initVerificationDate();
-    bool validationTimeDate();
-    grapthics g;
-    ExportPDF window;
-    Users *us;
+  bool validationTimeDate();
+  Ui::MainWindow *ui;
+  SerialPortManager *SerialPM;
+  DeviceInfoStorage &storage;
+  ExportDataFromBytes *parsed;
+  ApplicationConfiguration *appConfig;
+  ExportCSV *CSV;
+  QTimer *timer;
+  QVBoxLayout *layout;
+  grapthics g;
+  ExportPDF window;
+  Users *us;
 };
 #endif // MAINWINDOW_H

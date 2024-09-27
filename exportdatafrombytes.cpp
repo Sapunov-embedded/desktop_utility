@@ -80,7 +80,7 @@ void ExportDataFromBytes::ExportServiceAndDataPoints(){
       bool flag3 = flags & 0x04;
       bool flag4 = flags & 0x08;
 
-      if(flag1&&!flag2){
+      if(flag1&&!flag2&&!flag3&&!flag4){
           uint8_t startBit=4;
           cntrlIsOn=exportBits(data,startBit,1,i);
           startBit++;
@@ -135,6 +135,7 @@ void ExportDataFromBytes::ExportServiceAndDataPoints(){
           time.setHMS(0,0,0);
           n_time=time.addSecs(Minutes*60);
         }
+
     }
 
 };

@@ -1,8 +1,0 @@
-export PATH="/c/msys64/mingw64/bin:$PATH"
-
-
-Install make via MSYS2:
-Open MSYS2 and install make:
-bash
-Копировать код
-pacman -S make

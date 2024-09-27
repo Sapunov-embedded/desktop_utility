@@ -115,10 +115,7 @@ void Users::on_minus_clicked()
     }
 }
 
-//for future: here using select every table and select filtered row = 0
-//            rewrite this for chose only first and last table and for
-//            intermediate tabels just only SELECT and INSERT values
-//            with getting current values for next table
+
 void Users::on_addUser_clicked()
 {
   //crutch, because Device table has foreign key to user table, whitch i can't or want to delete
@@ -263,7 +260,8 @@ void Users::on_addUser_clicked()
       ExportDataFromBytes exp;
       exp.ExportServiceAndDataPoints();
       bool ctrl=exp.getRangeControlStatus();
-
+      auto range211=storage.getRangeFor211();
+      QString devName=storage.getModelDevice();
       //add range control settings in to DeviceControl table
       QSqlQuery Query;
       Query.prepare("INSERT INTO DeviceControl (DT, DataBlockID, DeviceID, TIntCheck, HIntCheck, TExtCheck, HExtCheck, TIntMin, TIntMax, HIntMin, HIntMax, TExtMin, TExtMax, HExtMin, HExtMax) "
@@ -276,14 +274,27 @@ void Users::on_addUser_clicked()
       Query.bindValue(":HIntCheck",ctrl);
       Query.bindValue(":TExtCheck",ctrl);//temp set inner sensor data
       Query.bindValue(":HExtCheck",ctrl);//temp set inner sensor data
-      Query.bindValue(":TIntMin",static_cast<int>(exp.getTempRange().first));
-      Query.bindValue(":TIntMax",static_cast<int>(exp.getTempRange().second));
-      Query.bindValue(":HIntMin",static_cast<int>(exp.getHumidRange().first));
-      Query.bindValue(":HIntMax",static_cast<int>(exp.getHumidRange().second));
-      Query.bindValue(":TExtMin",static_cast<int>(exp.getTempRange().first));//temp set inner sensor data
-      Query.bindValue(":TExtMax",static_cast<int>(exp.getTempRange().second));//temp set inner sensor data
-      Query.bindValue(":HExtMin",static_cast<int>(exp.getHumidRange().first));//temp set inner sensor data
-      Query.bindValue(":HExtMax",static_cast<int>(exp.getHumidRange().second));//temp set inner sensor data
+      if(devName=="101"){
+          Query.bindValue(":TIntMin",static_cast<int>(exp.getTempRange().first));
+          Query.bindValue(":TIntMax",static_cast<int>(exp.getTempRange().second));
+          Query.bindValue(":HIntMin",static_cast<int>(exp.getHumidRange().first));
+          Query.bindValue(":HIntMax",static_cast<int>(exp.getHumidRange().second));
+          Query.bindValue(":TExtMin",0);
+          Query.bindValue(":TExtMax",0);
+          Query.bindValue(":HExtMin",0);
+          Query.bindValue(":HExtMax",0);
+        }else if(devName=="211"){
+          Query.bindValue(":TIntMin",static_cast<int>(std::get<0>(range211)));
+          Query.bindValue(":TIntMax",static_cast<int>(std::get<1>(range211)));
+          Query.bindValue(":HIntMin",static_cast<int>(std::get<2>(range211)));
+          Query.bindValue(":HIntMax",static_cast<int>(std::get<3>(range211)));
+          Query.bindValue(":TExtMin",static_cast<int>(std::get<4>(range211)));
+          Query.bindValue(":TExtMax",static_cast<int>(std::get<5>(range211)));
+          Query.bindValue(":HExtMin",static_cast<int>(std::get<6>(range211)));
+          Query.bindValue(":HExtMax",static_cast<int>(std::get<7>(range211)));
+        }
+
+
       if(!Query.exec()){
           qDebug()<<"Device control data not write, "<<Query.lastError();
         }
@@ -300,7 +311,6 @@ void Users::on_addUser_clicked()
       QSqlQuery query;
       query.prepare(queryStr);
       query.bindValue(":DataBlockID", id);
-
       if (query.exec()) {
           if (query.next()) {
               // The value exists in the table
@@ -338,6 +348,7 @@ void Users::on_addUser_clicked()
                     }
                   model->select();
                   ++downloadValue;
+
                 }
             }
         } else {
@@ -346,7 +357,8 @@ void Users::on_addUser_clicked()
         }
     }
   if(tableName==QString("DeviceData%1").arg(s_n)){
-      ui->SavedLabel->show();
+       ui->SavedLabel->setText("Сохранено");
+     ui->SavedLabel->show();
     }
 }
 
