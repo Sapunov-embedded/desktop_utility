@@ -5,6 +5,7 @@
 
 #include "exportdatafrombytes.h"
 #include "deviceinfostorage.h"
+#include "globaldefines.h"
 #include "qcustomplot.h"
 
 namespace Ui {

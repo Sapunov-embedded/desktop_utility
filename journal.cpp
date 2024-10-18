@@ -13,7 +13,7 @@ Journal::Journal(const QString &location, const QString &organization, const QSt
     }
   else{
       if(storage.isInnerSensor()){
-      sensorType=innerSensor;//temp, realization than 211
+          sensorType=innerSensor;//temp, realization than 211
         }
       else{
           sensorType=externalSensor;
@@ -188,64 +188,64 @@ void Journal::drawHeader(QTextDocument &document) const {
 }
 
 void Journal::drawEntries(QTextTable& table) const {
-    int row = 2; // Starting from the third row, assuming the first two rows are headers
+  int row = 2; // Starting from the third row, assuming the first two rows are headers
 
-    for (int it = 0; it < reportData.size(); ++it) {
-        // First half of the day
-        QTextTableCell dataCell = table.cellAt(row, 0);
-        QTextCursor dataCursor = dataCell.firstCursorPosition();
-        dataCursor.insertText(reportData[it].date.toString("dd.MM.yyyy"));
+  for (int it = 0; it < reportData.size(); ++it) {
+      // First half of the day
+      QTextTableCell dataCell = table.cellAt(row, 0);
+      QTextCursor dataCursor = dataCell.firstCursorPosition();
+      dataCursor.insertText(reportData[it].date.toString("dd.MM.yyyy"));
 
-        dataCell = table.cellAt(row, 1);
-        dataCursor = dataCell.firstCursorPosition();
-        dataCursor.insertText("8:00");
+      dataCell = table.cellAt(row, 1);
+      dataCursor = dataCell.firstCursorPosition();
+      dataCursor.insertText("8:00");
 
-        dataCell = table.cellAt(row, 2);
-        dataCursor = dataCell.firstCursorPosition();
+      dataCell = table.cellAt(row, 2);
+      dataCursor = dataCell.firstCursorPosition();
 
-        if (reportData[it].middleTempFirstHalf != 1000) {
-            dataCursor.insertText(QString::number(reportData[it].middleTempFirstHalf, 'f', 1));
+      if (reportData[it].middleTempFirstHalf != 1000) {
+          dataCursor.insertText(QString::number(reportData[it].middleTempFirstHalf, 'f', 1));
         } else {
-            dataCursor.insertText("-");
+          dataCursor.insertText("-");
         }
 
-        dataCell = table.cellAt(row, 3);
-        dataCursor = dataCell.firstCursorPosition();
+      dataCell = table.cellAt(row, 3);
+      dataCursor = dataCell.firstCursorPosition();
 
-        if (reportData[it].middleHumidFirstHalf != 1000) {
-            dataCursor.insertText(QString::number(reportData[it].middleHumidFirstHalf, 'f', 1));
+      if (reportData[it].middleHumidFirstHalf != 1000) {
+          dataCursor.insertText(QString::number(reportData[it].middleHumidFirstHalf, 'f', 1));
         } else {
-            dataCursor.insertText("-");
+          dataCursor.insertText("-");
         }
 
-        // Second half of the day
-        dataCell = table.cellAt(row + 1, 1);
-        dataCursor = dataCell.firstCursorPosition();
-        dataCursor.insertText("20:00");
+      // Second half of the day
+      dataCell = table.cellAt(row + 1, 1);
+      dataCursor = dataCell.firstCursorPosition();
+      dataCursor.insertText("20:00");
 
-        dataCell = table.cellAt(row + 1, 2);
-        dataCursor = dataCell.firstCursorPosition();
+      dataCell = table.cellAt(row + 1, 2);
+      dataCursor = dataCell.firstCursorPosition();
 
-        if (reportData[it].middleTempSecondHalf != 1000) {
-            dataCursor.insertText(QString::number(reportData[it].middleTempSecondHalf, 'f', 1));
+      if (reportData[it].middleTempSecondHalf != 1000) {
+          dataCursor.insertText(QString::number(reportData[it].middleTempSecondHalf, 'f', 1));
         } else {
-            dataCursor.insertText("-");
+          dataCursor.insertText("-");
         }
 
-        dataCell = table.cellAt(row + 1, 3);
-        dataCursor = dataCell.firstCursorPosition();
+      dataCell = table.cellAt(row + 1, 3);
+      dataCursor = dataCell.firstCursorPosition();
 
-        if (reportData[it].middleHumidSecondHalf != 1000) {
-            dataCursor.insertText(QString::number(reportData[it].middleHumidSecondHalf, 'f', 1));
+      if (reportData[it].middleHumidSecondHalf != 1000) {
+          dataCursor.insertText(QString::number(reportData[it].middleHumidSecondHalf, 'f', 1));
         } else {
-            dataCursor.insertText("-");
+          dataCursor.insertText("-");
         }
 
-        // Merge the date cells for the two rows
-        table.mergeCells(row, 0, 2, 1);
+      // Merge the date cells for the two rows
+      table.mergeCells(row, 0, 2, 1);
 
-        // Move to the next set of rows
-        row += 2;
+      // Move to the next set of rows
+      row += 2;
     }
 }
 
@@ -254,69 +254,69 @@ void Journal::drawEntries(QTextTable& table) const {
 
 
 void Journal::calculateRangeOfEachDay() {
-    QTime startTimeF(00, 00, 00);
-    QTime endTimeF(11, 59, 00);
-    QTime startTimeS(12, 00, 00);
-    QTime endTimeS(23, 59, 00);
-    QDateTime currentDay;
-    std::vector<float> tempFirstHalf;
-    std::vector<float> tempSecondHalf;
-    std::vector<float> humidFirstHalf;
-    std::vector<float> humidSecondHalf;
+  QTime startTimeF(00, 00, 00);
+  QTime endTimeF(11, 59, 00);
+  QTime startTimeS(12, 00, 00);
+  QTime endTimeS(23, 59, 00);
+  QDateTime currentDay;
+  std::vector<float> tempFirstHalf;
+  std::vector<float> tempSecondHalf;
+  std::vector<float> humidFirstHalf;
+  std::vector<float> humidSecondHalf;
 
-    for (auto &entry : entries) {
-        if (!currentDay.isValid()) {
-            currentDay = entry.date;
-      qDebug()<<"no valid date";
+  for (auto &entry : entries) {
+      if (!currentDay.isValid()) {
+          currentDay = entry.date;
+          qDebug()<<"no valid date";
         }
 
-        if (entry.date.date() != currentDay.date()) {
-            float tempFirst = tempFirstHalf.empty() ? 1000 : std::accumulate(tempFirstHalf.begin(), tempFirstHalf.end(), 0.0f) / tempFirstHalf.size();
-            float tempSecond = tempSecondHalf.empty() ? 1000 : std::accumulate(tempSecondHalf.begin(), tempSecondHalf.end(), 0.0f) / tempSecondHalf.size();
-            float humidFirst = humidFirstHalf.empty() ? 1000 : std::accumulate(humidFirstHalf.begin(), humidFirstHalf.end(), 0.0f) / humidFirstHalf.size();
-            float humidSecond = humidSecondHalf.empty() ? 1000 : std::accumulate(humidSecondHalf.begin(), humidSecondHalf.end(), 0.0f) / humidSecondHalf.size();
+      if (entry.date.date() != currentDay.date()) {
+          float tempFirst = tempFirstHalf.empty() ? 1000 : std::accumulate(tempFirstHalf.begin(), tempFirstHalf.end(), 0.0f) / tempFirstHalf.size();
+          float tempSecond = tempSecondHalf.empty() ? 1000 : std::accumulate(tempSecondHalf.begin(), tempSecondHalf.end(), 0.0f) / tempSecondHalf.size();
+          float humidFirst = humidFirstHalf.empty() ? 1000 : std::accumulate(humidFirstHalf.begin(), humidFirstHalf.end(), 0.0f) / humidFirstHalf.size();
+          float humidSecond = humidSecondHalf.empty() ? 1000 : std::accumulate(humidSecondHalf.begin(), humidSecondHalf.end(), 0.0f) / humidSecondHalf.size();
 
-            MiddleOfDay middle{currentDay, tempFirst, tempSecond, humidFirst, humidSecond};
-            reportData.push_back(middle);
-qDebug()<<currentDay.date().toString("dd.MM.yyyy");
-qDebug()<<entry.date.date().toString("dd.MM.yyyy");
-            // Clear the temporary data for the new day
-            tempFirstHalf.clear();
-            tempSecondHalf.clear();
-            humidFirstHalf.clear();
-            humidSecondHalf.clear();
+          MiddleOfDay middle{currentDay, tempFirst, tempSecond, humidFirst, humidSecond};
+          reportData.push_back(middle);
+//          qDebug()<<currentDay.date().toString("dd.MM.yyyy");
+//          qDebug()<<entry.date.date().toString("dd.MM.yyyy");
+          // Clear the temporary data for the new day
+          tempFirstHalf.clear();
+          tempSecondHalf.clear();
+          humidFirstHalf.clear();
+          humidSecondHalf.clear();
 
-            currentDay = entry.date;
+          currentDay = entry.date;
         }
 
-        // Add entry values to the correct half-day based on the time
-        if (entry.date.time() >= startTimeF && entry.date.time() <= endTimeF) {
-            if(storage.isInnerSensor()){
-            tempFirstHalf.push_back(entry.values[2]);
-            humidFirstHalf.push_back(entry.values[3]);
-              }else{
-                tempFirstHalf.push_back(entry.values[0]);
-                humidFirstHalf.push_back(entry.values[1]);
-              }
+      // Add entry values to the correct half-day based on the time
+      if (entry.date.time() >= startTimeF && entry.date.time() <= endTimeF) {
+          if(storage.isInnerSensor()){
+              tempFirstHalf.push_back(entry.values[2]);
+              humidFirstHalf.push_back(entry.values[3]);
+            }else{
+              tempFirstHalf.push_back(entry.values[0]);
+              humidFirstHalf.push_back(entry.values[1]);
+            }
         } else if (entry.date.time() >= startTimeS && entry.date.time() <= endTimeS) {
-            if(storage.isInnerSensor()){
-            tempSecondHalf.push_back(entry.values[2]);
-            humidSecondHalf.push_back(entry.values[3]);
-             }else{
-                tempSecondHalf.push_back(entry.values[0]);
-                humidSecondHalf.push_back(entry.values[1]);
-              }
+          if(storage.isInnerSensor()){
+              tempSecondHalf.push_back(entry.values[2]);
+              humidSecondHalf.push_back(entry.values[3]);
+            }else{
+              tempSecondHalf.push_back(entry.values[0]);
+              humidSecondHalf.push_back(entry.values[1]);
+            }
         }
     }
 
-    // Handle the last day (if it hasn't been processed inside the loop)
-    if (!tempFirstHalf.empty() || !tempSecondHalf.empty() || !humidFirstHalf.empty() || !humidSecondHalf.empty()) {
-        float tempFirst = tempFirstHalf.empty() ? 1000 : std::accumulate(tempFirstHalf.begin(), tempFirstHalf.end(), 0.0f) / tempFirstHalf.size();
-        float tempSecond = tempSecondHalf.empty() ? 1000 : std::accumulate(tempSecondHalf.begin(), tempSecondHalf.end(), 0.0f) / tempSecondHalf.size();
-        float humidFirst = humidFirstHalf.empty() ? 1000 : std::accumulate(humidFirstHalf.begin(), humidFirstHalf.end(), 0.0f) / humidFirstHalf.size();
-        float humidSecond = humidSecondHalf.empty() ? 1000 : std::accumulate(humidSecondHalf.begin(), humidSecondHalf.end(), 0.0f) / humidSecondHalf.size();
+  // Handle the last day (if it hasn't been processed inside the loop)
+  if (!tempFirstHalf.empty() || !tempSecondHalf.empty() || !humidFirstHalf.empty() || !humidSecondHalf.empty()) {
+      float tempFirst = tempFirstHalf.empty() ? 1000 : std::accumulate(tempFirstHalf.begin(), tempFirstHalf.end(), 0.0f) / tempFirstHalf.size();
+      float tempSecond = tempSecondHalf.empty() ? 1000 : std::accumulate(tempSecondHalf.begin(), tempSecondHalf.end(), 0.0f) / tempSecondHalf.size();
+      float humidFirst = humidFirstHalf.empty() ? 1000 : std::accumulate(humidFirstHalf.begin(), humidFirstHalf.end(), 0.0f) / humidFirstHalf.size();
+      float humidSecond = humidSecondHalf.empty() ? 1000 : std::accumulate(humidSecondHalf.begin(), humidSecondHalf.end(), 0.0f) / humidSecondHalf.size();
 
-        MiddleOfDay middle{currentDay, tempFirst, tempSecond, humidFirst, humidSecond};
-        reportData.push_back(middle);
+      MiddleOfDay middle{currentDay, tempFirst, tempSecond, humidFirst, humidSecond};
+      reportData.push_back(middle);
     }
 }

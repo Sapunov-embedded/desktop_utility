@@ -228,11 +228,11 @@ void grapthics::on_controlTemp_clicked(bool checked)
   int8_t iTempL=0;
   int8_t iTempU=0;
 
-  if(model=="101"){
+  if(model==DEV_1XX){
       auto TempRange=expData->getTempRange();
       iTempL=TempRange.first;
       iTempU=TempRange.second;
-    } else if(model=="211"){
+    } else if(model==DEV_2XX){
       auto Range=storage.getRangeFor211();
       iTempL=std::get<0>(Range);
       iTempU=std::get<1>(Range);
@@ -264,11 +264,11 @@ void grapthics::on_controlHumid_clicked(bool checked)
   uint8_t iHumidL=0;
   uint8_t iHumidU=0;
 
-  if(model=="101"){
+  if(model==DEV_1XX){
      auto HumidRange=expData->getHumidRange();
       iHumidL=HumidRange.first;
       iHumidU=HumidRange.second;
-    } else if(model=="211"){
+    } else if(model==DEV_2XX){
       auto Range=storage.getRangeFor211();
       iHumidL=std::get<2>(Range);
       iHumidU=std::get<3>(Range);

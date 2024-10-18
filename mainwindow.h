@@ -21,6 +21,7 @@
 #include "exportcsv.h"
 #include "grapthics.h"
 #include "exportpdf.h"
+#include "globaldefines.h"
 #include "serialportmanager.h"
 #include "exportdatafrombytes.h"
 #include "applicationconfiguration.h"
@@ -88,6 +89,7 @@ private slots:
 
 private:
   bool validationTimeDate();
+  void disableAllIndicates();
   Ui::MainWindow *ui;
   SerialPortManager *SerialPM;
   DeviceInfoStorage &storage;

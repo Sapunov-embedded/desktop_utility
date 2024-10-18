@@ -28,6 +28,7 @@ HEADERS += \
     exportcsv.h \
     exportdatafrombytes.h \
     exportpdf.h \
+    globaldefines.h \
     grapthics.h \
     ini.h \
     journal.h \

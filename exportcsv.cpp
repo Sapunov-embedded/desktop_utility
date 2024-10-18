@@ -38,10 +38,10 @@ void ExportCSV::startExportProcess(){
       QString deviceName=storage.getModelDevice();
 
       if(includeTableOfContents){
-          if(deviceName=="101"){
+          if(deviceName==DEV_1XX){
           out<<TMFC_101;
             }else
-          if(deviceName=="211"){
+          if(deviceName==DEV_2XX){
               out<<TMFC_211;
             }
 
@@ -67,10 +67,10 @@ void ExportCSV::startExportProcess(){
       QString toDate=" по "+storage.getToDateDB().toString("dd.MM.yyyy hh:mm");
       out<<"c "<<fromDateTime<<toDate<<"\n";
 
-      if(deviceName=="101"){
+      if(deviceName==DEV_1XX){
           out<<pageHeader_101;
         }else
-        if(deviceName=="211"){
+        if(deviceName==DEV_2XX){
             out<<pageHeader_211;
           }
 
@@ -95,7 +95,7 @@ void ExportCSV::startExportProcess(){
       bool IsFirstPage=true;
 
       bool* arr=storage.getControlSettings();
-       if(deviceName=="101"){
+       if(deviceName==DEV_1XX){
       //parse setted range control temp and humid
       for(uint8_t it=1;it<=9;++it){
           if(it<=4){
@@ -117,7 +117,7 @@ void ExportCSV::startExportProcess(){
                 }
             }
         }
-         }else if(deviceName=="211"){
+         }else if(deviceName==DEV_2XX){
            auto ranges=storage.getRangeFor211();
                 startTempAverage=std::get<0>(ranges);
                 endTempAverage=std::get<1>(ranges);
@@ -131,11 +131,11 @@ void ExportCSV::startExportProcess(){
 
        //print range
        QString celsias="°С";
-       if(deviceName=="101"){
-           out<<"("<<tempArray[startTempAverage]<<"-"<<tempArray[endTempAverage]<<")"<<celsias<<";("<<humidArray[startHumidAverage]<<"-"<<humidArray[endHumidAverage]<<")%\n";
-         }else if(deviceName=="211"){
-           out<<"("<<startTempAverage<<"-"<<endTempAverage<<")"<<celsias<<";("<<startHumidAverage<<"-"<<endHumidAverage<<");"
-                "("<<startExTempAverage<<"-"<<endExTempAverage<<")"<<celsias<<";("<<startExHumidAverage<<"-"<<endExHumidAverage<<")%\n";                                                                                                                                                     "%\n";
+       if(deviceName==DEV_1XX){
+           out<<"("<<tempArray[startTempAverage]<<".."<<tempArray[endTempAverage]<<")"<<celsias<<";("<<humidArray[startHumidAverage]<<".."<<humidArray[endHumidAverage]<<")%\n";
+         }else if(deviceName==DEV_2XX){
+           out<<"("<<startTempAverage<<".."<<endTempAverage<<")"<<celsias<<";("<<startHumidAverage<<".."<<endHumidAverage<<");"
+                "("<<startExTempAverage<<".."<<endExTempAverage<<")"<<celsias<<";("<<startExHumidAverage<<".."<<endExHumidAverage<<")%\n";
          }
 
       uint8_t shift = 0;
@@ -239,12 +239,12 @@ void ExportCSV::startExportProcess(){
                   out<<";";
                   out<< locale.toString(iHumid,'f',1)+";";
                   //for 211 version device
-                  if(deviceName=="211"){
+                  if(deviceName==DEV_2XX){
                   out<<locale.toString(eTemp,'f',1);
                   out<<";";
                   out<< locale.toString(eHumid,'f',1)+";";
                }
-                  if(deviceName=="101"){
+                  if(deviceName==DEV_1XX){
                    if((rangeControl&&iTemp<tempArray[startTempAverage])||(rangeControl&&iTemp>tempArray[endTempAverage])||
                       (rangeControl&&iHumid<humidArray[startHumidAverage])||(rangeControl&&iHumid>humidArray[endHumidAverage])){
                        out<<yes<<";";
@@ -252,7 +252,7 @@ void ExportCSV::startExportProcess(){
                    else{
                        out<<no<<";";
                      }
-                    }else if((deviceName=="211"&&rangeControl)&&((iTemp<startTempAverage)||(iTemp>endTempAverage)||(iHumid<startHumidAverage)||(iHumid>endHumidAverage)||
+                    }else if((deviceName==DEV_2XX&&rangeControl)&&((iTemp<startTempAverage)||(iTemp>endTempAverage)||(iHumid<startHumidAverage)||(iHumid>endHumidAverage)||
                                                                  (eTemp<startExTempAverage)||(eTemp>endExTempAverage)||(eHumid<startExHumidAverage)||(eHumid>endExHumidAverage))){
 
                       out<<yes<<";";

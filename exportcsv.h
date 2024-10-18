@@ -9,7 +9,7 @@
 #include <QLocale>
 #include <vector>
 #include <algorithm>
-
+#include "globaldefines.h"
 #include "serialportmanager.h"
 
 

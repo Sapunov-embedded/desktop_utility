@@ -178,8 +178,12 @@ background-color:rgb(197, 197, 197);
       ui->tableButton->setEnabled(true);
       ui->progressBar->setValue(ui->progressBar->maximum()); //for compensation expected and current recived data size(temp)
     });
+  connect(SerialPM, &SerialPortManager::verificationDateRecorded,this, [this](){
+      ui->textBrowser->insertPlainText("Новая дата верификации "+storage.getVerificationDate().toString("dd.MM.yyyy")+" установлена");
+    },Qt::AutoConnection);
   Logging::logInfo("The app start");
   ui->Button_connect->click();
+
 }
 
 MainWindow::~MainWindow()
@@ -197,7 +201,7 @@ void MainWindow::closeSerialPort()
   ui->mainConsole_1->setText("Устройство отключено.\n");
   ui->Disconnected_device->show();
   ui->Connected_device->hide();
-
+  disableAllIndicates();
 }
 
 
@@ -251,10 +255,11 @@ void MainWindow::ProcessConnect(){
   ui->mainConsole_1->clear();
   ui->mainConsole_1->setText("Подключение к устройству...");
   QApplication::processEvents();
-
 };
 
 void MainWindow::ShowHideConnectWindow(){
+  ui->progressBar->setMaximum(storage.getBlockSizeValue());
+  ui->progressBar->setValue(0);
   ui->SNumber_text->setText(storage.getSnDevice());
   ui->FW_version_text->setText(storage.getFwVersion());
   ui->model->setText("ТМФЦ "+storage.getModelDevice());
@@ -269,7 +274,7 @@ void MainWindow::ShowHideConnectWindow(){
   initVerificationDate();
   on_readFlash_clicked();
   //-----------------------------------------------------
-  if(storage.getModelDevice()=="101"){
+  if(storage.getModelDevice()==DEV_1XX){
   //    ui->interval_211_inside->setEnabled(false);
    //   ui->interval_211_outside->setEnabled(false);
    //   ui->intervals_101->setEnabled(true);
@@ -277,8 +282,9 @@ void MainWindow::ShowHideConnectWindow(){
       ui->interval_211_outside->hide();
       ui->intervals_101->show();
       ui->switchSensorBox->setEnabled(false);
+      storage.setSensorType211(true);
     }
-  if(storage.getModelDevice()=="211"){
+  if(storage.getModelDevice()==DEV_2XX){
     //  ui->intervals_101->setEnabled(false);
     //  ui->interval_211_inside->setEnabled(true);
     //  ui->interval_211_outside->setEnabled(true);
@@ -298,6 +304,7 @@ void MainWindow::ShowHideConnectWindow(){
     }
   //-----------------------------------------------------
   ui->numberComPort_2->setValue(SerialPM->getPortNumber());
+
   ui->textBrowser->insertPlainText("Устройство подключено. Порт "+ SerialPM->getPortName() +"\nМодель ТМФЦ "+ storage.getModelDevice() +".\n");
 };
 
@@ -356,6 +363,7 @@ void MainWindow::on_refresh_clicked()
       if(SerialPM->controllSettings[it]&&it==8&& !ui->indicate_8->isChecked()){
           ui->indicate_8->toggle();
         }
+
     }
   checkControlRange();
 }
@@ -600,3 +608,13 @@ void MainWindow::on_externalSensorButton_toggled(bool checked)
     storage.setSensorType211(!checked);
 }
 
+void MainWindow::disableAllIndicates(){
+  ui->indicate_8->setChecked(false);
+  ui->indicate_7->setChecked(false);
+  ui->indicate_6->setChecked(false);
+  ui->indicate_5->setChecked(false);
+  ui->indicate_4->setChecked(false);
+  ui->indicate_3->setChecked(false);
+  ui->indicate_2->setChecked(false);
+  ui->indicate_1->setChecked(false);
+};

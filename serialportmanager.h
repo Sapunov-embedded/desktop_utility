@@ -17,6 +17,7 @@
 #include <QtMath>
 
 #include "logging.h"
+#include "globaldefines.h"
 #include "deviceinfostorage.h"
 
 class SerialPortManager : public QObject
@@ -84,6 +85,7 @@ private slots:
 signals:
   void dataReady();
   void blockDataReady();
+  void verificationDateRecorded();
 
 private:
   uint8_t BcdToByte(uint8_t Value); // Converts BCD to byte format.
