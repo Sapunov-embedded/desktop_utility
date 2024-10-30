@@ -1,6 +1,7 @@
 QT       += core gui serialport printsupport sql
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+
 CONFIG += c++17 #static
 
 
@@ -56,4 +57,6 @@ RC_FILE += icon.rc
 
 #QT_CONFIG -= opengl
 #CONFIG += no-icu -DNDEBUG
+
+
 

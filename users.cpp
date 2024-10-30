@@ -17,6 +17,7 @@ Users::~Users()
 {
   db.close();
   QSqlDatabase::removeDatabase(filePath);
+  delete model;
   delete ui;
 }
 
@@ -39,10 +40,10 @@ bool Users::initializeDatabase() {
   model = new QSqlTableModel(this, db);
   model->setTable("User");
   model->select(); // This is load the data from the table into the model
-  model->setHeaderData(1,Qt::Horizontal, tr("Организация"));
-  model->setHeaderData(2,Qt::Horizontal, tr("Адрес"));
-  model->setHeaderData(3,Qt::Horizontal, tr("Ответсвенное лицо"));
-
+//  model->setHeaderData(1,Qt::Horizontal, tr("Организация"));
+//  model->setHeaderData(2,Qt::Horizontal, tr("Адрес"));
+//  model->setHeaderData(3,Qt::Horizontal, tr("Ответсвенное лицо"));
+  setRusNameColums();
   // Set the model to the table view
   ui->tableView->setModel(model);
 
@@ -178,6 +179,13 @@ void Users::on_addUser_clicked()
       query.prepare(queryStr);
       query.bindValue(":SerialNumber", s_n);
       query.bindValue(":User", id);
+      QString devName=storage.getModelDevice();
+      //Fix problem with this table
+      if(devName==DEV_1XX){
+          devName="101";
+        }else{
+          devName="211";
+        }
 
       if (query.exec()) {
           if (query.next()) {
@@ -189,7 +197,7 @@ void Users::on_addUser_clicked()
               // Step 2: Add the new value with additional information
               QSqlQuery insertQuery;
               insertQuery.prepare("INSERT INTO Device (DeviceTypeID,UserID,SerialNumber,VerificationDate) VALUES (:DeviceTypeID,:UserID,:SerialNumber,:VerificationDate)");
-              insertQuery.bindValue(":DeviceTypeID", storage.getModelDevice());
+              insertQuery.bindValue(":DeviceTypeID", devName);
               insertQuery.bindValue(":UserID", id);
               insertQuery.bindValue(":SerialNumber", s_n);
               insertQuery.bindValue(":VerificationDate", storage.getVerificationDate().toString("yyyy-MM-dd"));
@@ -451,6 +459,7 @@ void Users::on_upButton_clicked()
   ui->SavedLabel->hide();
   model->setTable("User");
   model->select();
+  setRusNameColums();
   ui->tableView->setColumnHidden(0, true);
 }
 
@@ -491,11 +500,14 @@ void Users::on_update_clicked()
 }
 
 
-
-
 void Users::on_buttonBox_accepted()
 {
   model->submitAll();
   model->database().commit();
 }
 
+void Users::setRusNameColums(){
+  model->setHeaderData(1,Qt::Horizontal, tr("Организация"));
+  model->setHeaderData(2,Qt::Horizontal, tr("Адрес"));
+  model->setHeaderData(3,Qt::Horizontal, tr("Ответсвенное лицо"));
+};

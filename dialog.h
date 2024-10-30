@@ -25,8 +25,6 @@ signals:
 private slots:
   void on_buttonBox_accepted();
 
-
-
   void on_includeTableOfContents_stateChanged(int arg1);
 
   void on_includeHeaderOnEveryPage_stateChanged(int arg1);

@@ -609,7 +609,9 @@ void SerialPortManager::getBlock(){
       fromDateTime.setDate(dateFrom);
       fromDateTime.setTime(timeFrom);
       storage.setFromDateDB(fromDateTime);
-      for(int it=receivedData.size()-1;it>0;it-=6){
+      for(int it=receivedData.size();it>0;it-=6){
+          QByteArray temp;
+          temp.push_back(receivedData[it]);
           uint8_t flags=receivedData[it]>>4;
           bool flag1 = flags & 0x01;
           bool flag2 = flags & 0x02;
@@ -627,7 +629,7 @@ void SerialPortManager::getBlock(){
               storage.setToDateDB(ToDb);
               qDebug()<<"we find end date!block number "<<it;
               break;
-            }else if((!flag3&&!flag4)&&(/*flag2||*/(flag2&&flag1))){
+            }else if(static_cast<unsigned char>(receivedData[it])==0x20||static_cast<unsigned char>(receivedData[it])==0x30){
               uint8_t startBit=5;
               uint16_t ranges=exportBits(receivedData,startBit,16,it);
               uint16_t DaysAfter2015=exportBits(receivedData,startBit,16,it);

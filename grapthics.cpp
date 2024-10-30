@@ -59,6 +59,11 @@ grapthics::grapthics(ExportDataFromBytes *exp,QWidget *parent) :
   ui->graphicsView->setInteraction(QCP::iRangeZoom, true);
   ui->graphicsView->setInteraction(QCP::iRangeDrag, true);
   //customPlot->axisRect()->setRangeZoomFactor(1.2); // Adjust the zoom sensitivity
+  ui->inTemp->setChecked(true);
+  if(DEV_1XX==storage.getModelDevice()){
+      ui->outHumid->hide();
+      ui->outTemp->hide();
+    }
 }
 
 grapthics::~grapthics()

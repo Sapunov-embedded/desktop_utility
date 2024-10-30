@@ -108,7 +108,7 @@
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/resources/icons8-пользователь-30.png</normaloff>:/resources/icons8-пользователь-30.png</iconset>
+     <normaloff>:/resources/icons8-30.png</normaloff>:/resources/icons8-30.png</iconset>
    </property>
   </widget>
   <widget class="QPushButton" name="addUser">

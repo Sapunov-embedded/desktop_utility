@@ -6,6 +6,7 @@
 #include <QSqlQuery>
 #include <QSqlTableModel>
 #include <QSqlError>
+#include "globaldefines.h"
 #include "deviceinfostorage.h"
 #include "exportdatafrombytes.h"
 #include "applicationconfiguration.h"
@@ -52,6 +53,7 @@ private:
     void deleteTable(QString tableName);
     int getSelectedValueFromColum(int columNumber);
     QString getSelectedStringValue(int columN);
+    void setRusNameColums();
     //  void restoreData();
     // bool saveData(const QString &name, int age);
 };
