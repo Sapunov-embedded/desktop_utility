@@ -8,11 +8,11 @@
 //#include <QIODevice>
 #include <QDebug>  //for debug
 
-MainWindow::MainWindow(Users *user,SerialPortManager *SerialPM, ExportCSV *CSV,ExportDataFromBytes *parsedData,ApplicationConfiguration *config, QWidget *parent)
+MainWindow::MainWindow(Users *user,SerialPortManager *SerialPM,ExportDataFromBytes *parsedData,ApplicationConfiguration *config, QWidget *parent)
   : QMainWindow(parent),
     ui(new Ui::MainWindow),
     SerialPM(SerialPM),
-    storage(DeviceInfoStorage::getInstanse()),parsed(parsedData),appConfig(config),CSV(CSV),timer(new QTimer),layout(new QVBoxLayout),g(parsedData),us(user)
+    storage(DeviceInfoStorage::getInstanse()),parsed(parsedData),appConfig(config),timer(new QTimer),layout(new QVBoxLayout),g(parsedData),us(user)
 {
   us->hide();
   us->setWindowFlags (us->windowFlags() & ~Qt::WindowContextHelpButtonHint);//disable button "?" near close button
@@ -595,7 +595,7 @@ void MainWindow::on_graphButton_clicked()
 
 void MainWindow::on_tableButton_clicked()
 {
-  Dialog d(CSV);
+  Dialog d(this);
   d.setWindowFlags (d.windowFlags() & ~Qt::WindowContextHelpButtonHint);//disable button "?" near close button
   d.exec();
 }

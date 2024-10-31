@@ -1,25 +1,29 @@
 #ifndef DIALOG_H
 #define DIALOG_H
 
+#include <memory>
 #include <QDialog>
 #include "exportcsv.h"
 
 namespace Ui {
-class Dialog;
+  class Dialog;
 }
+/**
+ * @class Dialog
+ * @brief User interface for configuring CSV export parameters.
+ *
+ * Provides an interface for setting parameters required to create a CSV table.
+ * This class interacts with the ExportCSV class, which handles the business logic
+ * for generating the CSV file based on user-defined settings.
+ */
 
 class Dialog : public QDialog
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    explicit Dialog(ExportCSV *CSV,QWidget *parent = nullptr);
-    ~Dialog();
-
-public slots:
-
-signals:
-  void runCSV();
+  explicit Dialog(QWidget *parent = nullptr);
+  ~Dialog();
 
 
 private slots:
@@ -44,8 +48,9 @@ private slots:
   void on_nMultiple_valueChanged(int arg1);
 
 private:
-    Ui::Dialog *ui_2;
-    ExportCSV *CSV;
+  DeviceInfoStorage &storage;       ///< Reference to device information storage.
+  std::unique_ptr<Ui::Dialog> ui_2; ///< Pointer to the UI elements for the dialog.
+  std::unique_ptr<ExportCSV> CSV;   ///< Contains business logic for creating the CSV table.
 };
 
 #endif // DIALOG_H

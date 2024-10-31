@@ -35,7 +35,7 @@ class MainWindow : public QMainWindow
   Q_OBJECT
 
 public:
-  explicit  MainWindow(Users *user, SerialPortManager *SerialPM,ExportCSV *CSV,ExportDataFromBytes *parsedData,ApplicationConfiguration *config,QWidget *parent = nullptr);
+  explicit  MainWindow(Users *user, SerialPortManager *SerialPM,ExportDataFromBytes *parsedData,ApplicationConfiguration *config,QWidget *parent = nullptr);
 
 
   ~MainWindow();
@@ -95,7 +95,6 @@ private:
   DeviceInfoStorage &storage;
   ExportDataFromBytes *parsed;
   ApplicationConfiguration *appConfig;
-  ExportCSV *CSV;
   QTimer *timer;
   QVBoxLayout *layout;
   grapthics g;

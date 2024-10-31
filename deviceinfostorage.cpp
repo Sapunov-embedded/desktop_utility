@@ -7,7 +7,7 @@ DeviceInfoStorage&  DeviceInfoStorage::getInstanse(){
   return instanse;
 } ;
 
-//getters
+//==================getters==================
 QString DeviceInfoStorage::getModelDevice(){
   return ModelDevice;
 };
@@ -57,12 +57,15 @@ QDateTime DeviceInfoStorage::getToDateDB(){
 bool* DeviceInfoStorage::getControlSettings(){
   return controllSettings;
 };
+
 QString  DeviceInfoStorage::getDataBasePath(){
   return DBasePath;
 };
+
 QString  DeviceInfoStorage::getCsvPath(){
   return CsvPath;
 };
+
 QString  DeviceInfoStorage::getPdfPath(){
   return PdfPath;
 };
@@ -76,7 +79,7 @@ QString  DeviceInfoStorage::getPdfPath(){
     return isInSensor;
   };
 
-//setters
+//==================setters==================
 void DeviceInfoStorage::setModelDevice(QString deviceModel){
   ModelDevice=deviceModel;
 };
