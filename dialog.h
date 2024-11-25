@@ -16,7 +16,6 @@ namespace Ui {
  * This class interacts with the ExportCSV class, which handles the business logic
  * for generating the CSV file based on user-defined settings.
  */
-
 class Dialog : public QDialog
 {
   Q_OBJECT

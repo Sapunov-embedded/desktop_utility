@@ -3,7 +3,7 @@
 
 grapthics::grapthics(ExportDataFromBytes *exp,QWidget *parent) :
   QWidget(parent),
-  ui(new Ui::grapthics),storage(DeviceInfoStorage::getInstanse()),expData(exp)
+  ui(std::make_unique<Ui::grapthics>()),storage(DeviceInfoStorage::getInstanse()),expData(exp)
 {
   ui->setupUi(this);
   UpperTempControlLine=new QCPItemLine (ui->graphicsView);
@@ -37,7 +37,8 @@ grapthics::grapthics(ExportDataFromBytes *exp,QWidget *parent) :
   ui->graphicsView->yAxis->setLabel("Температрура/Влажность/Давление/Точка россы");
   ui->graphicsView->xAxis->setLabel("Время");
 
-  ui->snDevice->setText(storage.getSnDevice());
+
+
 
   for(uint8_t it=0;it<6;++it){
       ui->graphicsView->addGraph();
@@ -66,10 +67,7 @@ grapthics::grapthics(ExportDataFromBytes *exp,QWidget *parent) :
     }
 }
 
-grapthics::~grapthics()
-{
-  delete ui;
-}
+grapthics::~grapthics(){}
 
 
 void grapthics::drawGraph(){
@@ -84,7 +82,7 @@ void grapthics::drawGraph(){
 
   ui->fromDateTime->setText("с "+storage.getFromDateDB().toString("dd.MM.yyyy hh:mm"));
   ui->ToDateTime->setText("по "+storage.getToDateDB().toString("dd.MM.yyyy hh:mm"));
-
+  ui->snDevice->setText("Серийный номер: "+storage.getSnDevice());
   const QVector<ExportDataFromBytes::Data>& data=expData->getArrayValues();
 
   if (data.isEmpty()) {
@@ -244,7 +242,6 @@ void grapthics::on_controlTemp_clicked(bool checked)
     }
 
   if(checked){
-
       UpperTempControlLine->setVisible(true);
       UpperTempControlLine->start->setCoords(ui->graphicsView->xAxis->range().lower, iTempL);
       UpperTempControlLine->end->setCoords(ui->graphicsView->xAxis->range().upper, iTempL);
@@ -357,7 +354,7 @@ void grapthics::renderContent(QPainter &painter, QPrinter &printer)
 
 void grapthics::on_printToPdf_clicked()
 {
-  QString filePath = QFileDialog::getSaveFileName(this, "Save PDF", "", "*.pdf");
+  QString filePath = QFileDialog::getSaveFileName(this, storage.getPdfPath(), "График_"+storage.getFromDateDB().date().toString("dd_MM_yy"), "*.pdf");
   if (filePath.isEmpty())
     return;
 
@@ -408,17 +405,6 @@ void grapthics::print()
 
   painter.end();
 }
-
-void grapthics::debugRenderContent(const QSize &contentSize, const QRect &pageRect, qreal scaleFactor, qreal xOffset, qreal yOffset)
-{
-  qDebug() << "Content Size:" << contentSize;
-  qDebug() << "Page Rect:" << pageRect;
-  qDebug() << "Scale Factor:" << scaleFactor;
-  qDebug() << "X Offset:" << xOffset;
-  qDebug() << "Y Offset:" << yOffset;
-}
-
-
 
 
 void grapthics::on_controlTempOut_clicked(bool checked)

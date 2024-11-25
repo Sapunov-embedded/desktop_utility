@@ -125,7 +125,7 @@
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/resources/free-icon-checked-232444.png</normaloff>:/resources/free-icon-checked-232444.png</iconset>
+     <normaloff>:/resources/free-icon-save-3899581.png</normaloff>:/resources/free-icon-save-3899581.png</iconset>
    </property>
   </widget>
   <widget class="QPushButton" name="deleteUser">

@@ -14,7 +14,15 @@
 #include <QString>
 #include "exportdatafrombytes.h"
 #include "deviceinfostorage.h"
+#include "globaldefines.h"
 
+/**
+* @brief The Journal class
+*
+* The Journal class is responsible for analyzing temperature and humidity data by calculating the middle values for specific periods of the day.
+* It aggregates this processed data and generates a detailed PDF journal, providing an insightful summary of daily environmental conditions.
+* This class ensures precise data handling and offers an easy-to-read report format for comprehensive review.
+*/
 class Journal : public QObject
 {
   Q_OBJECT

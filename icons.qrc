@@ -48,5 +48,6 @@
         <file>resources/TMFC.BMP</file>
         <file>resources/TMFC.JPG</file>
         <file>resources/TMFC.png</file>
+        <file>resources/free-icon-save-3899581.png</file>
     </qresource>
 </RCC>

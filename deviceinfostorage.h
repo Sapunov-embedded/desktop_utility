@@ -11,12 +11,12 @@
 class DeviceInfoStorage:public QObject
 {
 public:
+
   static DeviceInfoStorage& getInstanse();
   /**
    * @brief Getters for retrieving stored variables.
    *
    */
-
   bool isInnerSensor();
   float getTemperature();
   float getHumid();
@@ -48,7 +48,6 @@ public:
    * @brief Setters for assigning values to variables.
    *
    */
-
   void setTemperature(float t);
   void setHumid(float h);
   void setVolumeLevel(uint8_t level);
@@ -82,7 +81,6 @@ public:
    * @param OutHumidLower Outer sensor's lower bound for humidity.
    * @param OutHumidUpper Outer sensor's upper bound for humidity.
    */
-
   void setRangeFor211(int8_t InTempLower, int8_t InTempUpper, uint8_t InHumidLower, uint8_t InHumidUpper,
                       int8_t OutTempLower, int8_t OutTempUpper, uint8_t OutHumidLower, uint8_t OutHumidUpper);
   void setSensorType211(bool isInner);

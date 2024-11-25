@@ -16,12 +16,6 @@ uint16_t ExportDataFromBytes::exportBits(QByteArray &data,uint8_t &startBit,uint
 };
 
 
-//uint16_t ExportDataFromBytes::getBytes(){
-//  uint16_t result=0;
-// // result=exportBits(array,stbit,bitlangth,iter);
-//  return result;
-//}
-
 void ExportDataFromBytes::ExportServiceAndDataPoints(){
   storageParsedData.clear();
   //copy data from storage class
@@ -169,3 +163,4 @@ std::pair<uint8_t,uint8_t> ExportDataFromBytes::getHumidRange(){
 bool ExportDataFromBytes::getRangeControlStatus(){
   return cntrlIsOn;
 };
+

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1055</width>
-    <height>807</height>
+    <height>791</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>1055</width>
-    <height>807</height>
+    <height>790</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -38,8 +38,8 @@
   <widget class="QCustomPlot" name="graphicsView">
    <property name="geometry">
     <rect>
-     <x>255</x>
-     <y>59</y>
+     <x>256</x>
+     <y>38</y>
      <width>781</width>
      <height>741</height>
     </rect>
@@ -49,9 +49,9 @@
    <property name="geometry">
     <rect>
      <x>-1</x>
-     <y>-1</y>
+     <y>-5</y>
      <width>251</width>
-     <height>801</height>
+     <height>811</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -63,169 +63,12 @@
    <property name="frameShadow">
     <enum>QFrame::Raised</enum>
    </property>
-   <widget class="QPushButton" name="closeGraph">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>241</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Закрыть</string>
-    </property>
-    <property name="icon">
-     <iconset resource="icons.qrc">
-      <normaloff>:/resources/close (1).png</normaloff>:/resources/close (1).png</iconset>
-    </property>
-   </widget>
-   <widget class="QColumnView" name="columnView">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>59</y>
-      <width>231</width>
-      <height>389</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="inTemp">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>454</y>
-      <width>66</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Т внутр.</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="outTemp">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>477</y>
-      <width>62</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Т внеш.</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="iHumid">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>500</y>
-      <width>73</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Rh внутр.</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="outHumid">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>523</y>
-      <width>69</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Rh внеш.</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="partialPressure">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>546</y>
-      <width>142</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Парциальное давление</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="dewPoint">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>569</y>
-      <width>150</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Температура точки росы</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="controlTemp">
-    <property name="geometry">
-     <rect>
-      <x>131</x>
-      <y>454</y>
-      <width>81</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Контроль Т</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="controlHumid">
-    <property name="geometry">
-     <rect>
-      <x>131</x>
-      <y>500</y>
-      <width>88</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Контроль Rh</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="snDevice">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>40</y>
-      <width>46</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>303-1919</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>615</y>
-      <width>74</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Интервал, мин</string>
-    </property>
-   </widget>
    <widget class="Line" name="line">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>641</y>
-      <width>231</width>
+      <y>610</y>
+      <width>241</width>
       <height>16</height>
      </rect>
     </property>
@@ -233,307 +76,12 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>650</y>
-      <width>231</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Обновить</string>
-    </property>
-    <property name="icon">
-     <iconset resource="icons.qrc">
-      <normaloff>:/resources/rotation.png</normaloff>:/resources/rotation.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>30</width>
-      <height>30</height>
-     </size>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="printToPdf">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>748</y>
-      <width>231</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>    В файл</string>
-    </property>
-    <property name="icon">
-     <iconset resource="icons.qrc">
-      <normaloff>:/resources/pdf.png</normaloff>:/resources/pdf.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>35</width>
-      <height>35</height>
-     </size>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="Print">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>694</y>
-      <width>231</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>На печать</string>
-    </property>
-    <property name="icon">
-     <iconset resource="icons.qrc">
-      <normaloff>:/resources/printer.png</normaloff>:/resources/printer.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>40</width>
-      <height>40</height>
-     </size>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_3">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>455</y>
-      <width>20</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color:rgb(255, 0, 0);</string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Sunken</enum>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>477</y>
-      <width>20</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color:rgb(255, 0, 255);</string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Sunken</enum>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_5">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>499</y>
-      <width>20</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color:rgb(0, 0, 255)</string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Sunken</enum>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_6">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>521</y>
-      <width>20</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color:rgb(85, 255, 255)</string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Sunken</enum>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_7">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>543</y>
-      <width>20</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color:rgb(255, 170, 0)</string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Sunken</enum>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_8">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>565</y>
-      <width>20</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color:rgb(191, 220, 190)</string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Sunken</enum>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="comboBox">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>610</y>
-      <width>69</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="editable">
-     <bool>true</bool>
-    </property>
-    <property name="currentText">
-     <string>1</string>
-    </property>
-    <property name="currentIndex">
-     <number>0</number>
-    </property>
-    <property name="maxVisibleItems">
-     <number>120</number>
-    </property>
-    <property name="modelColumn">
-     <number>0</number>
-    </property>
-    <item>
-     <property name="text">
-      <string>1</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>2</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>3</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>4</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>5</string>
-     </property>
-    </item>
-   </widget>
-   <widget class="QCheckBox" name="controlTempOut">
-    <property name="geometry">
-     <rect>
-      <x>131</x>
-      <y>477</y>
-      <width>101</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Контроль Т вн.</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="controlHumidOut">
-    <property name="geometry">
-     <rect>
-      <x>131</x>
-      <y>523</y>
-      <width>111</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Контроль Rh вн.</string>
-    </property>
-   </widget>
   </widget>
   <widget class="QLabel" name="discription">
    <property name="geometry">
     <rect>
-     <x>500</x>
-     <y>40</y>
+     <x>501</x>
+     <y>19</y>
      <width>241</width>
      <height>16</height>
     </rect>
@@ -545,8 +93,8 @@
   <widget class="QLabel" name="fromDateTime">
    <property name="geometry">
     <rect>
-     <x>740</x>
-     <y>38</y>
+     <x>741</x>
+     <y>17</y>
      <width>101</width>
      <height>20</height>
     </rect>
@@ -558,14 +106,462 @@
   <widget class="QLabel" name="ToDateTime">
    <property name="geometry">
     <rect>
-     <x>849</x>
-     <y>38</y>
+     <x>850</x>
+     <y>17</y>
      <width>111</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
     <string>по 10.10.2010 11:00 </string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="printToPdf">
+   <property name="geometry">
+    <rect>
+     <x>13</x>
+     <y>725</y>
+     <width>231</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>    В файл</string>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/resources/pdf.png</normaloff>:/resources/pdf.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>35</width>
+     <height>35</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="partialPressure">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>504</y>
+     <width>142</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Парциальное давление</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>523</y>
+     <width>20</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color:rgb(191, 220, 190)</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Sunken</enum>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>457</y>
+     <width>20</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color:rgb(255, 0, 255);</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Sunken</enum>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>577</y>
+     <width>74</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Интервал, мин</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="outTemp">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>459</y>
+     <width>62</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Т внеш.</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="iHumid">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>437</y>
+     <width>73</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Rh внутр.</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="inTemp">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>412</y>
+     <width>66</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Т внутр.</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>479</y>
+     <width>20</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color:rgb(85, 255, 255)</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Sunken</enum>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="controlTemp">
+   <property name="geometry">
+    <rect>
+     <x>131</x>
+     <y>412</y>
+     <width>121</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Контроль Т внутр.</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="closeGraph">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>38</y>
+     <width>241</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="text">
+    <string>Закрыть</string>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/resources/close (1).png</normaloff>:/resources/close (1).png</iconset>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBox">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>572</y>
+     <width>69</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="editable">
+    <bool>true</bool>
+   </property>
+   <property name="currentText">
+    <string>1</string>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <property name="maxVisibleItems">
+    <number>120</number>
+   </property>
+   <property name="modelColumn">
+    <number>0</number>
+   </property>
+   <item>
+    <property name="text">
+     <string>1</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>2</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>3</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>4</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>5</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QCheckBox" name="controlTempOut">
+   <property name="geometry">
+    <rect>
+     <x>131</x>
+     <y>459</y>
+     <width>121</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Контроль Т внеш.</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>413</y>
+     <width>20</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color:rgb(255, 0, 0);</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Sunken</enum>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="controlHumid">
+   <property name="geometry">
+    <rect>
+     <x>131</x>
+     <y>437</y>
+     <width>121</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Контроль Rh внутр.</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="controlHumidOut">
+   <property name="geometry">
+    <rect>
+     <x>131</x>
+     <y>481</y>
+     <width>121</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Контроль Rh внеш.</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="snDevice">
+   <property name="geometry">
+    <rect>
+     <x>19</x>
+     <y>78</y>
+     <width>211</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Серийный номер: 0000</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_7">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>501</y>
+     <width>20</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color:rgb(255, 170, 0)</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Sunken</enum>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>435</y>
+     <width>20</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color:rgb(0, 0, 255)</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Sunken</enum>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="outHumid">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>481</y>
+     <width>69</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Rh внеш.</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="Print">
+   <property name="geometry">
+    <rect>
+     <x>13</x>
+     <y>671</y>
+     <width>231</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>На печать</string>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/resources/printer.png</normaloff>:/resources/printer.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>40</width>
+     <height>40</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>13</x>
+     <y>627</y>
+     <width>231</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Обновить</string>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/resources/rotation.png</normaloff>:/resources/rotation.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>30</width>
+     <height>30</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="dewPoint">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>527</y>
+     <width>150</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Температура точки росы</string>
    </property>
   </widget>
  </widget>

@@ -38,7 +38,7 @@
    <bool>false</bool>
   </property>
   <property name="windowTitle">
-   <string>Сервисная программа обработки данных v03.03.2R9</string>
+   <string>Работа с гигрометром &quot;Фармацевт&quot; ТМФЦ 102/212. Настройка, получение отчётов и графиков.</string>
   </property>
   <property name="windowIcon">
    <iconset resource="icons.qrc">
@@ -97,14 +97,14 @@
      <widget class="QWidget" name="Connected_device" native="true">
       <property name="geometry">
        <rect>
-        <x>0</x>
+        <x>1</x>
         <y>0</y>
         <width>971</width>
         <height>791</height>
        </rect>
       </property>
       <property name="autoFillBackground">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <widget class="QToolButton" name="Disconnect_device">
        <property name="geometry">
@@ -129,10 +129,10 @@
       <widget class="QTextBrowser" name="textBrowser">
        <property name="geometry">
         <rect>
-         <x>530</x>
-         <y>620</y>
-         <width>421</width>
-         <height>141</height>
+         <x>640</x>
+         <y>640</y>
+         <width>311</width>
+         <height>121</height>
         </rect>
        </property>
       </widget>
@@ -338,7 +338,7 @@
        <property name="geometry">
         <rect>
          <x>871</x>
-         <y>590</y>
+         <y>611</y>
          <width>75</width>
          <height>23</height>
         </rect>
@@ -385,7 +385,7 @@
         <string notr="true">color:rgb(4, 149, 18);</string>
        </property>
        <property name="text">
-        <string>Термогиргометр</string>
+        <string>Гигроометр</string>
        </property>
       </widget>
       <widget class="QFrame" name="modelFrame">
@@ -443,7 +443,7 @@
        <property name="geometry">
         <rect>
          <x>120</x>
-         <y>720</y>
+         <y>749</y>
          <width>131</width>
          <height>16</height>
         </rect>
@@ -456,7 +456,7 @@
        <property name="geometry">
         <rect>
          <x>120</x>
-         <y>690</y>
+         <y>719</y>
          <width>91</width>
          <height>16</height>
         </rect>
@@ -469,7 +469,7 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>690</y>
+         <y>719</y>
          <width>81</width>
          <height>20</height>
         </rect>
@@ -482,7 +482,7 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>720</y>
+         <y>749</y>
          <width>81</width>
          <height>20</height>
         </rect>
@@ -491,52 +491,13 @@
         <bool>true</bool>
        </property>
       </widget>
-      <widget class="QLineEdit" name="verificationDateEnd">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>468</y>
-         <width>81</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_12">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>434</y>
-         <width>81</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Дата поверки</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_13">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>468</y>
-         <width>131</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Дата окончания поверки</string>
-       </property>
-      </widget>
       <widget class="QGroupBox" name="groupBox_4">
        <property name="geometry">
         <rect>
-         <x>460</x>
-         <y>180</y>
+         <x>30</x>
+         <y>547</y>
          <width>171</width>
-         <height>151</height>
+         <height>121</height>
         </rect>
        </property>
        <property name="title">
@@ -552,24 +513,11 @@
          </rect>
         </property>
        </widget>
-       <widget class="QLineEdit" name="UTC">
-        <property name="geometry">
-         <rect>
-          <x>40</x>
-          <y>60</y>
-          <width>50</width>
-          <height>22</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>+3:00</string>
-        </property>
-       </widget>
        <widget class="QPushButton" name="readDateTimeFromDevice">
         <property name="geometry">
          <rect>
-          <x>13</x>
-          <y>90</y>
+          <x>10</x>
+          <y>60</y>
           <width>51</width>
           <height>23</height>
          </rect>
@@ -581,8 +529,8 @@
        <widget class="QPushButton" name="timeFromPcButton">
         <property name="geometry">
          <rect>
-          <x>13</x>
-          <y>120</y>
+          <x>10</x>
+          <y>90</y>
           <width>151</width>
           <height>23</height>
          </rect>
@@ -594,27 +542,14 @@
        <widget class="QPushButton" name="writeDateTimeFromDevice">
         <property name="geometry">
          <rect>
-          <x>103</x>
-          <y>90</y>
+          <x>100</x>
+          <y>60</y>
           <width>61</width>
           <height>23</height>
          </rect>
         </property>
         <property name="text">
          <string>Записать</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_6">
-        <property name="geometry">
-         <rect>
-          <x>13</x>
-          <y>60</y>
-          <width>31</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>UTC</string>
         </property>
        </widget>
        <widget class="QTimeEdit" name="timeEdit">
@@ -631,7 +566,7 @@
       <widget class="QPushButton" name="getTempButton">
        <property name="geometry">
         <rect>
-         <x>360</x>
+         <x>420</x>
          <y>100</y>
          <width>71</width>
          <height>21</height>
@@ -644,10 +579,10 @@
       <widget class="QFrame" name="frame_2">
        <property name="geometry">
         <rect>
-         <x>80</x>
+         <x>30</x>
          <y>130</y>
-         <width>351</width>
-         <height>271</height>
+         <width>461</width>
+         <height>331</height>
         </rect>
        </property>
        <property name="frameShape">
@@ -662,10 +597,10 @@
        <widget class="QLabel" name="label_11">
         <property name="geometry">
          <rect>
-          <x>160</x>
+          <x>174</x>
           <y>150</y>
-          <width>47</width>
-          <height>51</height>
+          <width>51</width>
+          <height>61</height>
          </rect>
         </property>
         <property name="font">
@@ -707,10 +642,10 @@
        <widget class="QLabel" name="label_14">
         <property name="geometry">
          <rect>
-          <x>160</x>
+          <x>174</x>
           <y>43</y>
-          <width>51</width>
-          <height>51</height>
+          <width>61</width>
+          <height>61</height>
          </rect>
         </property>
         <property name="font">
@@ -726,10 +661,10 @@
        <widget class="QLCDNumber" name="lcd_humid">
         <property name="geometry">
          <rect>
-          <x>10</x>
+          <x>20</x>
           <y>147</y>
           <width>141</width>
-          <height>61</height>
+          <height>71</height>
          </rect>
         </property>
         <property name="frameShape">
@@ -751,10 +686,10 @@
        <widget class="QLCDNumber" name="lcd_temp">
         <property name="geometry">
          <rect>
-          <x>10</x>
+          <x>20</x>
           <y>36</y>
           <width>141</width>
-          <height>61</height>
+          <height>71</height>
          </rect>
         </property>
         <property name="frameShape">
@@ -767,10 +702,10 @@
        <widget class="QLCDNumber" name="lcdHours">
         <property name="geometry">
          <rect>
-          <x>256</x>
+          <x>328</x>
           <y>30</y>
-          <width>71</width>
-          <height>31</height>
+          <width>101</width>
+          <height>41</height>
          </rect>
         </property>
         <property name="inputMethodHints">
@@ -792,15 +727,15 @@
        <widget class="QLCDNumber" name="lcdDate">
         <property name="geometry">
          <rect>
-          <x>240</x>
+          <x>298</x>
           <y>70</y>
-          <width>101</width>
-          <height>21</height>
+          <width>131</width>
+          <height>31</height>
          </rect>
         </property>
         <property name="font">
          <font>
-          <family>Times New Roman</family>
+          <family>MS Shell Dlg 2</family>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -833,166 +768,175 @@
        <widget class="Line" name="line">
         <property name="geometry">
          <rect>
-          <x>223</x>
+          <x>241</x>
           <y>20</y>
           <width>20</width>
-          <height>211</height>
+          <height>291</height>
          </rect>
         </property>
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
        </widget>
-      </widget>
-      <widget class="QPushButton" name="WriteToFlash">
-       <property name="geometry">
-        <rect>
-         <x>250</x>
-         <y>624</y>
-         <width>80</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Записать</string>
-       </property>
-      </widget>
-      <widget class="QComboBox" name="VolumeLevel">
-       <property name="geometry">
-        <rect>
-         <x>474</x>
-         <y>360</y>
-         <width>72</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <item>
-        <property name="text">
-         <string>5</string>
+       <widget class="Line" name="line_2">
+        <property name="geometry">
+         <rect>
+          <x>266</x>
+          <y>93</y>
+          <width>171</width>
+          <height>20</height>
+         </rect>
         </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>10</string>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>15</string>
+       </widget>
+       <widget class="QLabel" name="controlLabel">
+        <property name="geometry">
+         <rect>
+          <x>320</x>
+          <y>111</y>
+          <width>81</width>
+          <height>21</height>
+         </rect>
         </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>20</string>
+        <property name="font">
+         <font>
+          <family>Segoe UI Black</family>
+          <pointsize>10</pointsize>
+          <weight>75</weight>
+          <italic>false</italic>
+          <bold>true</bold>
+         </font>
         </property>
-       </item>
-       <item>
         <property name="text">
-         <string>25</string>
+         <string>КОНТРОЛЬ</string>
         </property>
-       </item>
-       <item>
+       </widget>
+       <widget class="QFrame" name="InnerFrame">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>235</y>
+          <width>190</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
+        <property name="tabletTracking">
+         <bool>true</bool>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Box</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
+        </property>
+        <widget class="QLabel" name="label_37">
+         <property name="geometry">
+          <rect>
+           <x>49</x>
+           <y>6</y>
+           <width>101</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Segoe UI Black</family>
+           <pointsize>10</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>ВНУТРЕННИЙ</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QFrame" name="OuterFrame">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>280</y>
+          <width>190</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Box</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
+        </property>
+        <widget class="QLabel" name="label_38">
+         <property name="geometry">
+          <rect>
+           <x>58</x>
+           <y>4</y>
+           <width>81</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Segoe UI Black</family>
+           <pointsize>10</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>ВНЕШНИЙ</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QLabel" name="label_13">
+        <property name="geometry">
+         <rect>
+          <x>316</x>
+          <y>270</y>
+          <width>131</width>
+          <height>16</height>
+         </rect>
+        </property>
         <property name="text">
-         <string>30</string>
+         <string>Дата окончания поверки</string>
         </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>35</string>
+       </widget>
+       <widget class="QLineEdit" name="verificationDateEnd">
+        <property name="geometry">
+         <rect>
+          <x>363</x>
+          <y>288</y>
+          <width>81</width>
+          <height>21</height>
+         </rect>
         </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>40</string>
+        <property name="readOnly">
+         <bool>true</bool>
         </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>45</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>50</string>
-        </property>
-       </item>
-      </widget>
-      <widget class="QLabel" name="label_30">
-       <property name="geometry">
-        <rect>
-         <x>484</x>
-         <y>340</y>
-         <width>61</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Громкость</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="WriteVolumeLevel">
-       <property name="geometry">
-        <rect>
-         <x>554</x>
-         <y>360</y>
-         <width>61</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Записать</string>
-       </property>
-      </widget>
-      <widget class="QDateEdit" name="VerificationDate">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>430</y>
-         <width>81</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="dateTime">
-        <datetime>
-         <hour>0</hour>
-         <minute>0</minute>
-         <second>0</second>
-         <year>2023</year>
-         <month>11</month>
-         <day>23</day>
-        </datetime>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="setVerDate">
-       <property name="geometry">
-        <rect>
-         <x>270</x>
-         <y>430</y>
-         <width>61</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Записать</string>
-       </property>
+       </widget>
       </widget>
       <widget class="QGroupBox" name="intervals_101">
        <property name="geometry">
         <rect>
-         <x>20</x>
-         <y>544</y>
-         <width>221</width>
-         <height>111</height>
+         <x>295</x>
+         <y>268</y>
+         <width>181</width>
+         <height>101</height>
         </rect>
        </property>
        <property name="title">
-        <string>Интервалы внутрение</string>
+        <string/>
        </property>
        <widget class="QLabel" name="label_29">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>80</y>
+          <y>70</y>
           <width>31</width>
           <height>16</height>
          </rect>
@@ -1005,7 +949,7 @@
         <property name="geometry">
          <rect>
           <x>36</x>
-          <y>38</y>
+          <y>28</y>
           <width>26</width>
           <height>20</height>
          </rect>
@@ -1024,7 +968,7 @@
         <property name="geometry">
          <rect>
           <x>121</x>
-          <y>62</y>
+          <y>52</y>
           <width>21</width>
           <height>16</height>
          </rect>
@@ -1037,7 +981,7 @@
         <property name="geometry">
          <rect>
           <x>150</x>
-          <y>18</y>
+          <y>8</y>
           <width>21</width>
           <height>20</height>
          </rect>
@@ -1050,7 +994,7 @@
         <property name="geometry">
          <rect>
           <x>27</x>
-          <y>62</y>
+          <y>52</y>
           <width>21</width>
           <height>16</height>
          </rect>
@@ -1063,7 +1007,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>40</y>
+          <y>30</y>
           <width>31</width>
           <height>20</height>
          </rect>
@@ -1076,7 +1020,7 @@
         <property name="geometry">
          <rect>
           <x>66</x>
-          <y>38</y>
+          <y>28</y>
           <width>26</width>
           <height>20</height>
          </rect>
@@ -1095,7 +1039,7 @@
         <property name="geometry">
          <rect>
           <x>98</x>
-          <y>82</y>
+          <y>72</y>
           <width>26</width>
           <height>20</height>
          </rect>
@@ -1114,7 +1058,7 @@
         <property name="geometry">
          <rect>
           <x>60</x>
-          <y>20</y>
+          <y>10</y>
           <width>21</width>
           <height>16</height>
          </rect>
@@ -1127,7 +1071,7 @@
         <property name="geometry">
          <rect>
           <x>150</x>
-          <y>62</y>
+          <y>52</y>
           <width>21</width>
           <height>16</height>
          </rect>
@@ -1140,7 +1084,7 @@
         <property name="geometry">
          <rect>
           <x>91</x>
-          <y>62</y>
+          <y>52</y>
           <width>21</width>
           <height>16</height>
          </rect>
@@ -1153,7 +1097,7 @@
         <property name="geometry">
          <rect>
           <x>90</x>
-          <y>20</y>
+          <y>10</y>
           <width>21</width>
           <height>16</height>
          </rect>
@@ -1166,7 +1110,7 @@
         <property name="geometry">
          <rect>
           <x>28</x>
-          <y>20</y>
+          <y>10</y>
           <width>21</width>
           <height>16</height>
          </rect>
@@ -1179,7 +1123,7 @@
         <property name="geometry">
          <rect>
           <x>120</x>
-          <y>20</y>
+          <y>10</y>
           <width>21</width>
           <height>16</height>
          </rect>
@@ -1192,7 +1136,7 @@
         <property name="geometry">
          <rect>
           <x>96</x>
-          <y>38</y>
+          <y>28</y>
           <width>26</width>
           <height>20</height>
          </rect>
@@ -1211,7 +1155,7 @@
         <property name="geometry">
          <rect>
           <x>68</x>
-          <y>82</y>
+          <y>72</y>
           <width>26</width>
           <height>20</height>
          </rect>
@@ -1230,7 +1174,7 @@
         <property name="geometry">
          <rect>
           <x>128</x>
-          <y>82</y>
+          <y>72</y>
           <width>26</width>
           <height>20</height>
          </rect>
@@ -1270,7 +1214,7 @@
         <property name="geometry">
          <rect>
           <x>38</x>
-          <y>82</y>
+          <y>72</y>
           <width>26</width>
           <height>20</height>
          </rect>
@@ -1289,7 +1233,7 @@
         <property name="geometry">
          <rect>
           <x>126</x>
-          <y>38</y>
+          <y>28</y>
           <width>26</width>
           <height>20</height>
          </rect>
@@ -1308,7 +1252,7 @@
         <property name="geometry">
          <rect>
           <x>61</x>
-          <y>62</y>
+          <y>52</y>
           <width>21</width>
           <height>16</height>
          </rect>
@@ -1321,11 +1265,14 @@
       <widget class="QProgressBar" name="progressBar">
        <property name="geometry">
         <rect>
-         <x>530</x>
-         <y>583</y>
+         <x>640</x>
+         <y>611</y>
          <width>118</width>
          <height>20</height>
         </rect>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
        </property>
        <property name="value">
         <number>24</number>
@@ -1334,62 +1281,288 @@
         <enum>Qt::Horizontal</enum>
        </property>
       </widget>
-      <widget class="QGroupBox" name="interval_211_inside">
+      <widget class="QGroupBox" name="groupBox">
        <property name="geometry">
         <rect>
-         <x>340</x>
-         <y>544</y>
-         <width>161</width>
-         <height>101</height>
+         <x>30</x>
+         <y>486</y>
+         <width>171</width>
+         <height>51</height>
         </rect>
        </property>
        <property name="title">
-        <string>Интервалы внутрение(211)</string>
+        <string>Дата поверки</string>
        </property>
-       <widget class="QSpinBox" name="InTempLower">
+       <widget class="QDateEdit" name="VerificationDate">
         <property name="geometry">
          <rect>
-          <x>35</x>
-          <y>42</y>
-          <width>42</width>
+          <x>10</x>
+          <y>23</y>
+          <width>81</width>
           <height>22</height>
          </rect>
         </property>
-        <property name="minimum">
-         <number>-40</number>
-        </property>
-        <property name="maximum">
-         <number>70</number>
+        <property name="dateTime">
+         <datetime>
+          <hour>0</hour>
+          <minute>0</minute>
+          <second>0</second>
+          <year>2023</year>
+          <month>11</month>
+          <day>23</day>
+         </datetime>
         </property>
        </widget>
-       <widget class="QSpinBox" name="InHumidLower">
+       <widget class="QPushButton" name="setVerDate">
         <property name="geometry">
          <rect>
-          <x>95</x>
-          <y>42</y>
-          <width>42</width>
+          <x>100</x>
+          <y>23</y>
+          <width>61</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Записать</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_3">
+       <property name="geometry">
+        <rect>
+         <x>520</x>
+         <y>110</y>
+         <width>91</width>
+         <height>81</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Громкость</string>
+       </property>
+       <widget class="QComboBox" name="VolumeLevel">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>23</y>
+          <width>72</width>
           <height>22</height>
          </rect>
         </property>
+        <item>
+         <property name="text">
+          <string>5</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>10</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>15</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>20</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>25</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>30</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>35</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>40</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>45</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>50</string>
+         </property>
+        </item>
        </widget>
-       <widget class="QLabel" name="label_7">
+       <widget class="QPushButton" name="WriteVolumeLevel">
         <property name="geometry">
          <rect>
-          <x>39</x>
-          <y>22</y>
+          <x>10</x>
+          <y>53</y>
+          <width>61</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Записать</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="settingsOuterSensor">
+       <property name="geometry">
+        <rect>
+         <x>280</x>
+         <y>630</y>
+         <width>341</width>
+         <height>131</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Выбрать контролируемые диапозоны внешнего датчика:</string>
+       </property>
+       <widget class="QGroupBox" name="interval_211_outside">
+        <property name="geometry">
+         <rect>
+          <x>170</x>
+          <y>20</y>
+          <width>161</width>
+          <height>101</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Ручная настройка</string>
+        </property>
+        <widget class="MySpinBox" name="OutTempLower">
+         <property name="geometry">
+          <rect>
+           <x>49</x>
+           <y>36</y>
+           <width>42</width>
+           <height>22</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>-40</number>
+         </property>
+         <property name="maximum">
+          <number>70</number>
+         </property>
+        </widget>
+        <widget class="MySpinBox" name="OutHumidLower">
+         <property name="geometry">
+          <rect>
+           <x>49</x>
+           <y>70</y>
+           <width>42</width>
+           <height>22</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="MySpinBox" name="OutHumidUpper">
+         <property name="geometry">
+          <rect>
+           <x>104</x>
+           <y>70</y>
+           <width>42</width>
+           <height>22</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_4">
+         <property name="geometry">
+          <rect>
+           <x>50</x>
+           <y>20</y>
+           <width>21</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>От</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_35">
+         <property name="geometry">
+          <rect>
+           <x>105</x>
+           <y>20</y>
+           <width>21</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>До</string>
+         </property>
+        </widget>
+        <widget class="MySpinBox" name="OutTempUpper">
+         <property name="geometry">
+          <rect>
+           <x>104</x>
+           <y>36</y>
+           <width>42</width>
+           <height>22</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>-40</number>
+         </property>
+         <property name="maximum">
+          <number>70</number>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_34">
+         <property name="geometry">
+          <rect>
+           <x>16</x>
+           <y>73</y>
+           <width>31</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>RH%</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_31">
+         <property name="geometry">
+          <rect>
+           <x>16</x>
+           <y>38</y>
+           <width>31</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string> Т °C</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QLabel" name="label_40">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>57</y>
           <width>31</width>
-          <height>16</height>
+          <height>20</height>
          </rect>
         </property>
         <property name="text">
          <string> Т °C</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_32">
+       <widget class="QLabel" name="label_41">
         <property name="geometry">
          <rect>
-          <x>102</x>
-          <y>21</y>
+          <x>10</x>
+          <y>98</y>
           <width>31</width>
           <height>16</height>
          </rect>
@@ -1398,118 +1571,57 @@
          <string>RH%</string>
         </property>
        </widget>
-       <widget class="QSpinBox" name="InHumidUpper">
+       <widget class="CustomComboBox" name="outerTempComboBox">
         <property name="geometry">
          <rect>
-          <x>95</x>
-          <y>70</y>
-          <width>42</width>
+          <x>50</x>
+          <y>58</y>
+          <width>111</width>
           <height>22</height>
          </rect>
         </property>
-        <property name="minimum">
-         <number>1</number>
-        </property>
        </widget>
-       <widget class="QSpinBox" name="InTempUpper">
+       <widget class="CustomComboBox" name="outerHumidComboBox">
         <property name="geometry">
          <rect>
-          <x>35</x>
-          <y>70</y>
-          <width>42</width>
+          <x>50</x>
+          <y>95</y>
+          <width>111</width>
           <height>22</height>
          </rect>
-        </property>
-        <property name="minimum">
-         <number>-40</number>
-        </property>
-        <property name="maximum">
-         <number>70</number>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>43</y>
-          <width>21</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>От</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_33">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>73</y>
-          <width>21</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>До</string>
         </property>
        </widget>
       </widget>
-      <widget class="QGroupBox" name="interval_211_outside">
+      <widget class="QGroupBox" name="settingsInnerSensor">
        <property name="geometry">
         <rect>
-         <x>340</x>
-         <y>660</y>
-         <width>161</width>
-         <height>101</height>
+         <x>280</x>
+         <y>486</y>
+         <width>341</width>
+         <height>131</height>
         </rect>
        </property>
        <property name="title">
-        <string>Интервалы внешние(211)</string>
+        <string>Выбрать контролируемые диапозоны внутреннего датчика:</string>
        </property>
-       <widget class="QSpinBox" name="OutTempLower">
+       <widget class="QLabel" name="label_30">
         <property name="geometry">
          <rect>
-          <x>35</x>
-          <y>42</y>
-          <width>42</width>
-          <height>22</height>
-         </rect>
-        </property>
-        <property name="minimum">
-         <number>-40</number>
-        </property>
-        <property name="maximum">
-         <number>70</number>
-        </property>
-       </widget>
-       <widget class="QSpinBox" name="OutHumidLower">
-        <property name="geometry">
-         <rect>
-          <x>95</x>
-          <y>42</y>
-          <width>42</width>
-          <height>22</height>
-         </rect>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_31">
-        <property name="geometry">
-         <rect>
-          <x>39</x>
-          <y>22</y>
+          <x>10</x>
+          <y>59</y>
           <width>31</width>
-          <height>16</height>
+          <height>20</height>
          </rect>
         </property>
         <property name="text">
          <string> Т °C</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_34">
+       <widget class="QLabel" name="label_39">
         <property name="geometry">
          <rect>
-          <x>102</x>
-          <y>21</y>
+          <x>10</x>
+          <y>96</y>
           <width>31</width>
           <height>16</height>
          </rect>
@@ -1518,62 +1630,185 @@
          <string>RH%</string>
         </property>
        </widget>
-       <widget class="QSpinBox" name="OutHumidUpper">
+       <widget class="QGroupBox" name="interval_211_inside">
         <property name="geometry">
          <rect>
-          <x>95</x>
-          <y>70</y>
-          <width>42</width>
+          <x>170</x>
+          <y>20</y>
+          <width>161</width>
+          <height>101</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Ручная настройка</string>
+        </property>
+        <widget class="MySpinBox" name="InTempLower">
+         <property name="geometry">
+          <rect>
+           <x>49</x>
+           <y>36</y>
+           <width>42</width>
+           <height>22</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>-40</number>
+         </property>
+         <property name="maximum">
+          <number>70</number>
+         </property>
+        </widget>
+        <widget class="MySpinBox" name="InHumidLower">
+         <property name="geometry">
+          <rect>
+           <x>49</x>
+           <y>70</y>
+           <width>42</width>
+           <height>22</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="MySpinBox" name="InHumidUpper">
+         <property name="geometry">
+          <rect>
+           <x>104</x>
+           <y>70</y>
+           <width>42</width>
+           <height>22</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label">
+         <property name="geometry">
+          <rect>
+           <x>50</x>
+           <y>19</y>
+           <width>21</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>От</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_33">
+         <property name="geometry">
+          <rect>
+           <x>105</x>
+           <y>19</y>
+           <width>21</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>До</string>
+         </property>
+        </widget>
+        <widget class="MySpinBox" name="InTempUpper">
+         <property name="geometry">
+          <rect>
+           <x>104</x>
+           <y>36</y>
+           <width>42</width>
+           <height>22</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>-40</number>
+         </property>
+         <property name="maximum">
+          <number>70</number>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_32">
+         <property name="geometry">
+          <rect>
+           <x>16</x>
+           <y>73</y>
+           <width>31</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>RH%</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_7">
+         <property name="geometry">
+          <rect>
+           <x>14</x>
+           <y>39</y>
+           <width>31</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string> Т °C</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="CustomComboBox" name="innerTempComboBox">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>56</y>
+          <width>111</width>
           <height>22</height>
          </rect>
         </property>
-        <property name="minimum">
-         <number>1</number>
+        <property name="currentIndex">
+         <number>-1</number>
         </property>
        </widget>
-       <widget class="QSpinBox" name="OutTempUpper">
+       <widget class="CustomComboBox" name="innerHumidComboBox">
         <property name="geometry">
          <rect>
-          <x>35</x>
-          <y>70</y>
-          <width>42</width>
+          <x>50</x>
+          <y>93</y>
+          <width>111</width>
           <height>22</height>
          </rect>
-        </property>
-        <property name="minimum">
-         <number>-40</number>
-        </property>
-        <property name="maximum">
-         <number>70</number>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_4">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>43</y>
-          <width>21</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>От</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_35">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>73</y>
-          <width>21</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>До</string>
         </property>
        </widget>
       </widget>
+      <widget class="QPushButton" name="WriteToFlash">
+       <property name="geometry">
+        <rect>
+         <x>540</x>
+         <y>460</y>
+         <width>80</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Записать</string>
+       </property>
+      </widget>
+      <zorder>progressBar</zorder>
+      <zorder>Disconnect_device</zorder>
+      <zorder>textBrowser</zorder>
+      <zorder>groupBox_2</zorder>
+      <zorder>clearConsoleDisW</zorder>
+      <zorder>label_2</zorder>
+      <zorder>label_3</zorder>
+      <zorder>modelFrame</zorder>
+      <zorder>clearConsoleConW</zorder>
+      <zorder>label_9</zorder>
+      <zorder>label_8</zorder>
+      <zorder>SNumber_text</zorder>
+      <zorder>FW_version_text</zorder>
+      <zorder>groupBox_4</zorder>
+      <zorder>getTempButton</zorder>
+      <zorder>frame_2</zorder>
+      <zorder>intervals_101</zorder>
+      <zorder>groupBox</zorder>
+      <zorder>groupBox_3</zorder>
+      <zorder>settingsOuterSensor</zorder>
+      <zorder>settingsInnerSensor</zorder>
+      <zorder>WriteToFlash</zorder>
      </widget>
      <widget class="QWidget" name="Disconnected_device" native="true">
       <property name="geometry">
@@ -1753,7 +1988,7 @@
        <property name="geometry">
         <rect>
          <x>871</x>
-         <y>590</y>
+         <y>611</y>
          <width>75</width>
          <height>23</height>
         </rect>
@@ -1765,19 +2000,133 @@
       <widget class="QTextBrowser" name="mainConsole_1">
        <property name="geometry">
         <rect>
-         <x>530</x>
-         <y>620</y>
-         <width>421</width>
-         <height>141</height>
+         <x>640</x>
+         <y>640</y>
+         <width>311</width>
+         <height>121</height>
         </rect>
        </property>
       </widget>
+      <widget class="QGroupBox" name="groupBox_7">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>110</y>
+         <width>201</width>
+         <height>91</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Цель подключения изделия</string>
+       </property>
+       <widget class="QRadioButton" name="journalTargetRadioButton">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>151</width>
+          <height>19</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Формирование журнала</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="mainTargetRadioButton">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>60</y>
+          <width>191</width>
+          <height>19</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Работа и настройка устройства</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="switchSensorBoxDisWin">
+       <property name="geometry">
+        <rect>
+         <x>250</x>
+         <y>120</y>
+         <width>161</width>
+         <height>80</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Выбор датчика для журнала</string>
+       </property>
+       <widget class="QRadioButton" name="innerlSensorButtonDisWin">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>27</y>
+          <width>84</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Внутренний</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="externalSensorButtonDisWin">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>47</y>
+          <width>84</width>
+          <height>19</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Внешний</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QProgressBar" name="progressBar_for_journal">
+       <property name="geometry">
+        <rect>
+         <x>640</x>
+         <y>610</y>
+         <width>118</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+       <property name="value">
+        <number>24</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
      </widget>
+     <zorder>Disconnected_device</zorder>
+     <zorder>Connected_device</zorder>
     </widget>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomComboBox</class>
+   <extends>QComboBox</extends>
+   <header>mainwindow.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MySpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>mainwindow.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="icons.qrc"/>
  </resources>

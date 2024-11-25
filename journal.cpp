@@ -8,12 +8,12 @@ Journal::Journal(const QString &location, const QString &organization, const QSt
   calculateRangeOfEachDay();
   product=storage.getModelDevice();
 
-  if(product=="101"){
+  if(product==DEV_1XX){
       sensorType=innerSensor;
     }
   else{
       if(storage.isInnerSensor()){
-          sensorType=innerSensor;//temp, realization than 211
+          sensorType=innerSensor;
         }
       else{
           sensorType=externalSensor;
@@ -44,8 +44,8 @@ void Journal::createJournal(const QString &fileName) {
   constraints << QTextLength(QTextLength::FixedLength, 100)   // First column width
               << QTextLength(QTextLength::FixedLength, 100)   // Second column width
               << QTextLength(QTextLength::FixedLength, 100)  // Third column width
-              << QTextLength(QTextLength::FixedLength, 100)  // fourth column width
-              << QTextLength(QTextLength::FixedLength, 100);  // fourth column width
+              << QTextLength(QTextLength::FixedLength, 100)  // Fourth column width
+              << QTextLength(QTextLength::FixedLength, 100);  // Fith column width
   tableFormat.setColumnWidthConstraints(constraints);
   int rows=4;//default
 
@@ -87,9 +87,15 @@ void Journal::createJournal(const QString &fileName) {
     }
 
   drawEntries(*table);
-
+  QString fileN=fileName;
+  if(sensorType=="Внутренний датчик"){
+      fileN+="_in";
+    }else{
+    fileN+="_out";
+    }
+  fileN+=".pdf";
   // Create a QPdfWriter
-  QPdfWriter writer(fileName);
+  QPdfWriter writer(fileN);
 
   // Optional: Set some parameters for the PDF (e.g., resolution, page size)
   writer.setResolution(300);
@@ -98,7 +104,7 @@ void Journal::createJournal(const QString &fileName) {
   // Print the QTextDocument to the PDF
   document.print(&writer);
   emit JournalCreateDone();
-  QUrl fileUrl = QUrl::fromLocalFile(fileName);
+  QUrl fileUrl = QUrl::fromLocalFile(fileN);
   QDesktopServices::openUrl(fileUrl);
 }
 
@@ -250,9 +256,6 @@ void Journal::drawEntries(QTextTable& table) const {
 }
 
 
-
-
-
 void Journal::calculateRangeOfEachDay() {
   QTime startTimeF(00, 00, 00);
   QTime endTimeF(11, 59, 00);
@@ -278,8 +281,7 @@ void Journal::calculateRangeOfEachDay() {
 
           MiddleOfDay middle{currentDay, tempFirst, tempSecond, humidFirst, humidSecond};
           reportData.push_back(middle);
-//          qDebug()<<currentDay.date().toString("dd.MM.yyyy");
-//          qDebug()<<entry.date.date().toString("dd.MM.yyyy");
+
           // Clear the temporary data for the new day
           tempFirstHalf.clear();
           tempSecondHalf.clear();

@@ -18,11 +18,18 @@ Dialog::Dialog(QWidget *parent) :
 
 Dialog::~Dialog(){};
 
+/**
+ * @brief Dialog::on_buttonBox_accepted
+ * "Ok" on window.
+ */
 void Dialog::on_buttonBox_accepted()
 {
   CSV->startExportProcess();
 }
 
+/**
+ * @brief CheckBoxes
+ */
 void Dialog::on_includeTableOfContents_stateChanged(int arg1)
 {
   if(arg1==2){

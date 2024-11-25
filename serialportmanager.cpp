@@ -150,13 +150,19 @@ void SerialPortManager::readFwVersion(){
               fwVersion+=QString::number(it);
             }
           storage.setFwVersion(fwVersion);
+          repeatTimes=0;
         }
       else{
-          qDebug()<<"fw getting fail, repeat";
-          Logging::logWarning("fw getting fail, repeat for get");
-          receivedData.clear();
-          delay(500);
-          readFwVersion();
+          if(repeatTimes<10){
+              qDebug()<<"fw getting fail, repeat";
+              Logging::logWarning("fw getting fail, repeat for get");
+              receivedData.clear();
+              ++repeatTimes;
+              delay(500);
+              readFwVersion();
+            }else{
+              Logging::logWarning("fw getting fail, tryed 10 times");
+            }
         }
       qDebug()<<"fw: "<<fwVersion;
     }
@@ -165,14 +171,12 @@ void SerialPortManager::readFwVersion(){
 //s.n included in answear from device(question "who are you?")
 void SerialPortManager::readSnDevice(){
   if(serial->isOpen()){
-      QString snDevice;
       QByteArray deviceInfo= storage.getDeviceInfo();
       if(deviceInfo.size()==32){
           QString str;
           for(int it=10;it<16;++it){
               str+=QString::number(deviceInfo[it]);
             }
-          snDevice=str; //not need
           storage.setSnDevice(str);
           qDebug()<<"s.n "<<str;
         }
@@ -236,12 +240,18 @@ void SerialPortManager::readDateTimeFromDevice(){
           dataTime.setDate(QDate(2000+receivedData[4],receivedData[3],receivedData[2]));
           qDebug()<<"dataTime"<<dataTime.toString("dd.MM.yyyy hh:mm");
           storage.setDateTime(dataTime);
+          repeatTimes=0;
         }
       else{
-          delay(500);
-          qDebug()<<"Read divice datetime fail, repeat";
-          Logging::logWarning("Read divice datetime fail, repeat to read");
-          readDateTimeFromDevice();
+          if(repeatTimes<10){
+              delay(500);
+              qDebug()<<"Read divice datetime fail, repeat";
+              Logging::logWarning("Read divice datetime fail, repeat to read");
+              ++repeatTimes;
+              readDateTimeFromDevice();
+            }else{
+              Logging::logError("Read divice datetime fail, tryed more 10 times");
+            }
         }
 
 
@@ -337,32 +347,72 @@ void SerialPortManager::getTempHumid(){
           storage.setHumid(humid*0.1);
           qDebug()<<"temp: "<<temp*0.1<<"humid"<<humid*0.1;
           Logging::logInfo("temp: "+QString::number(temp*0.1).toStdString()+", humid: "+QString::number(humid*0.1).toStdString());
+          repeatTimes=0;
         }else{
-          delay(500);
-           Logging::logInfo("tempHumid getting fail,repeat to get");
-          qDebug()<<"tempHumid getting fail,repeat";
-          getTempHumid();
+          if(repeatTimes<10){
+              delay(500);
+              Logging::logInfo("tempHumid getting fail,repeat to get");
+              qDebug()<<"tempHumid getting fail,repeat";
+              ++repeatTimes;
+              getTempHumid();
+            }else{
+              Logging::logError("tempHumid getting fail,tryed more 10 times");
+            }
         }
     }
 };
 
-//only up to 32byte, mean need loop for receive all data
-void SerialPortManager::readFlashAddr(const uint8_t cmd,const uint8_t lng, const uint8_t addr,const  int byteCount){
-  if(serial->isOpen()){
+////only up to 32byte, mean need loop for receive all data
+//void SerialPortManager::readFlashAddr(const uint8_t cmd,const uint8_t lng, const uint8_t addr,const  int byteCount){
+//  if(serial->isOpen()){
+//      receivedData.clear();
+//      serial->clear();
+//      writeData(createCommand(cmd,lng,addr));
+//      delay(800);
+//      while(receivedData.size()<byteCount){
+//          QEventLoop loop;
+//          connect(this, &SerialPortManager::dataReady, &loop, &QEventLoop::quit);
+//          QTimer::singleShot(1000, &loop, &QEventLoop::quit);
+//          loop.exec();
+//          processBarValue=receivedData.size();
+//        }
+//      qDebug()<<"receivedData total:"<<receivedData.size();
+//    }
+//};
+void SerialPortManager::readFlashAddr(const uint8_t cmd, const uint8_t lng, const uint8_t addr, const int byteCount) {
+  if (serial->isOpen()) {
       receivedData.clear();
       serial->clear();
-      writeData(createCommand(cmd,lng,addr));
+      writeData(createCommand(cmd, lng, addr));
       delay(800);
-      while(receivedData.size()<byteCount){
+
+      int retryCount = 0;
+      const int maxRetries = 10; // максимальное количество попыток ожидания
+      const int waitTimeMs = 1000; // время ожидания в миллисекундах
+
+      while (receivedData.size() < byteCount && retryCount < maxRetries) {
           QEventLoop loop;
           connect(this, &SerialPortManager::dataReady, &loop, &QEventLoop::quit);
-          QTimer::singleShot(1000, &loop, &QEventLoop::quit);
+          QTimer::singleShot(waitTimeMs, &loop, &QEventLoop::quit);
           loop.exec();
-          processBarValue=receivedData.size();
+
+          if (receivedData.size() > static_cast<int>(processBarValue)) {
+              retryCount = 0; // если получены новые данные, сбрасываем счетчик попыток
+            } else {
+              ++retryCount; // увеличиваем счетчик при отсутствии новых данных
+            }
+
+          processBarValue = receivedData.size();
         }
-      qDebug()<<"receivedData total:"<<receivedData.size();
+
+      qDebug() << "receivedData total:" << receivedData.size();
+
+      if (retryCount == maxRetries) {
+          qWarning() << "Timeout reached: data not fully received.";
+        }
     }
-};
+}
+
 
 //create mask user control range
 void SerialPortManager::controlSettings(){
@@ -484,7 +534,7 @@ void SerialPortManager::getVerificationDate(){
   if(!VerificationDate.isValid()||VerificationDate.isNull()){
       qDebug()<<"no valid ver date, getted "<<deviceInfo;
       Logging::logError("no valid ver date, getted "+deviceInfo.toStdString());
-      askSerialPort();
+      // askSerialPort(); without repeat request, healfing in future
     }
   storage.setVerificationDate(VerificationDate);
   qDebug()<<"VerificationDate "<<VerificationDate.toString("dd.MM.yyyy");
@@ -506,9 +556,9 @@ void SerialPortManager::setVerificationDate(){
       writeToFlashByte((0x12+it),ByteToBcd(date[it]));
       delay(500);
     }
- //erase cmd 33 on device
- // writeData(createCommand(0x21,0x00,0x00));
- //delay(500);
+  //erase cmd 33 on device
+  // writeData(createCommand(0x21,0x00,0x00));
+  //delay(500);
   storage.setVerificationDate(VerificationDate);
   qDebug()<<"new verification date setted";
   Logging::logWarning("new verification date setted");
@@ -555,6 +605,10 @@ void SerialPortManager::setHighBaudRate(){
 //send to device cmd for set baudrate 9600
 void SerialPortManager::resetSpeed(){
   if(serial->isOpen()){
+      if(storage.getModelDevice()==DEV_1XX){
+      writeData(createCommand(0x3C,0x00,0x60));
+      delay(500);
+        }
       writeData(createCommand(0x3C,0x00,0x60));
       delay(500);
       serial->setBaudRate(9600);
@@ -571,13 +625,13 @@ void SerialPortManager::saveSettings(){
 
 //one byte contain value setted control range on device
 void SerialPortManager::getControlRange(){
-  if(storage.getModelDevice()=="101"){
-  readFlashAddr(0x0A,0x04,0x18,8);
-  controlSettings();
+  if(storage.getModelDevice()==DEV_1XX){
+      readFlashAddr(0x0A,0x04,0x18,8);
+      controlSettings();
     }
-  if(storage.getModelDevice()=="211"){
+  if(storage.getModelDevice()==DEV_2XX){
       readFlashAddr(0x0A,0x08,0x44,12);
-  controlSettings211();
+      controlSettings211();
     }
 };
 
@@ -590,7 +644,7 @@ void SerialPortManager::getBlock(){
   if(serial->isOpen()&&storage.getBlockSizeValue()!=0){
       int32_t bytes=storage.getBlockSizeValue();
       delay(1000);
-      if(bytes>9600){
+      if(bytes>1000){
           setHighBaudRate();
         }
       delay(1000);
@@ -609,7 +663,7 @@ void SerialPortManager::getBlock(){
       fromDateTime.setDate(dateFrom);
       fromDateTime.setTime(timeFrom);
       storage.setFromDateDB(fromDateTime);
-      for(int it=receivedData.size();it>0;it-=6){
+      for(int it=receivedData.size()-6;it>0;it-=6){
           QByteArray temp;
           temp.push_back(receivedData[it]);
           uint8_t flags=receivedData[it]>>4;
@@ -617,7 +671,7 @@ void SerialPortManager::getBlock(){
           bool flag2 = flags & 0x02;
           bool flag3 = flags & 0x04;
           bool flag4 = flags & 0x08;
-          if((flag2/*||flag3*/)&&!flag1&&!flag4&&devName==DEV_1XX){
+          if(flag2&&!flag1&&!flag3&&!flag4&&devName==DEV_1XX){
               uint8_t startBit=5;
               uint16_t ranges=exportBits(receivedData,startBit,16,it);
               uint16_t DaysAfter2015=exportBits(receivedData,startBit,16,it);
@@ -634,12 +688,12 @@ void SerialPortManager::getBlock(){
               uint16_t ranges=exportBits(receivedData,startBit,16,it);
               uint16_t DaysAfter2015=exportBits(receivedData,startBit,16,it);
               uint16_t Minutes=exportBits(receivedData,startBit,11,it);
-QByteArray temp;
-temp.push_back(receivedData[it]);
+              QByteArray temp;
+              temp.push_back(receivedData[it]);
 
-qDebug()<<"byte array: "<<temp.toHex().toUpper();
+              qDebug()<<"byte array: "<<temp.toHex().toUpper();
 
-          QDateTime ToDb;
+              QDateTime ToDb;
               ToDb.setDate(start.addDays(DaysAfter2015));
               ToDb.setTime(time.addSecs(Minutes*60));
               storage.setToDateDB(ToDb);
@@ -694,14 +748,14 @@ void SerialPortManager::getBlockSize(){
 };
 
 void SerialPortManager::controlSettings211(){
-   int8_t inTempLower=receivedData[0];
-   int8_t inTempUpper=receivedData[1];
-   uint8_t inHumidLower=receivedData[4];
-   uint8_t inHumidUpper=receivedData[5];
-   int8_t outTempLower=receivedData[2];
-   int8_t outTempUpper=receivedData[3];
-   uint8_t outHumidLower=receivedData[6];
-   uint8_t outHumidUpper=receivedData[7];
-   storage.setRangeFor211(inTempLower,inTempUpper,inHumidLower,inHumidUpper,outTempLower,outTempUpper,outHumidLower,outHumidUpper);
+  int8_t inTempLower=receivedData[0];
+  int8_t inTempUpper=receivedData[1];
+  uint8_t inHumidLower=receivedData[4];
+  uint8_t inHumidUpper=receivedData[5];
+  int8_t outTempLower=receivedData[2];
+  int8_t outTempUpper=receivedData[3];
+  uint8_t outHumidLower=receivedData[6];
+  uint8_t outHumidUpper=receivedData[7];
+  storage.setRangeFor211(inTempLower,inTempUpper,inHumidLower,inHumidUpper,outTempLower,outTempUpper,outHumidLower,outHumidUpper);
 };
 

@@ -90,6 +90,7 @@ signals:
 private:
   uint8_t BcdToByte(uint8_t Value); // Converts BCD to byte format.
   uint8_t ByteToBcd(uint8_t Value); // Converts byte to BCD format.
+  uint8_t repeatTimes=0;
   uint16_t exportBits(QByteArray &data, uint8_t &startBit, uint8_t bitLength, uint32_t iter); // Exports bits from data.
   void resetSpeed(); // Resets the speed settings.
   void delay(int milliseconds);

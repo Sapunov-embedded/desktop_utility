@@ -4,6 +4,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17 #static
 
+#CONFIG-=static
 
 
 SOURCES += \
@@ -12,7 +13,6 @@ SOURCES += \
     dialog.cpp \
     exportcsv.cpp \
     exportdatafrombytes.cpp \
-    exportpdf.cpp \
     grapthics.cpp \
     journal.cpp \
     logging.cpp \
@@ -28,7 +28,6 @@ HEADERS += \
     dialog.h \
     exportcsv.h \
     exportdatafrombytes.h \
-    exportpdf.h \
     globaldefines.h \
     grapthics.h \
     ini.h \

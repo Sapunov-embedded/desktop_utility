@@ -1,12 +1,28 @@
 #include "exportcsv.h"
-#include <QDebug>
+
 
 ExportCSV::ExportCSV():storage(DeviceInfoStorage::getInstanse()){
   FromDb=storage.getFromDateDB();
   ToDb=storage.getToDateDB();
 };
 
-
+/**
+ * @brief Extracts a sequence of bits from a byte array and returns it as a 16-bit integer.
+ *
+ * This function parses `bitLength` bits from the `data` byte array starting at the specified
+ * bit position (`startBit`) and returns the value as a `uint16_t`. The `iter` parameter allows
+ * for an offset, useful for parsing consecutive sections of a larger data structure.
+ *
+ * @param data       The source byte array from which to extract bits.
+ * @param startBit   A reference to the starting bit position. This is incremented by `bitLength`
+ *                   to reflect the next bit position after the parsed segment.
+ * @param bitLength  The number of bits to extract, must not exceed 16 to fit within a `uint16_t`.
+ * @param iter       The byte offset to start from in the byte array (useful for consecutive parsing).
+ *
+ * @return uint16_t  The extracted bits packed into a 16-bit unsigned integer. If `bitLength` is
+ *                   greater than 16 or if the data array does not contain enough bits, the behavior
+ *                   may be undefined.
+ */
 uint16_t ExportCSV::exportBits(QByteArray &data,uint8_t &startBit,uint8_t bitlengh,uint32_t iter ){
   uint16_t value=0;
   for(int i=0;i<bitlengh;++i){
@@ -21,12 +37,14 @@ uint16_t ExportCSV::exportBits(QByteArray &data,uint8_t &startBit,uint8_t bitlen
 
 void ExportCSV::startExportProcess(){
   defaultFileAddr=storage.getCsvPath()+"/TMFC_"+storage.getModelDevice()+storage.getFromDateDB().toString("_dd_MM_yyyy_hh_mm")+"_"+storage.getToDateDB().toString("dd_MM_yyyy_hh_mm")+".csv";
-  qDebug()<<defaultFileAddr;
+  Logging::logInfo("CSV full file path "+defaultFileAddr.toStdString());
+  //qDebug()<<defaultFileAddr;
+
   QFile f(defaultFileAddr);
   if(f.open( QIODevice::WriteOnly)){
       QTextStream out(&f);
-      QString TMFC_101="ДЕТАЛЬНАЯ ТАБЛИЦА ТЕМПЕРАТУРЫ И ВЛАЖНОСТИ ГИГРОМЕТРА ТМФЦ 101\n";
-      QString TMFC_211="ДЕТАЛЬНАЯ ТАБЛИЦА ТЕМПЕРАТУРЫ И ВЛАЖНОСТИ ГИГРОМЕТРА ТМФЦ 211\n";
+      QString TMFC_101="ДЕТАЛЬНАЯ ТАБЛИЦА ТЕМПЕРАТУРЫ И ВЛАЖНОСТИ ГИГРОМЕТРА ТМФЦ 102\n";
+      QString TMFC_211="ДЕТАЛЬНАЯ ТАБЛИЦА ТЕМПЕРАТУРЫ И ВЛАЖНОСТИ ГИГРОМЕТРА ТМФЦ 212\n";
       QString pageHeader_101="Дата/Время;Т, °С;Rh, %;Нарушение;Контроль\n";
       QString pageHeader_211="Дата/Время;Т внутр, °С;Rh внутр, %;Т внеш, °С;Rh внеш, %;Нарушение;Контроль\n";
       QString controlRange="Интервал контроля;";
@@ -39,11 +57,11 @@ void ExportCSV::startExportProcess(){
 
       if(includeTableOfContents){
           if(deviceName==DEV_1XX){
-          out<<TMFC_101;
+              out<<TMFC_101;
             }else
-          if(deviceName==DEV_2XX){
-              out<<TMFC_211;
-            }
+            if(deviceName==DEV_2XX){
+                out<<TMFC_211;
+              }
 
         }
 
@@ -95,48 +113,48 @@ void ExportCSV::startExportProcess(){
       bool IsFirstPage=true;
 
       bool* arr=storage.getControlSettings();
-       if(deviceName==DEV_1XX){
-      //parse setted range control temp and humid
-      for(uint8_t it=1;it<=9;++it){
-          if(it<=4){
-              if(arr[it]&&!startTempAverage){
-                  startTempAverage=it;
+      if(deviceName==DEV_1XX){
+          //parse setted range control temp and humid
+          for(uint8_t it=1;it<=9;++it){
+              if(it<=4){
+                  if(arr[it]&&!startTempAverage){
+                      startTempAverage=it;
+                    }
+                  if(arr[it]){
+                      endTempAverage=it+1;
+                    }
                 }
-              if(arr[it]){
-                  endTempAverage=it+1;
+              if(it<=9&&it>4){
+                  if(arr[it]&&!startHumidAverage){
+                      startHumidAverage=it-4;
+                      qDebug()<<startHumidAverage<<"startHumidAverage";
+                    }
+                  if(arr[it]){
+                      endHumidAverage=it-3;
+                      qDebug()<<endHumidAverage<<"endHumidAverage";
+                    }
                 }
             }
-          if(it<=9&&it>4){
-              if(arr[it]&&!startHumidAverage){
-                  startHumidAverage=it-4;
-                  qDebug()<<startHumidAverage<<"startHumidAverage";
-                }
-              if(arr[it]){
-                  endHumidAverage=it-3;
-                  qDebug()<<endHumidAverage<<"endHumidAverage";
-                }
-            }
+        }else if(deviceName==DEV_2XX){
+          auto ranges=storage.getRangeFor211();
+          startTempAverage=std::get<0>(ranges);
+          endTempAverage=std::get<1>(ranges);
+          startHumidAverage=std::get<2>(ranges);
+          endHumidAverage=std::get<3>(ranges);
+          startExTempAverage=std::get<4>(ranges);
+          endExTempAverage=std::get<5>(ranges);
+          startExHumidAverage=std::get<6>(ranges);
+          endExHumidAverage=std::get<7>(ranges);
         }
-         }else if(deviceName==DEV_2XX){
-           auto ranges=storage.getRangeFor211();
-                startTempAverage=std::get<0>(ranges);
-                endTempAverage=std::get<1>(ranges);
-                startHumidAverage=std::get<2>(ranges);
-                endHumidAverage=std::get<3>(ranges);
-                startExTempAverage=std::get<4>(ranges);
-                endExTempAverage=std::get<5>(ranges);
-                startExHumidAverage=std::get<6>(ranges);
-                endExHumidAverage=std::get<7>(ranges);
-         }
 
-       //print range
-       QString celsias="°С";
-       if(deviceName==DEV_1XX){
-           out<<"("<<tempArray[startTempAverage]<<".."<<tempArray[endTempAverage]<<")"<<celsias<<";("<<humidArray[startHumidAverage]<<".."<<humidArray[endHumidAverage]<<")%\n";
-         }else if(deviceName==DEV_2XX){
-           out<<"("<<startTempAverage<<".."<<endTempAverage<<")"<<celsias<<";("<<startHumidAverage<<".."<<endHumidAverage<<");"
-                "("<<startExTempAverage<<".."<<endExTempAverage<<")"<<celsias<<";("<<startExHumidAverage<<".."<<endExHumidAverage<<")%\n";
-         }
+      //print range
+      QString celsias="°С";
+      if(deviceName==DEV_1XX){
+          out<<"("<<tempArray[startTempAverage]<<".."<<tempArray[endTempAverage]<<")"<<celsias<<";("<<humidArray[startHumidAverage]<<".."<<humidArray[endHumidAverage]<<")%\n";
+        }else if(deviceName==DEV_2XX){
+          out<<"("<<startTempAverage<<".."<<endTempAverage<<")"<<celsias<<";("<<startHumidAverage<<".."<<endHumidAverage<<");"
+                                                                                                                          "("<<startExTempAverage<<".."<<endExTempAverage<<")"<<celsias<<";("<<startExHumidAverage<<".."<<endExHumidAverage<<")%\n";
+        }
 
       uint8_t shift = 0;
       //main loop data parse
@@ -240,20 +258,20 @@ void ExportCSV::startExportProcess(){
                   out<< locale.toString(iHumid,'f',1)+";";
                   //for 211 version device
                   if(deviceName==DEV_2XX){
-                  out<<locale.toString(eTemp,'f',1);
-                  out<<";";
-                  out<< locale.toString(eHumid,'f',1)+";";
-               }
+                      out<<locale.toString(eTemp,'f',1);
+                      out<<";";
+                      out<< locale.toString(eHumid,'f',1)+";";
+                    }
                   if(deviceName==DEV_1XX){
-                   if((rangeControl&&iTemp<tempArray[startTempAverage])||(rangeControl&&iTemp>tempArray[endTempAverage])||
-                      (rangeControl&&iHumid<humidArray[startHumidAverage])||(rangeControl&&iHumid>humidArray[endHumidAverage])){
-                       out<<yes<<";";
-                     }
-                   else{
-                       out<<no<<";";
-                     }
+                      if((rangeControl&&iTemp<tempArray[startTempAverage])||(rangeControl&&iTemp>tempArray[endTempAverage])||
+                         (rangeControl&&iHumid<humidArray[startHumidAverage])||(rangeControl&&iHumid>humidArray[endHumidAverage])){
+                          out<<yes<<";";
+                        }
+                      else{
+                          out<<no<<";";
+                        }
                     }else if((deviceName==DEV_2XX&&rangeControl)&&((iTemp<startTempAverage)||(iTemp>endTempAverage)||(iHumid<startHumidAverage)||(iHumid>endHumidAverage)||
-                                                                 (eTemp<startExTempAverage)||(eTemp>endExTempAverage)||(eHumid<startExHumidAverage)||(eHumid>endExHumidAverage))){
+                                                                   (eTemp<startExTempAverage)||(eTemp>endExTempAverage)||(eHumid<startExHumidAverage)||(eHumid>endExHumidAverage))){
 
                       out<<yes<<";";
                     }
@@ -304,12 +322,12 @@ void ExportCSV::startExportProcess(){
             }
         }
     }
- f.close();
-      QUrl fileUrl = QUrl::fromLocalFile(defaultFileAddr);
-      QDesktopServices::openUrl(fileUrl);
+  f.close();
+  QUrl fileUrl = QUrl::fromLocalFile(defaultFileAddr);
+  QDesktopServices::openUrl(fileUrl);
 };
 
-//setters
+//==================setters==================
 void ExportCSV::setIncludeTableOfContents(bool state) {
   includeTableOfContents = state;
 }
@@ -350,6 +368,7 @@ void ExportCSV::setDbDate(){
   ToDb=storage.getToDateDB();
 };
 
+//==================getters==================
 bool ExportCSV::getIncludeTableOfContents(){
   return includeTableOfContents;
 };

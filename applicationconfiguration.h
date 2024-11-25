@@ -21,10 +21,10 @@
  * and converts backslashes to forward slashes for cross-platform compatibility, preventing misinterpretation
  * of escape sequences. It also stores user-specific information such as the resource person, company, and city.
  */
-
 class ApplicationConfiguration
 {
 public:
+
   /**
    * @brief Constructs an ApplicationConfiguration object.
    *
@@ -37,13 +37,11 @@ public:
    * CSV files, and database connections, storing the relevant
    * information in the program's storage for later use.
    */
-
   ApplicationConfiguration();
 
   /**
    * @brief Destructor delete tempory file temp.ini
    */
-
   ~ApplicationConfiguration();
 
   /**
@@ -55,7 +53,6 @@ public:
    * Additionally, it saves the new values to the `FS_Service.ini`
    * file without corrupting any existing data.
    */
-
   void saveSettings();
 
   void setCurrentUser(QString rPers, QString company, QString city);

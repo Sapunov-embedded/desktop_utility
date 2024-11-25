@@ -30,38 +30,47 @@ ApplicationConfiguration::ApplicationConfiguration():storage(DeviceInfoStorage::
   QTextStream out(&outFile);
   out << fileContent;
   outFile.close();
+  mINI::INIFile fil("temp.ini");
+  mINI::INIStructure ini;
+  fil.read(ini);
 
   auto settings2= std::make_unique<QSettings>("temp.ini", QSettings::IniFormat);
-  AdobePath=settings2->value("eARPath.text").toString();
-  Logging::logInfo("AdobePath " +AdobePath.toStdString());
-  //qDebug()<<"AdobePath"<<AdobePath;
 
-  DBasePath=settings2->value("eDataDir.text").toString();
+  //AdobePath=settings2->value("eARPath.text").toString();
+  AdobePath=QString::fromStdString(ini["General"]["eARPath.text"]);
+  Logging::logInfo("AdobePath " +AdobePath.toStdString());
+  qDebug()<<"AdobePath"<<AdobePath;
+
+  //DBasePath=settings2->value("eDataDir.text").toString();
+  DBasePath=QString::fromStdString(ini["General"]["eDataDir.text"]);
   Logging::logInfo("DBasePath "+DBasePath.toStdString());
   storage.setDataBasePath(DBasePath);
-  //qDebug()<<"DBasePath"<<DBasePath;
+  qDebug()<<"DBasePath"<<DBasePath;
 
-  CsvPath=settings2->value("eXlsxDir.text").toString();
+ // CsvPath=settings2->value("eXlsxDir.text").toString();
+  CsvPath=QString::fromStdString(ini["General"]["eXlsxDir.text"]);
   Logging::logInfo("CsvPath "+CsvPath.toStdString());
   storage.setCsvPath(CsvPath);
-  //qDebug()<<"CsvPath"<<CsvPath;
+  qDebug()<<"CsvPath"<<CsvPath;
 
-  PdfPath=settings2->value("ePdfDir.text").toString();
+ // PdfPath=settings2->value("ePdfDir.text").toString();
+  PdfPath=QString::fromStdString(ini["General"]["ePdfDir.text"]);
   Logging::logInfo("PdfPath "+PdfPath.toStdString());
   storage.setPdfPath(PdfPath);
-  //qDebug()<<"PdfPath"<<PdfPath;
+  qDebug()<<"PdfPath"<<PdfPath;
 
-  ResPerson=settings->value("eRespPersonN.text").toString();
+
+  ResPerson= QString::fromStdString(ini["General"]["eRespPersonN.text"]);
   Logging::logInfo("RespPerson "+ResPerson.toStdString());
-  //qDebug()<<ResPerson;
+  qDebug()<<ResPerson;
 
-  CompanyN=settings->value("eCompanyN.text").toString();
+  CompanyN= QString::fromStdString(ini["General"]["eCompanyN.text"]);
   Logging::logInfo("CompanyN "+CompanyN.toStdString());
-  //qDebug()<<CompanyN;
+  qDebug()<<CompanyN;
 
-  CityN=settings->value("eTHLocationN.text").toStringList().join(", ");
+  CityN=QString::fromStdString(ini["General"]["eTHLocationN.text"]);
   Logging::logInfo("CityN "+CityN.toStdString());
-  //qDebug()<<CityN;
+  qDebug()<<CityN;
 }
 
 ApplicationConfiguration::~ApplicationConfiguration()

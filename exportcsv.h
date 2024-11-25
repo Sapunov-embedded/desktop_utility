@@ -1,14 +1,16 @@
 #ifndef EXPORTCSV_H
 #define EXPORTCSV_H
 
+#include <QUrl>
 #include <QFile>
+#include <QDate>
+#include <QDebug>
+#include <QLocale>
 #include <QTextStream>
 #include <QDesktopServices>
-#include <QUrl>
-#include <QDate>
-#include <QLocale>
 #include <vector>
 #include <algorithm>
+#include "logging.h"
 #include "globaldefines.h"
 #include "serialportmanager.h"
 
@@ -21,7 +23,11 @@ class ExportCSV: public QObject
 
 public:
   ExportCSV();
-  //getters
+
+  /**
+   * @brief Getters for retrieving stored variables.
+   *
+   */
   bool getIncludeTableOfContents();
   bool getIncludeHeaderOnEveryPage();
   bool getShowEveryMinute();
@@ -36,7 +42,11 @@ public:
 
 public slots:
   void startExportProcess();
-  //setters
+
+  /**
+   * @brief Setters for assigning values to variables.
+   *
+   */
   void setIncludeTableOfContents(bool status);
   void setIncludeHeaderOnEveryPage(bool status);
   void setShowEveryMinute(bool status);
@@ -48,12 +58,9 @@ public slots:
   void setNMultiple(uint8_t multiple);
   void setDbDate();
 
-signals:
-  void exportDone();
 
 private:
   QString defaultFileAddr="DB.csv";
-  uint16_t exportBits(QByteArray &data,uint8_t &startBit,uint8_t bitlengh,uint32_t iter);
   DeviceInfoStorage &storage;
   QDateTime FromDb;
   QDateTime ToDb;
@@ -61,11 +68,12 @@ private:
   bool includeHeaderOnEveryPage =false;
   bool showEveryMinute =true;
   bool showEveryNMinutesEachHour  = false;
-  uint8_t nMinutesInterval =1;
   bool calculateAverageEveryNMinutes  = false;
-  uint8_t averageInterval =2;
   bool showEveryMinuteMultipleOfN  = false;
+  uint8_t nMinutesInterval =1;
+  uint8_t averageInterval =2;
   uint8_t nMultiple=1;
+  uint16_t exportBits(QByteArray &data,uint8_t &startBit,uint8_t bitlengh,uint32_t iter);
 
 };
 

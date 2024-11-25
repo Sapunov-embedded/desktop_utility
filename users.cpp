@@ -319,11 +319,25 @@ void Users::on_addUser_clicked()
       QSqlQuery query;
       query.prepare(queryStr);
       query.bindValue(":DataBlockID", id);
+
+      model->setTable("User");
+      model->select(); // This is load the data from the table into the model
+       if(model->tableName()=="User"){
+      QSqlQuery query2;
+      query2.exec("PRAGMA foreign_keys = OFF;");
+    }
+  else{
+      QSqlQuery query2;
+      query2.exec("PRAGMA foreign_keys = ON;");
+    }
+      setRusNameColums();
+      ui->tableView->setColumnHidden(0, true);
       if (query.exec()) {
           if (query.next()) {
               // The value exists in the table
               qDebug() << "DataBlockID exists. Displaying all matching rows:";
-
+               ui->SavedLabel->setText("Уже сохранен.");
+              ui->SavedLabel->show();
             } else {
               // The value does not exist in the table
               qDebug() << "DataBlockID does not exist. Adding to the table.";
@@ -337,6 +351,8 @@ void Users::on_addUser_clicked()
               ui->downloadProgress->setMaximum(values.size()-1);
               ui->downloadProgress->show();
               int downloadValue=0;
+
+
 
               for(const auto& it:values){
                   ui->downloadProgress->setValue(downloadValue);
@@ -358,16 +374,15 @@ void Users::on_addUser_clicked()
                   ++downloadValue;
 
                 }
+              ui->SavedLabel->setText("Сохранено");
+              ui->SavedLabel->show();
             }
         } else {
           // Handle query execution error
           qDebug() << "Query execution failed:" << query.lastError().text();
         }
     }
-  if(tableName==QString("DeviceData%1").arg(s_n)){
-       ui->SavedLabel->setText("Сохранено");
-     ui->SavedLabel->show();
-    }
+ ui->SavedLabel->hide();
 }
 
 

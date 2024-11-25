@@ -2,11 +2,11 @@
 #define GRAPTHICS_H
 
 #include <QWidget>
-
-#include "exportdatafrombytes.h"
-#include "deviceinfostorage.h"
-#include "globaldefines.h"
+#include <memory>
 #include "qcustomplot.h"
+#include "globaldefines.h"
+#include "deviceinfostorage.h"
+#include "exportdatafrombytes.h"
 
 namespace Ui {
 class grapthics;
@@ -58,28 +58,26 @@ private slots:
 
   void renderContent(QPainter &painter, QPrinter &printer);
 
-  void debugRenderContent(const QSize &contentSize, const QRect &pageRect, qreal scaleFactor, qreal xOffset, qreal yOffset);
-
   void on_controlTempOut_clicked(bool checked);
 
   void on_controlHumidOut_clicked(bool checked);
 
 private:
-    Ui::grapthics *ui;
+    std::unique_ptr<Ui::grapthics> ui;
     DeviceInfoStorage& storage;
     QPen iTempPen,eTempPen,iHumidPen,eHumidPen,dewPen,pPressurePen;
-    ExportDataFromBytes *expData;
+    ExportDataFromBytes *expData;///<instance in main function
     uint64_t RangeInSeconds=60;
     double calculatePartialPressure(float Temp, float Humid);
     double calculateDewPoint(float temperature, float relativeHumidity);
-    QCPItemLine *UpperTempControlLine;
-    QCPItemLine *LowerTempControlLine;
-    QCPItemLine *UpperHumidControlLine;
-    QCPItemLine *LowerHumidControlLine;
-    QCPItemLine *LowerExTempControlLine;
-    QCPItemLine *UpperExHumidControlLine;
-    QCPItemLine *LowerExHumidControlLine;
-    QCPItemLine *UpperExTempControlLine;
+    QCPItemLine *UpperTempControlLine;///<dont care about delete this pointer
+    QCPItemLine *LowerTempControlLine;///<dont care about delete this pointer
+    QCPItemLine *UpperHumidControlLine;///<dont care about delete this pointer
+    QCPItemLine *LowerHumidControlLine;///<dont care about delete this pointer
+    QCPItemLine *LowerExTempControlLine;///<dont care about delete this pointer
+    QCPItemLine *UpperExHumidControlLine;///<dont care about delete this pointer
+    QCPItemLine *LowerExHumidControlLine;///<dont care about delete this pointer
+    QCPItemLine *UpperExTempControlLine;///<dont care about delete this pointer
 
 
 
