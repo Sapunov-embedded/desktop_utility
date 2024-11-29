@@ -35,7 +35,7 @@ MainWindow::MainWindow(Users *user,SerialPortManager *SerialPM,ExportDataFromByt
   if(enableSaveToDb){
       ui->SaveToDataBaseButton->show();
     }else{
-  ui->SaveToDataBaseButton->hide();
+      ui->SaveToDataBaseButton->hide();
     }
 
   ui->JournalButton->setEnabled(false);
@@ -44,17 +44,18 @@ MainWindow::MainWindow(Users *user,SerialPortManager *SerialPM,ExportDataFromByt
 
 
   ui->innerTempComboBox->addItems(tempList);
+
   ui->innerHumidComboBox->addItems(humidList);
   ui->outerTempComboBox->addItems(tempList);
   ui->outerHumidComboBox->addItems(humidList);
 
-      if(enableMainFunctionality){
+  if(enableMainFunctionality){
       ui->mainTargetRadioButton->setChecked(enableMainFunctionality);
       ui->switchSensorBoxDisWin->setEnabled(false);
-        }else{
-          ui->journalTargetRadioButton->setChecked(true);
-          ui->switchSensorBoxDisWin->setEnabled(true);
-        }
+    }else{
+      ui->journalTargetRadioButton->setChecked(true);
+      ui->switchSensorBoxDisWin->setEnabled(true);
+    }
   matchValueInRange();
 
   connect(ui->innerTempComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -140,9 +141,10 @@ background-color:rgb(197, 197, 197);
       checkControlRange();
     });
 
-
+  //auto update lcd screen
   // connect(timer, &QTimer::timeout, this, &MainWindow::on_getTempButton_clicked);
   // connect(timer, &QTimer::timeout, this, &MainWindow::set_lcd_datatime);
+
   connect(timer, &QTimer::timeout, this, &MainWindow::setProgressBar);
   timer->start(200);
 
@@ -156,7 +158,7 @@ background-color:rgb(197, 197, 197);
       SerialPM->auto_search_com_ports();
       if(SerialPM->getConnectStatus()){
           if(enableMainFunctionality){
-          ShowHideConnectWindow();
+              ShowHideConnectWindow();
             }else{
               onlyJournalFunc();
             }
@@ -172,7 +174,7 @@ background-color:rgb(197, 197, 197);
       ui->manualConButton->setEnabled(true);
       ui->SNumber_text->clear();
       ui->FW_version_text->clear();
-     // ui->SaveToDataBaseButton->setEnabled(false);
+      ui->SaveToDataBaseButton->setEnabled(false);
       ui->JournalButton->setEnabled(false);
       ui->graphButton->setEnabled(false);
       ui->tableButton->setEnabled(false);
@@ -190,7 +192,7 @@ background-color:rgb(197, 197, 197);
         }
       else {
           if(enableMainFunctionality){
-          ShowHideConnectWindow();
+              ShowHideConnectWindow();
             }else{
               onlyJournalFunc();
             }
@@ -219,6 +221,7 @@ background-color:rgb(197, 197, 197);
   connect(ui->writeDateTimeFromDevice, &QPushButton::clicked,this, [this,SerialPM](){
       SerialPM->writeDateTimeFromDevice();
       ui->textBrowser->insertPlainText("Дата и время обновлено на устройстве.\n");
+      setBackgroundButton(ui->writeDateTimeFromDevice,false);
     },Qt::AutoConnection);
 
   connect(ui->clearConsoleDisW, &QPushButton::clicked,this, [this](){
@@ -231,7 +234,7 @@ background-color:rgb(197, 197, 197);
 
   //show not active func after get block
   connect(SerialPM,&SerialPortManager::blockDataReady,this,[this](){
-     ui->SaveToDataBaseButton->setEnabled(true);
+      ui->SaveToDataBaseButton->setEnabled(true);
       ui->JournalButton->setEnabled(true);
       ui->graphButton->setEnabled(true);
       ui->tableButton->setEnabled(true);
@@ -244,10 +247,15 @@ background-color:rgb(197, 197, 197);
   Logging::logInfo("The app start");
   ui->Button_connect->click();
   setActiveSensorDisplay(INNER);
- // matchValueInRange();
+  // matchValueInRange();
   if(storage.getModelDevice()==DEV_1XX){
       ui->switchSensorBoxDisWin->hide();
     }
+  setBackgroundButton(ui->setVerDate,false);
+  setBackgroundButton(ui->writeDateTimeFromDevice,false);
+  setBackgroundButton(ui->WriteVolumeLevel,false);
+  setBackgroundButton(ui->WriteToFlash,false);
+  ui->progressBar->hide();
 }
 
 MainWindow::~MainWindow()
@@ -266,6 +274,7 @@ void MainWindow::closeSerialPort()
   ui->Disconnected_device->show();
   ui->Connected_device->hide();
   disableAllIndicates();
+
 }
 
 
@@ -306,6 +315,7 @@ void MainWindow::on_dateEdit_userDateChanged(const QDate &date)
   QDateTime dt=storage.getDateTime();
   dt.setDate(date);
   storage.setDateTime(dt);
+  setBackgroundButton(ui->writeDateTimeFromDevice,true);
 }
 
 void MainWindow::on_timeEdit_userTimeChanged(const QTime &time)
@@ -313,6 +323,7 @@ void MainWindow::on_timeEdit_userTimeChanged(const QTime &time)
   QDateTime dt=storage.getDateTime();
   dt.setTime(time);
   storage.setDateTime(dt);
+  setBackgroundButton(ui->writeDateTimeFromDevice,true);
 }
 
 void MainWindow::ProcessConnect(){
@@ -322,6 +333,7 @@ void MainWindow::ProcessConnect(){
 };
 
 void MainWindow::ShowHideConnectWindow(){
+
   ui->progressBar->setMaximum(storage.getBlockSizeValue());
   ui->progressBar->setValue(0);
   ui->SNumber_text->setText(storage.getSnDevice());
@@ -332,7 +344,7 @@ void MainWindow::ShowHideConnectWindow(){
   set_lcd_datatime();
   ui->lcd_temp->display(storage.getTemperature());
   ui->lcd_humid->display(qRound(storage.getHumid()));
-  ui->progressBar->setMaximum(storage.getBlockSizeValue());//*
+  ui->progressBar->setMaximum(storage.getBlockSizeValue());
   qDebug()<<"block size "<<storage.getBlockSizeValue();
   Logging::logInfo("block size "+QString::number(storage.getBlockSizeValue()).toStdString());
   initVerificationDate();
@@ -371,6 +383,10 @@ void MainWindow::ShowHideConnectWindow(){
   ui->numberComPort_2->setValue(SerialPM->getPortNumber());
 
   ui->textBrowser->insertPlainText("Устройство подключено. Порт "+ SerialPM->getPortName() +"\nМодель ТМФЦ "+ storage.getModelDevice() +".\n");
+  setBackgroundButton(ui->setVerDate,false);
+  setBackgroundButton(ui->writeDateTimeFromDevice,false);
+  setBackgroundButton(ui->WriteVolumeLevel,false);
+  setBackgroundButton(ui->WriteToFlash,false);
 };
 
 
@@ -381,6 +397,7 @@ void MainWindow::on_getTempButton_clicked()
   ui->lcd_humid->display(qRound(storage.getHumid()));
   SerialPM->readDateTimeFromDevice();
   set_lcd_datatime();
+  setBackgroundButton(ui->writeDateTimeFromDevice,false);
 }
 
 void MainWindow::set_lcd_datatime(){
@@ -403,6 +420,7 @@ void MainWindow::on_readFlash_clicked()
 //range squars
 void MainWindow::on_refresh_clicked()
 {
+
   for(uint8_t it=1;it<=8;++it){
       if(SerialPM->controllSettings[it]&&it==1&& !ui->indicate_1->isChecked()){
           ui->indicate_1->toggle();
@@ -442,17 +460,18 @@ void MainWindow::on_WriteToFlash_clicked()
       ui->textBrowser->insertPlainText("Диапозоны контроля: от "+QString::number(ui->InTempLower->value())+" до "+QString::number(ui->InTempUpper->value())+" °C, от "+
                                        QString::number(ui->InHumidLower->value())+" до "+ QString::number(ui->InHumidUpper->value())+"%\n");
     }else{
-  auto ranges=storage.getRangeFor211();
-  ui->textBrowser->insertPlainText("Диапозоны контроля:\nВнутренний датчик: от " + QString::number(std::get<0>(ranges))+"..."+QString::number(std::get<1>(ranges))+" °C, "+
-                                   QString::number(std::get<2>(ranges))+"..."+QString::number(std::get<3>(ranges))+" %\n");
-  ui->textBrowser->insertPlainText("Внешний датчик: от "+QString::number(std::get<4>(ranges))+ "..."+QString::number(std::get<5>(ranges))+" °C, "+
-                                                           QString::number(std::get<6>(ranges))+ "..." +QString::number(std::get<7>(ranges))+"% установлены.\n");
+      auto ranges=storage.getRangeFor211();
+      ui->textBrowser->insertPlainText("Диапозоны контроля:\nВнутренний датчик: от " + QString::number(std::get<0>(ranges))+"..."+QString::number(std::get<1>(ranges))+" °C, "+
+                                       QString::number(std::get<2>(ranges))+"..."+QString::number(std::get<3>(ranges))+" %\n");
+      ui->textBrowser->insertPlainText("Внешний датчик: от "+QString::number(std::get<4>(ranges))+ "..."+QString::number(std::get<5>(ranges))+" °C, "+
+                                       QString::number(std::get<6>(ranges))+ "..." +QString::number(std::get<7>(ranges))+"% установлены.\n");
     }
- // matchValueInRange();
+  // matchValueInRange();
   if(storage.getModelDevice()==DEV_1XX){
-     // updateBoxRange102();
+      // updateBoxRange102();
     }else{
     }
+  setBackgroundButton(ui->WriteToFlash,false);
 }
 
 //mask squers
@@ -465,12 +484,14 @@ void MainWindow::on_WriteVolumeLevel_clicked()
 {
   SerialPM->setVolumeLevel(ui->VolumeLevel->currentText().toUShort());
   SerialPM->saveSettings();
+  setBackgroundButton(ui->WriteVolumeLevel,false);
 }
 
 void MainWindow::on_VerificationDate_userDateChanged(const QDate &date)
 {
   storage.setVerificationDate(date);
   endVerificationDate();
+  setBackgroundButton(ui->setVerDate,true);
 }
 
 // its settup higher speed 230000
@@ -492,12 +513,15 @@ bool MainWindow::validationTimeDate(){
 void MainWindow::on_ReadDataFromDeviceButton_clicked()
 {
   ui->progressBar->setMaximum(storage.getBlockSizeValue());
+  SerialPM->processBarValue=0;
+  ui->progressBar->show();
   ui->progressBar_for_journal->setMaximum(storage.getBlockSizeValue());
   SerialPM->getAllData();
   if(ui->generateAllReports->isChecked()){
       on_JournalButton_clicked();
       emit ui->tableButton->clicked();
     }
+  ui->progressBar->hide();
 }
 
 void MainWindow::endVerificationDate(){
@@ -536,6 +560,7 @@ void  MainWindow::JournalCreated(){
 };
 
 void MainWindow::checkControlRange(){
+  setBackgroundButton(ui->WriteToFlash,true);
   uint8_t startTemp=0;
   uint8_t endTemp=0;
   uint8_t startHumid=0;
@@ -568,12 +593,12 @@ void MainWindow::checkControlRange(){
       tempRange=get_combined_range(startTemp,endTemp,true);
       humidRange=get_combined_range(startHumid,endHumid,false);
     }
-  QVector<QPair<int, int>> tempRanges = {
-    {-40, -18}, {-18, -5}, {2, 8}, {2, 15}, {2, 25}, {2, 30}, {8, 15}, {8, 25}, {15, 25}, {2, 70}
-  };
-  QVector<QPair<int, int>> humidRanges = {
-    {20, 45}, {20, 50}, {20, 60}, {20, 65}
-  };
+  //  QVector<QPair<int, int>> tempRanges = {
+  //    {-40, -18}, {-18, -5}, {2, 8}, {2, 15}, {2, 25}, {2, 30}, {8, 15}, {8, 25}, {15, 25}, {2, 70}
+  //  };
+  //  QVector<QPair<int, int>> humidRanges = {
+  //    {20, 45}, {20, 50}, {20, 60}, {20, 65}
+  //  };
 
   //--
 
@@ -637,67 +662,61 @@ void MainWindow::updateRangeValues(){
 
   storage.setRangeFor211(InTempLowerControl,InTempUpperControl,InHumidLowerControl,InHumidUpperControl,
                          OutTempLowerControl,OutTempUpperControl,OutHumidLowerControl,OutHumidUpperControl);
+  setBackgroundButton(ui->WriteToFlash,true);
 };
 
 void MainWindow::on_InTempLower_valueChanged(int arg1)
 {
   updateRangeValues();
   setActiveSensorDisplay(INNER);
-
 }
 
 void MainWindow::on_InHumidLower_valueChanged(int arg1)
 {
   updateRangeValues();
   setActiveSensorDisplay(INNER);
-
 }
 
 void MainWindow::on_InTempUpper_valueChanged(int arg1)
 {
   updateRangeValues();
   setActiveSensorDisplay(INNER);
-
 }
 
 void MainWindow::on_OutTempLower_valueChanged(int arg1)
 {
   updateRangeValues();
   setActiveSensorDisplay(OUTER);
-
 }
 
 void MainWindow::on_OutHumidLower_valueChanged(int arg1)
 {
   updateRangeValues();
   setActiveSensorDisplay(OUTER);
-
 }
 
 void MainWindow::on_OutTempUpper_valueChanged(int arg1)
 {
   updateRangeValues();
   setActiveSensorDisplay(OUTER);
-
 }
 
 void MainWindow::on_OutHumidUpper_valueChanged(int arg1)
 {
   updateRangeValues();
   setActiveSensorDisplay(OUTER);
-
 }
 
 void MainWindow::on_InHumidUpper_valueChanged(int arg1)
 {
   updateRangeValues();
   setActiveSensorDisplay(INNER);
-
 }
 
 void MainWindow::on_setVerDate_clicked()
 {
   SerialPM->setVerificationDate();
+  setBackgroundButton(ui->setVerDate,false);
 }
 
 void MainWindow::on_graphButton_clicked()
@@ -764,8 +783,10 @@ void MainWindow::rangeProcess(){
   ui->OutHumidLower->setValue(exHumidValues.first);
   ui->OutHumidUpper->setValue(exHumidValues.second);
 
-  if(storage.getModelDevice()==DEV_1XX)
-    setNewMaskRange102(inTempValues.first,inTempValues.second,inHumidValues.first,inHumidValues.second);
+  if(storage.getModelDevice()==DEV_1XX){
+      setNewMaskRange102(inTempValues.first,inTempValues.second,inHumidValues.first,inHumidValues.second);
+    }
+      setBackgroundButton(ui->WriteToFlash,true);
 };
 
 std::pair<int8_t,int8_t> MainWindow::tempProcess(uint8_t index){
@@ -852,7 +873,7 @@ std::pair<uint8_t,uint8_t> MainWindow::humidProcess(uint8_t index){
     }
   switch (index) {
     case 0 : {
-        humidH=45;
+        humidH=30;
         break;
       }
     case 1 : {
@@ -860,11 +881,11 @@ std::pair<uint8_t,uint8_t> MainWindow::humidProcess(uint8_t index){
         break;
       }
     case 2 : {
-        humidH=60;
+        humidH=65;
         break;
       }
     case 3 : {
-        humidH=65;
+        humidH=80;
         break;
       }
     }
@@ -880,7 +901,7 @@ void MainWindow::matchValueInRange(){
     {-40, -18}, {-18, -5}, {2, 8}, {2, 15}, {2, 25}, {2, 30}, {8, 15}, {8, 25}, {15, 25}, {2, 70}
   };
   QVector<QPair<int, int>> humidRanges = {
-    {0, 45}, {0, 50}, {0, 60}, {0, 65}
+    {0, 30}, {0, 50}, {0, 65}, {0, 80}
   };
 
   int indexInnerTemp=findBestRangeIndex(ui->InTempLower->value(),ui->InTempUpper->value(),tempRanges);
@@ -1030,8 +1051,8 @@ void MainWindow::updateBoxRange102(){
         }
     }
 
-  uint8_t tempResult=endTemp-startTemp;
-  uint8_t humidResult=endHumid-startHumid;
+ // uint8_t tempResult=endTemp-startTemp;
+ // uint8_t humidResult=endHumid-startHumid;
 
   //--
   std::pair<int, int> tempRange={0,0};
@@ -1044,7 +1065,7 @@ void MainWindow::updateBoxRange102(){
     {-40, -18}, {-18, -5}, {2, 8}, {2, 15}, {2, 25}, {2, 30}, {8, 15}, {8, 25}, {15, 25}, {2, 70}
   };
   QVector<QPair<int, int>> humidRanges = {
-    {20, 45}, {20, 50}, {20, 60}, {20, 65}
+    {20, 30}, {20, 50}, {20, 65}, {20, 80}
   };
   if(storage.getModelDevice()==DEV_1XX&&tempRange.first!=0&&tempRange.second!=0){
       ui->innerTempComboBox->setCurrentIndex(findBestRangeIndex(tempRange.first,tempRange.second,tempRanges));
@@ -1058,8 +1079,8 @@ void MainWindow::updateBoxRange102(){
 
 void MainWindow::on_mainTargetRadioButton_clicked()
 {
-    enableMainFunctionality=true;
-    ui->switchSensorBoxDisWin->setEnabled(false);
+  enableMainFunctionality=true;
+  ui->switchSensorBoxDisWin->setEnabled(false);
 }
 
 
@@ -1084,18 +1105,32 @@ void MainWindow::onlyJournalFunc(){
 void MainWindow::on_journalTargetRadioButton_clicked()
 {
   enableMainFunctionality=false;
-    ui->switchSensorBoxDisWin->setEnabled(true);
+  ui->switchSensorBoxDisWin->setEnabled(true);
 }
 
 
 void MainWindow::on_externalSensorButtonDisWin_clicked()
 {
-    storage.setSensorType211(false);
+  storage.setSensorType211(false);
 }
 
 
 void MainWindow::on_innerlSensorButtonDisWin_clicked()
 {
-    storage.setSensorType211(true);
+  storage.setSensorType211(true);
+}
+
+void MainWindow::setBackgroundButton(QPushButton *button, bool needAction){
+  if(needAction){
+      button->setStyleSheet("background-color: #FFEB3B; color: black; border: 2px solid #FBC02D;  transition: all 0.3s ease;");
+
+    }else{
+      button->setStyleSheet("");
+    }
+};
+
+void MainWindow::on_VolumeLevel_currentIndexChanged(const QString &arg1)
+{
+  setBackgroundButton(ui->WriteVolumeLevel,true);
 }
 

@@ -48,14 +48,7 @@ RESOURCES += icons.qrc
 RC_FILE += icon.rc
 
 
-#QMAKE_LFLAGS += -static -static-libgcc -static-libstdc++
 
-# Явная ссылка на статические библиотеки
-#LIBS += -LC:/static/lib  -lQt5Core -lQt5Gui -lQt5Widgets -lQt5SerialPort -lqtharfbuzz -lz -lpcre2-16 -ldouble-conversion -ljasper -lmng -lsqlite3 #-lpq
-
-
-#QT_CONFIG -= opengl
-#CONFIG += no-icu -DNDEBUG
 
 
 

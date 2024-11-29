@@ -60,5 +60,6 @@ int main(int argc, char *argv[])
   Users us(appConfig);
   MainWindow w(&us,&SerialPM,&parsedData,&appConfig);
   w.show();
+
   return a.exec();
 }

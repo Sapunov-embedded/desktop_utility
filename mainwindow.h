@@ -5,7 +5,6 @@
 #include <QMainWindow>
 #include <QDateTime>
 #include <QVBoxLayout>
-
 #include "users.h"
 #include "journal.h"
 #include "logging.h"
@@ -206,6 +205,8 @@ private slots:
 
 
 
+  void on_VolumeLevel_currentIndexChanged(const QString &arg1);
+
 private:
   void updateBoxRange102();
   void setNewMaskRange102(int tempL, int tempH, int humidL, int humidH);
@@ -225,6 +226,7 @@ private:
   void refreash102();
   void disableAllIndicates();
   void onlyJournalFunc();
+  void setBackgroundButton(QPushButton *button, bool needAction);
 
   std::pair<int8_t,int8_t> tempProcess(uint8_t index);
   std::pair<uint8_t,uint8_t> humidProcess(uint8_t index);
@@ -240,7 +242,7 @@ private:
   Users *us;
   QStringList tempList={"ниже -18°C", "от -5 до -18°C","от +2 до +8°C", "от +2 до +15°C", "от +2 до +25°C",
                         "от +2 до +30°C", "от +8 до +15°C", "от +8 до +25°C", "от +15 до +25°C", "не ниже +2°C"};
-  QStringList humidList={"не более 45%", "не более 50%", "не более 60%", "не более 65%" };
+  QStringList humidList={"не более 30%", "не более 50%", "не более 65%", "не более 80%" };
 };
 
 /**

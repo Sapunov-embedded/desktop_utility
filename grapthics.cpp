@@ -38,8 +38,6 @@ grapthics::grapthics(ExportDataFromBytes *exp,QWidget *parent) :
   ui->graphicsView->xAxis->setLabel("Время");
 
 
-
-
   for(uint8_t it=0;it<6;++it){
       ui->graphicsView->addGraph();
     }
@@ -61,6 +59,7 @@ grapthics::grapthics(ExportDataFromBytes *exp,QWidget *parent) :
   ui->graphicsView->setInteraction(QCP::iRangeDrag, true);
   //customPlot->axisRect()->setRangeZoomFactor(1.2); // Adjust the zoom sensitivity
   ui->inTemp->setChecked(true);
+  ui->iHumid->setChecked(true);
   if(DEV_1XX==storage.getModelDevice()){
       ui->outHumid->hide();
       ui->outTemp->hide();

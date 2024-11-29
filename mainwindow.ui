@@ -2108,8 +2108,6 @@
        </property>
       </widget>
      </widget>
-     <zorder>Disconnected_device</zorder>
-     <zorder>Connected_device</zorder>
     </widget>
    </widget>
   </widget>
